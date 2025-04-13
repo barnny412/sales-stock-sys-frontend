@@ -1,0 +1,245 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container */
+.add-sales-container {
+  flex-grow: 1; /* Makes it take up remaining space */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+  min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+  margin-top: 70px;
+}
+
+/* Form header */
+.add-sales-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Overall Total Sales */
+.overall-total-sales {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00ff7f;
+  background-color: #222;
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 1px solid #00ff7f;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Form Group - Aligns Inputs */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between elements */
+  flex-wrap: wrap;
+}
+
+/* Input fields */
+.add-sales-container select {
+  padding: 10px;
+  width: 200px; /* Ensuring consistent width */
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  margin-right: 10px;
+}
+
+/* Closing Stock Input */
+.closing-stock-input {
+  width: 200px; /* Match the select box */
+  padding: 10px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Add button */
+.add-sales-container button.add-sale-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+.add-sales-container button.add-sale-btn:hover {
+  background-color: #00e67f;
+}
+
+/* Sales Table */
+.sales-list {
+  overflow-x: auto;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #222;
+  margin-top: 20px;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 12px;
+  border: 1px solid #00ff7f;
+  text-align: left;
+}
+
+.sales-table th {
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  text-align: center;
+}
+
+.sales-table tr:nth-child(even) {
+  background-color: #333;
+}
+
+.sales-table tr:hover {
+  background-color: #444;
+}
+
+/* Remove button */
+button.remove-btn {
+  background-color: #ff4444;
+  color: white;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  border: none;
+}
+
+button.remove-btn:hover {
+  background-color: #e53e36;
+}
+
+/* Actions */
+.actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.save-sales-btn {
+  padding: 12px 20px;
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.save-sales-btn:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE DESIGN */
+
+/* Tablet Screens */
+@media (max-width: 768px) {
+  .add-sales-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .overall-total-sales {
+    margin-top: 10px;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-sales-container select {
+    width: 100%;
+  }
+
+  /* Closing Stock Input */
+.closing-stock-input {
+  width: 95%; /* Match the select box */
+  margin-top: 10px;
+}
+
+}
+
+/* Mobile Screens */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .overall-total-sales {
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    font-size: 0.8rem;
+  }
+
+  .sales-table {
+    font-size: 0.8rem;
+  }
+
+  .save-sales-btn {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  button.add-sale-btn {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .sales-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

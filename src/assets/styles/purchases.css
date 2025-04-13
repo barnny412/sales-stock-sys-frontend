@@ -1,0 +1,175 @@
+/* Main container */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.purchases-container {
+  flex-grow: 1; /* Makes it take up remaining space */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+  min-height: calc(100vh - 60px);
+  margin-top: 70px;
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  /* Search input */
+  .search-input {
+    padding: 10px;
+    width: 250px;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  .search-input::placeholder {
+    color: #aaa;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #00ff7f;
+    box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+  }
+  
+  /* Add Purchase Button */
+  .add-purchase-btn {
+    background-color: #00ff7f;
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+  }
+  
+  .add-purchase-btn:hover {
+    background-color: #008f5e;
+    color: #fff;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .tabs button {
+    background: none;
+    color: #fff;
+    border: 2px solid #00ff7f;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .tabs button:hover {
+    background-color: #00ff7f;
+    color: #000;
+  }
+  
+  .tabs .active {
+    background-color: #00ff7f;
+    color: #000;
+  }
+  
+  /* Table */
+  .purchases-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .purchases-table th, 
+  .purchases-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+  
+  .purchases-table th {
+    background-color: #00ff7f;
+    color: #000;
+  }
+  
+  .purchases-table tr:hover {
+    background-color: rgba(0, 255, 127, 0.1);
+  }
+  
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .pagination button {
+    background: none;
+    border: 1px solid #00ff7f;
+    color: #fff;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0 5px;
+    border-radius: 5px;
+  }
+  
+  .pagination button:hover {
+    background-color: #00ff7f;
+    color: #000;
+  }
+  
+  .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .purchases-container {
+      padding: 10px;
+    }
+  
+    .search-input {
+      width: 100%;
+    }
+  
+    .purchases-table th,
+    .purchases-table td {
+      padding: 8px;
+      font-size: 14px;
+    }
+  
+    .tabs {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .add-purchase-btn {
+      width: 90%;
+      margin-top: 10px;
+    }
+  }
+  

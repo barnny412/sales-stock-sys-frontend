@@ -1,0 +1,193 @@
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1e1e1e;
+  padding: 15px 20px;
+  z-index: 1000;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Navbar Container */
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Logo */
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00ff7f;
+  cursor: pointer;
+}
+
+/* Desktop Navigation */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.nav-links li {
+  display: inline;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  color: #00ff7f;
+}
+
+/* Hide Mobile Menu Button on Large Screens */
+.menu-toggle {
+  display: none;
+}
+
+/* Drawer Styles */
+.drawer-content {
+  width: 250px;
+  background-color: #1e1e1e; /* Match navbar background */
+  color: white;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 255, 127, 0.2); /* Neon green shadow */
+}
+
+/* Close Button */
+.drawer-close {
+  align-self: flex-end;
+  color: #00ff7f; /* Neon green */
+  transition: color 0.3s;
+}
+
+.drawer-close:hover {
+  color: #00cc66; /* Darker green on hover */
+}
+
+/* Drawer Links */
+.drawer-link {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.drawer-link:hover {
+  background-color: #333; /* Match dashboard list background */
+  color: #00ff7f; /* Neon green on hover */
+}
+
+/* Material-UI List and ListItem Overrides */
+.MuiList-root {
+  padding: 0;
+}
+
+.MuiListItem-root {
+  padding: 0;
+  margin-bottom: 5px;
+}
+
+.MuiListItemText-primary {
+  font-weight: bold;
+}
+
+/* Responsive Design */
+
+/* At 1024px */
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 15px;
+  }
+}
+
+/* At 900px (Mobile Drawer) */
+@media (max-width: 900px) {
+  .nav-container {
+    max-width: 90%;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .menu-toggle:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* At 768px */
+@media (max-width: 768px) {
+  .nav-container {
+    max-width: 85%;
+  }
+
+  .menu-toggle {
+    font-size: 30px;
+  }
+
+  .drawer-content {
+    width: 200px; /* Slightly narrower for smaller screens */
+    padding: 15px;
+  }
+
+  .drawer-link {
+    font-size: 16px;
+    padding: 8px;
+  }
+}
+
+/* At 480px */
+@media (max-width: 480px) {
+  .nav-container {
+    max-width: 85%;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .menu-toggle {
+    font-size: 26px;
+  }
+
+  .drawer-content {
+    width: 180px;
+    padding: 10px;
+  }
+
+  .drawer-link {
+    font-size: 14px;
+    padding: 6px;
+  }
+}

@@ -1,0 +1,214 @@
+/* Container */
+.add-purchases-container {
+  flex-grow: 1; /* Makes it take up remaining space */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+  min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+  margin-top: 70px;
+}
+
+/* Form header */
+.add-purchases-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+h2 {
+    margin: 0;
+}
+
+/* Input fields */
+.add-purchases-container select {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    margin: 10px 0;
+}
+
+.quantity-input,
+.price-input {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    margin: 10px 0;
+}
+
+/* Add button */
+.add-purchases-container button.add-purchase-btn {
+    padding: 8px 12px;
+    background-color: #00ff7f;
+    color: #1e1e1e;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.add-purchases-container button.add-purchase-btn:hover {
+    background-color: #00e67f;
+}
+
+/* Purchases table */
+.purchases-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #222;
+    margin-top: 20px;
+}
+
+.purchases-table th,
+.purchases-table td {
+    padding: 10px;
+    border: 1px solid #00ff7f;
+    text-align: left;
+}
+
+.purchases-table th {
+    background-color: #00ff7f;
+    color: #1e1e1e;
+}
+
+.purchases-table tr:nth-child(even) {
+    background-color: #333;
+}
+
+.purchases-table tr:hover {
+    background-color: #444;
+}
+
+/* Remove button */
+button.remove-btn {
+    background-color: #ff4444;
+    color: white;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button.remove-btn:hover {
+    background-color: #e53e36;
+}
+
+/* Save button */
+button.save-purchases-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #00ff7f;
+    color: #1e1e1e;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+button.save-purchases-btn:hover {
+    background-color: #00e67f;
+}
+
+/* Disabled state for save button */
+button.save-purchases-btn:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+}
+
+/* Error and success messages */
+.error-message,
+.success-message {
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.error-message {
+    background: #ff4c4c;
+    color: white;
+}
+
+.success-message {
+    background: #4caf50;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .add-purchases-container {
+      padding: 15px;
+    }
+  
+    .add-purchases-container select {
+      width: 90%; /* Full width on medium screens */
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .add-purchases-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .add-purchases-container select {
+      width: 100%;
+      padding: 10px;
+    }
+
+    .quantity-input,
+    .price-input {
+      width: 95%;
+      padding: 10px;
+    }
+  
+    .add-purchases-container button.add-purchase-btn {
+      width: 100%;
+      padding: 12px;
+    }
+  
+    /* Make the table scrollable */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto; /* Enables horizontal scrolling */
+    }
+  
+    .purchases-table {
+      min-width: 600px; /* Ensures table doesn't shrink too much */
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .add-purchases-container {
+      padding: 10px;
+    }
+  
+    .add-purchases-header h2 {
+      font-size: 18px;
+    }
+  
+    .add-purchases-container button.save-purchases-btn {
+      width: 100%;
+      padding: 12px;
+    }
+  
+    button.remove-btn {
+      padding: 8px;
+    }
+  }
+  

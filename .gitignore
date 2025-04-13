@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+*.local
+package-lock.json  # Added to ignore npm lock file
+
+# Environment variables
+.env              # Added
+.env.local        # Added
+.env.development  # Added
+.env.production   # Added
+
+# Vite-specific cache
+.vite/            # Added
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Render-specific files
+render.yaml       # Added

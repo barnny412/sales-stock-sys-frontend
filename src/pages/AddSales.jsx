@@ -1,0 +1,201 @@
+import React, { useState, useEffect } from "react";
+import { createSale } from "../api/salesAPI";
+import { fetchProducts } from "../api/productsAPI";
+import { fetchLastClosingStock } from "../api/salesAPI";
+import "../assets/styles/addSales.css";
+
+const AddSales = () => {
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [closingStock, setClosingStock] = useState("");
+  const [salesList, setSalesList] = useState([]);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [openingStock, setOpeningStock] = useState({});
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (error) {
+        setError("Failed to fetch products.");
+        console.error("Fetch Products Error:", error);
+      }
+    };
+
+    getProducts();
+  }, []);
+
+  const handleAddSale = async () => {
+    if (!selectedProduct || !closingStock) {
+      setError("Both Product and Closing Stock are required.");
+      return;
+    }
+
+    if (salesList.some((sale) => sale.product_id === parseInt(selectedProduct))) {
+      setError("This product is already added.");
+      return;
+    }
+
+    try {
+      const lastClosingStock = await fetchLastClosingStock(selectedProduct);
+      console.log("Last Closing Stock: ", lastClosingStock);
+
+      const openingStockValue = lastClosingStock?.lastClosingStock || 0;
+
+      const product = products.find((p) => p.id === parseInt(selectedProduct));
+      if (!product) {
+        setError("Selected product not found.");
+        return;
+      }
+
+      if (parseInt(closingStock, 10) > openingStockValue) {
+        setError("Closing stock cannot exceed opening stock.");
+        return;
+      }
+
+      const saleData = {
+        product_id: parseInt(selectedProduct),
+        opening_stock: openingStockValue,
+        closing_stock: parseInt(closingStock, 10),
+        price: product.selling_price,
+        sales_date: new Date().toISOString().split("T")[0],
+      };
+
+      setSalesList([...salesList, saleData]);
+      setOpeningStock({ ...openingStock, [selectedProduct]: openingStockValue });
+
+      setSelectedProduct("");
+      setClosingStock("");
+      setError("");
+    } catch (error) {
+      setError("Failed to fetch opening stock.");
+      console.error("Opening Stock Error:", error);
+    }
+  };
+
+  const handleSaveSales = async () => {
+    if (salesList.length === 0) {
+      setError("Please add at least one sale.");
+      return;
+    }
+
+    setError("");
+    setSuccessMessage("");
+    setIsSaving(true);
+
+    try {
+      // Send all sales as a single batch
+      await createSale(salesList); // Pass the entire salesList array
+
+      setSuccessMessage("Sales recorded successfully!");
+      setSalesList([]);
+    } catch (error) {
+      setError("Error while saving sales. Please try again.");
+      console.error("Save Sales Error:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const overallTotalSales = salesList
+    .reduce((total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.price, 0)
+    .toFixed(2);
+
+  return (
+    <div className="add-sales-container">
+      <h2>Record Sales</h2>
+
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success-message">{successMessage}</div>}
+
+      <div className="add-sales-form">
+        <select
+          value={selectedProduct}
+          onChange={(e) => setSelectedProduct(e.target.value)}
+          className="product-select"
+        >
+          <option value="">Select Product</option>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name} (Price: ${product.selling_price})
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="number"
+          placeholder="Closing Stock"
+          value={closingStock}
+          onChange={(e) => setClosingStock(e.target.value)}
+          className="closing-stock-input"
+          min="0"
+        />
+
+        <button className="add-sale-btn" onClick={handleAddSale}>
+          Add Sale
+        </button>
+      </div>
+
+      <div className="sales-list">
+        <div className="top-bar">
+          <h3>Sales List</h3>
+          <div className="overall-total-sales">
+            <strong>Overall Total Sales:</strong> ${overallTotalSales}
+          </div>
+        </div>
+        <table className="sales-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Opening Stock</th>
+              <th>Closing Stock</th>
+              <th>Total Sales Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {salesList.length > 0 ? (
+              salesList.map((sale, index) => (
+                <tr key={index}>
+                  <td>{products.find((p) => p.id === sale.product_id)?.name}</td>
+                  <td>{sale.opening_stock}</td>
+                  <td>{sale.closing_stock}</td>
+                  <td>
+                    ${((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)}
+                  </td>
+                  <td>
+                    <button
+                      className="remove-btn"
+                      onClick={() =>
+                        setSalesList(salesList.filter((_, i) => i !== index))
+                      }
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="no-sales-message">
+                  No sales added yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="actions">
+        <button className="save-sales-btn" onClick={handleSaveSales} disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save Sales"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default AddSales;

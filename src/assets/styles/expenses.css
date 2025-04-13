@@ -1,0 +1,139 @@
+html, body { 
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .expenses-container {
+    flex-grow: 1; /* Makes it take up remaining space */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+    min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+    margin-top: 70px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .search-input {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+  }
+  
+  .add-expense-btn {
+    background-color: #00ff7f;
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+  }
+  
+  .expenses-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #222;
+  }
+  
+  .expenses-table th,
+  .expenses-table td {
+    padding: 10px;
+    border: 1px solid #00ff7f;
+    text-align: left;
+  }
+  
+  .expenses-table th {
+    background-color: #00ff7f;
+    color: #1e1e1e;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+  }
+  
+  .edit-btn {
+    background-color: #ffa500;
+    color: white;
+  }
+  
+  .delete-btn {
+    background-color: #ff4444;
+    color: white;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .pagination button {
+    padding: 6px 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #00ff7f;
+    color: #1e1e1e;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+  }
+
+  .expense-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #222;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+  }
+  
+  .expense-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+  }
+  
+  .expense-form input {
+    padding: 8px;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  
