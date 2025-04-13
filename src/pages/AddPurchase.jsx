@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPurchase } from "../api/purchasesAPI";
 import { fetchProducts } from "../api/productsAPI";
 import { fetchSuppliers } from "../api/suppliersAPI";
-import "../assets/styles/addPurchases.css";
+import "../assets/styles/addpurchases.css";
 
 const AddPurchases = () => {
   const [products, setProducts] = useState([]);

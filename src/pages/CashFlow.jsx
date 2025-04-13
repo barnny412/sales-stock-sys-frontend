@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchCashFlow } from "../api/cashFlowAPI"; // API function
-import "../assets/styles/cashflow.css"; // CSS for styling
+import "../assets/styles/cashFlow.css"; // CSS for styling
 
 const CashFlow = () => {
   const [cashflow, setCashflow] = useState([]);
