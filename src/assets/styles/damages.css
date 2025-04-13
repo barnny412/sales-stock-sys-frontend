@@ -1,109 +1,184 @@
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: -webkit-flex; /* Webkit prefix for flex */
+  display: flex;
+  -webkit-flex-direction: column; /* Webkit prefix for flex-direction */
+  flex-direction: column;
+}
+
+.damages-container {
+  -webkit-flex-grow: 1; /* Webkit prefix for flex-grow */
+  flex-grow: 1;
+  display: -webkit-flex; /* Webkit prefix for flex */
+  display: flex;
+  -webkit-flex-direction: column; /* Webkit prefix for flex-direction */
+  flex-direction: column;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 255, 127, 0.2); /* Webkit prefix for box-shadow */
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+  min-height: calc(100vh - 60px);
+  margin-top: 70px;
+}
+
+.header {
+  display: -webkit-flex; /* Webkit prefix for flex */
+  display: flex;
+  -webkit-justify-content: space-between; /* Webkit prefix for justify-content */
+  justify-content: space-between;
+  -webkit-align-items: center; /* Webkit prefix for align-items */
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.search-input {
+  padding: 8px;
+  width: 200px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+}
+
+.add-damage-btn {
+  background-color: #00ff7f;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  -webkit-transition: 0.3s; /* Webkit prefix for transition */
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.damages-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #222;
+}
+
+.damages-table th,
+.damages-table td {
+  padding: 10px;
+  border: 1px solid #00ff7f;
+  text-align: left;
+}
+
+.damages-table th {
+  background-color: #00ff7f;
+  color: #1e1e1e;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.edit-btn {
+  background-color: #ffa500;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #ff4444;
+  color: white;
+}
+
+.pagination {
+  display: -webkit-flex; /* Webkit prefix for flex */
+  display: flex;
+  -webkit-justify-content: center; /* Webkit prefix for justify-content */
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  font-weight: bold;
+  cursor: pointer;
+  -webkit-transition: 0.3s; /* Webkit prefix for transition */
+  transition: 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
+
+/* Loading Message */
+.loading-message {
+  text-align: center;
+  color: #00ff7f;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Error Message */
+.error-message {
+  text-align: center;
+  color: #ff4d4d;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Empty Message */
+.empty-message {
+  text-align: center;
+  color: #bbb;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
   .damages-container {
-    flex-grow: 1; /* Makes it take up remaining space */
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background-color: #1e1e1e;
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
-    min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
-    margin-top: 70px;
+    padding: 15px;
   }
-  
+
   .header {
+    display: -webkit-flex; /* Webkit prefix for flex */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    -webkit-flex-direction: column; /* Webkit prefix for flex-direction */
+    flex-direction: column;
+    -webkit-align-items: flex-end; /* Webkit prefix for align-items */
+    align-items: flex-end;
+    gap: 10px;
   }
-  
+
   .search-input {
-    padding: 8px;
-    width: 200px;
-    border: 1px solid #00ff7f;
-    border-radius: 5px;
-    background-color: #333;
-    color: white;
-  }
-  
-  .add-damage-btn {
-    background-color: #00ff7f;
-    color: #000;
-    border: none;
-    padding: 10px 16px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
-  }
-  
-  .damages-table {
     width: 100%;
-    border-collapse: collapse;
-    background-color: #222;
   }
-  
+
+  .add-damage-btn {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+
   .damages-table th,
   .damages-table td {
-    padding: 10px;
-    border: 1px solid #00ff7f;
-    text-align: left;
+    padding: 8px;
+    font-size: 14px;
   }
-  
-  .damages-table th {
-    background-color: #00ff7f;
-    color: #1e1e1e;
-  }
-  
-  .edit-btn,
-  .delete-btn {
-    padding: 5px 10px;
-    margin-right: 5px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 4px;
-  }
-  
-  .edit-btn {
-    background-color: #ffa500;
-    color: white;
-  }
-  
-  .delete-btn {
-    background-color: #ff4444;
-    color: white;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-  }
-  
+
   .pagination button {
-    padding: 6px 12px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #00ff7f;
-    color: #1e1e1e;
-    font-weight: bold;
-    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 14px;
   }
-  
-  .pagination button:disabled {
-    background-color: #444;
-    cursor: not-allowed;
-  }
-  
+}
