@@ -84,6 +84,11 @@
     font-size: 14px; /* Smaller font */
   }
 
+  .cashflow-table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling */
+  }
+
   .cashflow-table th,
   .cashflow-table td {
     padding: 8px; /* Reduce padding */

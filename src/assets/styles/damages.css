@@ -171,6 +171,11 @@ html, body {
     font-size: 14px;
   }
 
+  .damages-table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling */
+  }
+
   .damages-table th,
   .damages-table td {
     padding: 8px;

@@ -194,4 +194,9 @@ html, body {
   .products-container {
     padding: 15px;
   }
+
+  .products-table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling */
+  }
 }
