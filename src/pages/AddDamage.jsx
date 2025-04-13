@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { addDamage } from "../api/damagesAPI"; // Import addDamage from your API file
 import { fetchProducts } from "../api/productsAPI";
-import "../assets/styles/AddDamage.css";
+import "../assets/styles/addDamage.css";
 
 const AddDamage = () => {
   const [damageData, setDamageData] = useState({

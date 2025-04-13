@@ -36,8 +36,11 @@ html, body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
+/* Search input */
 .search-input {
   padding: 8px;
   width: 250px;
@@ -45,12 +48,10 @@ html, body {
   border-radius: 5px;
   background-color: #333;
   color: white;
+  box-sizing: border-box;
 }
 
-.search-input::placeholder {
-  color: #aaa;
-}
-
+/* Total stock value */
 .total-stock-value {
   font-size: 18px;
   font-weight: bold;
@@ -59,6 +60,12 @@ html, body {
   padding: 8px 15px;
   border-radius: 5px;
   border: 1px solid #00ff7f;
+  white-space: nowrap;
+}
+
+/* Placeholder for search input */
+.search-input::placeholder {
+  color: #aaa;
 }
 
 /* Table Styling */
@@ -68,7 +75,8 @@ html, body {
   background-color: #222;
 }
 
-.products-table th, .products-table td {
+.products-table th,
+.products-table td {
   padding: 12px;
   border: 1px solid #00ff7f;
   text-align: left;
@@ -85,7 +93,8 @@ html, body {
 }
 
 /* Buttons */
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
   padding: 6px 12px;
   margin-right: 5px;
   border: none;
@@ -139,4 +148,50 @@ html, body {
 .pagination button:disabled {
   background-color: #444;
   cursor: not-allowed;
+}
+
+/* Loading Message */
+.loading-message {
+  text-align: center;
+  color: #00ff7f;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Error Message */
+.error-message {
+  text-align: center;
+  color: #ff4d4d;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Empty Message */
+.empty-message {
+  text-align: center;
+  color: #bbb;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column; /* Stack vertically */
+    align-items: flex-end; /* Align children to the right */
+    gap: 10px;
+  }
+
+  .search-input {
+    width: 100%; /* Full width */
+  }
+
+  .total-stock-value {
+    width: auto; /* Fit content */
+    text-align: left; /* Align text naturally */
+  }
+
+  .products-container {
+    padding: 15px;
+  }
 }
