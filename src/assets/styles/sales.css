@@ -1,5 +1,3 @@
-/* sales.css */
-
 /* General Styles */
 /* Ensure the layout fills the entire viewport */
 html, body {
@@ -12,7 +10,7 @@ html, body {
 
 /* Make sure the main container takes the full remaining space */
 .sales-container {
-  flex-grow: 1; /* Makes it take up remaining space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -20,142 +18,233 @@ html, body {
   color: white;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
-  min-height: calc(100vh - 60px); /* Adjust according to navbar/footer */
+  min-height: calc(100vh - 60px);
   margin-top: 70px;
 }
 
-  
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 250px;
+  font-size: 16px;
+}
+
+.add-sale-btn {
+  background-color: #00ff7f;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.add-sale-btn:hover {
+  background-color: #008f5e;
+  color: #fff;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tabs button:hover {
+  background-color: #444;
+}
+
+.tabs button.active {
+  background-color: #00ff7f;
+  color: #1e1e1e;
+}
+
+/* Sales Table */
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.sales-table th {
+  background-color: #333;
+}
+
+.sales-table td {
+  background-color: #2a2a2a;
+}
+
+.sales-table tr:hover {
+  background-color: #444;
+}
+
+.sales-table .edit-btn,
+.sales-table .delete-btn {
+  padding: 5px 10px;
+  background-color: #00ff7f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: background-color 0.3s;
+}
+
+.sales-table .edit-btn:hover {
+  background-color: #00e66d;
+}
+
+.sales-table .delete-btn {
+  background-color: #ff3b30;
+}
+
+.sales-table .delete-btn:hover {
+  background-color: #e03e2d;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+  background-color: #444;
+}
+
+.pagination span {
+  color: #fff;
+  margin: 0 10px;
+}
+
+/* Loading Message */
+.loading-message {
+  text-align: center;
+  color: #00ff7f;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Error Message */
+.error-message {
+  text-align: center;
+  color: #ff4d4d;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Empty Message */
+.empty-message {
+  text-align: center;
+  color: #bbb;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .sales-container {
+    padding: 15px; /* Reduce padding */
+  }
+
   .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    flex-direction: column; /* Stack search and button vertically */
+    gap: 10px; /* Add spacing between elements */
   }
-  
+
   .search-input {
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    width: 250px;
-    font-size: 16px;
+    width: 100%; /* Full width */
+    font-size: 14px; /* Smaller font */
   }
-  
+
   .add-sale-btn {
-    background-color: #00ff7f;
-    color: #000;
-    border: none;
-    padding: 10px 16px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
+    width: 90%; /* Match Purchases */
+    margin-top: 10px; /* Match Purchases */
+    padding: 8px 14px; /* Slightly reduce padding */
+    font-size: 14px; /* Smaller font */
+    text-align: center;
   }
-  
-  .add-sale-btn:hover {
-    background-color: #008f5e;
-    color: #fff;
-  }
-  
-  /* Tabs */
+
   .tabs {
-    display: flex;
-    margin-bottom: 20px;
+    flex-direction: column; /* Stack tabs vertically */
+    gap: 10px; /* Add spacing */
   }
-  
+
   .tabs button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    padding: 8px 16px; /* Reduce padding */
+    font-size: 14px; /* Smaller font */
+    margin-right: 0; /* Remove margin */
   }
-  
-  .tabs button:hover {
-    background-color: #444;
-  }
-  
-  .tabs button.active {
-    background-color: #00ff7f;
-    color: #1e1e1e;
-  }
-  
-  /* Sales Table */
-  .sales-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  .sales-table th, .sales-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #444;
-  }
-  
-  .sales-table th {
-    background-color: #333;
-  }
-  
+
+  .sales-table th,
   .sales-table td {
-    background-color: #2a2a2a;
+    padding: 8px; /* Reduce padding */
+    font-size: 14px; /* Smaller font */
   }
-  
-  .sales-table tr:hover {
-    background-color: #444;
+
+  .sales-table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling */
   }
-  
+
   .sales-table .edit-btn,
   .sales-table .delete-btn {
-    padding: 5px 10px;
-    background-color: #00ff7f;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 5px;
-    transition: background-color 0.3s;
+    padding: 4px 8px; /* Reduce padding */
+    font-size: 12px; /* Smaller font */
   }
-  
-  .sales-table .edit-btn:hover {
-    background-color: #00e66d;
-  }
-  
-  .sales-table .delete-btn {
-    background-color: #ff3b30;
-  }
-  
-  .sales-table .delete-btn:hover {
-    background-color: #e03e2d;
-  }
-  
-  /* Pagination */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
+
   .pagination button {
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 5px;
-    transition: background-color 0.3s;
+    padding: 8px 16px; /* Reduce padding */
+    font-size: 14px; /* Smaller font */
   }
-  
-  .pagination button:hover {
-    background-color: #444;
-  }
-  
+
   .pagination span {
-    color: #fff;
-    margin: 0 10px;
+    font-size: 14px; /* Smaller font */
   }
-  
+
+  .loading-message,
+  .error-message,
+  .empty-message {
+    font-size: 14px; /* Smaller font */
+  }
+}

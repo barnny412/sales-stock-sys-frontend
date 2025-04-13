@@ -170,6 +170,7 @@ html, body {
     .add-purchase-btn {
       width: 90%;
       margin-top: 10px;
+      text-align: center;
     }
   }
   
