@@ -15,6 +15,7 @@ const AddPurchases = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("cigarette"); // Track active tab
 
   useEffect(() => {
     const loadData = async () => {
@@ -62,6 +63,7 @@ const AddPurchases = () => {
       price: Number(price),
       total_cost: Number(price) * Number(quantity),
       date: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
+      purchase_type: activeTab, // Set purchase_type based on active tab
     };
 
     setPurchaseList([...purchaseList, newPurchase]);
@@ -83,8 +85,9 @@ const AddPurchases = () => {
       product_id: p.product_id,
       supplier_id: p.supplier_id,
       quantity: p.quantity,
-      purchase_date: p.date, // Already formatted as YYYY-MM-DD
-      price: p.price, // Include price
+      purchase_date: p.date,
+      price: p.price,
+      purchase_type: p.purchase_type, // Include purchase_type
     }));
 
     console.log("Sending purchases to server:", formattedPurchases);
@@ -105,9 +108,30 @@ const AddPurchases = () => {
     setPurchaseList(purchaseList.filter((_, i) => i !== index));
   };
 
+  // Filter purchases based on the active tab
+  const filteredPurchases = purchaseList.filter(
+    (purchase) => purchase.purchase_type === activeTab
+  );
+
   return (
     <div className="add-purchases-container">
       <h2>Record Purchases</h2>
+
+      {/* Tabs */}
+      <div className="tabs">
+        <button
+          className={activeTab === "cigarette" ? "active" : ""}
+          onClick={() => setActiveTab("cigarette")}
+        >
+          Cigarette
+        </button>
+        <button
+          className={activeTab === "bread_tomato" ? "active" : ""}
+          onClick={() => setActiveTab("bread_tomato")}
+        >
+          Bread/Tomato
+        </button>
+      </div>
 
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
@@ -155,7 +179,7 @@ const AddPurchases = () => {
           onChange={(e) => setPrice(e.target.value)}
           className="price-input"
           min="0"
-          step="0.01" // Allows decimals with up to 2 places (e.g., 7.50)
+          step="0.01"
         />
 
         <button type="submit" className="add-purchase-btn">
@@ -164,7 +188,7 @@ const AddPurchases = () => {
       </form>
 
       <div className="purchases-list">
-        <h3>Purchases List</h3>
+        <h3>{activeTab === "cigarette" ? "Cigarette" : "Bread/Tomato"} Purchases</h3>
         <div className="table-wrapper">
           <table className="purchases-table">
             <thead>
@@ -179,8 +203,8 @@ const AddPurchases = () => {
               </tr>
             </thead>
             <tbody>
-              {purchaseList.length > 0 ? (
-                purchaseList.map((purchase, index) => (
+              {filteredPurchases.length > 0 ? (
+                filteredPurchases.map((purchase, index) => (
                   <tr key={index}>
                     <td>{purchase.supplier_name}</td>
                     <td>{purchase.product_name}</td>
@@ -191,7 +215,9 @@ const AddPurchases = () => {
                     <td>
                       <button
                         className="remove-btn"
-                        onClick={() => handleRemovePurchase(index)}
+                        onClick={() => handleRemovePurchase(
+                          purchaseList.findIndex((p) => p === purchase)
+                        )}
                       >
                         Remove
                       </button>
@@ -201,7 +227,7 @@ const AddPurchases = () => {
               ) : (
                 <tr>
                   <td colSpan="7" className="no-purchases-message">
-                    No purchases added yet.
+                    No {activeTab === "cigarette" ? "cigarette" : "bread/tomato"} purchases added yet.
                   </td>
                 </tr>
               )}

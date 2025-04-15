@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchPurchases } from "../api/purchasesAPI"; // Ensure this file name matches exactly
+import { fetchPurchases } from "../api/purchasesAPI";
 import "../assets/styles/purchases.css";
 
 const Purchases = () => {
   const [purchases, setPurchases] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentTab, setCurrentTab] = useState("today"); // "today" | "all"
+  const [currentTab, setCurrentTab] = useState("today");
   const [currentPage, setCurrentPage] = useState(1);
   const purchasesPerPage = 5;
 
   useEffect(() => {
     const getPurchases = async () => {
       try {
-        const data = await fetchPurchases();
+        const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
+        console.log("Fetching purchases with type:", type); // Debug: Confirm type parameter
+        const data = await fetchPurchases(type);
         console.log("Fetched purchases data:", data);
+        // Debug: Log the purchase_type distribution in the response
+        const typeCounts = data.reduce((acc, purchase) => {
+          acc[purchase.purchase_type] = (acc[purchase.purchase_type] || 0) + 1;
+          return acc;
+        }, {});
+        console.log("Purchase type distribution in response:", typeCounts);
         setPurchases(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch purchases", error);
@@ -23,13 +31,19 @@ const Purchases = () => {
     };
 
     getPurchases();
-  }, []);
+  }, [currentTab]);
 
   // Filter based on search + tab
   const filteredPurchases = purchases.filter((purchase) => {
     const productName = purchase.product?.name?.toLowerCase() || "";
     const matchesSearch = productName.includes(searchTerm.toLowerCase());
 
+    // For cigarette and bread_tomato tabs, ensure purchase_type matches
+    if (currentTab === "cigarette" || currentTab === "bread_tomato") {
+      return matchesSearch && purchase.purchase_type === currentTab;
+    }
+
+    // For today and all tabs, apply date-based filtering
     const purchaseDate = new Date(purchase.purchase_date).toDateString();
     const todayDate = new Date().toDateString();
     const isToday = purchaseDate === todayDate;
@@ -54,7 +68,7 @@ const Purchases = () => {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); // reset to page 1 on new search
+            setCurrentPage(1);
           }}
           className="search-input"
         />
@@ -83,6 +97,24 @@ const Purchases = () => {
         >
           All Purchases
         </button>
+        <button
+          className={currentTab === "cigarette" ? "active" : ""}
+          onClick={() => {
+            setCurrentTab("cigarette");
+            setCurrentPage(1);
+          }}
+        >
+          Cigarette
+        </button>
+        <button
+          className={currentTab === "bread_tomato" ? "active" : ""}
+          onClick={() => {
+            setCurrentTab("bread_tomato");
+            setCurrentPage(1);
+          }}
+        >
+          Bread/Tomato
+        </button>
       </div>
 
       {/* Purchases Table */}
@@ -96,6 +128,7 @@ const Purchases = () => {
               <th>Total Cost ($)</th>
               <th>Supplier</th>
               <th>Purchase Date</th>
+              <th>Purchase Type</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -111,6 +144,7 @@ const Purchases = () => {
                   <td>
                     {new Date(purchase.purchase_date).toLocaleDateString()}
                   </td>
+                  <td>{purchase.purchase_type}</td>
                   <td>
                     <button className="edit-btn">Edit</button>
                     <button className="delete-btn">Delete</button>
@@ -119,7 +153,7 @@ const Purchases = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="8" className="text-center">
                   No purchases found.
                 </td>
               </tr>

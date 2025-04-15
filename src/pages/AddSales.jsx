@@ -13,6 +13,7 @@ const AddSales = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [openingStock, setOpeningStock] = useState({});
+  const [currentTab, setCurrentTab] = useState("cigarette"); // "cigarette" | "bread_tomato"
 
   useEffect(() => {
     const getProducts = async () => {
@@ -62,6 +63,7 @@ const AddSales = () => {
         closing_stock: parseInt(closingStock, 10),
         price: product.selling_price,
         sales_date: new Date().toISOString().split("T")[0],
+        sale_type: currentTab, // Add sale_type based on active tab
       };
 
       setSalesList([...salesList, saleData]);
@@ -87,11 +89,10 @@ const AddSales = () => {
     setIsSaving(true);
 
     try {
-      // Send all sales as a single batch
-      await createSale(salesList); // Pass the entire salesList array
-
+      await createSale(salesList);
       setSuccessMessage("Sales recorded successfully!");
       setSalesList([]);
+      setOpeningStock({});
     } catch (error) {
       setError("Error while saving sales. Please try again.");
       console.error("Save Sales Error:", error);
@@ -110,6 +111,28 @@ const AddSales = () => {
 
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
+
+      {/* Tabs */}
+      <div className="tabs">
+        <button
+          className={currentTab === "cigarette" ? "active" : ""}
+          onClick={() => {
+            setCurrentTab("cigarette");
+            setSelectedProduct(""); // Reset selected product when tab changes
+          }}
+        >
+          Cigarette
+        </button>
+        <button
+          className={currentTab === "bread_tomato" ? "active" : ""}
+          onClick={() => {
+            setCurrentTab("bread_tomato");
+            setSelectedProduct(""); // Reset selected product when tab changes
+          }}
+        >
+          Bread/Tomato
+        </button>
+      </div>
 
       <div className="add-sales-form">
         <select
@@ -153,6 +176,7 @@ const AddSales = () => {
               <th>Opening Stock</th>
               <th>Closing Stock</th>
               <th>Total Sales Price</th>
+              <th>Sale Type</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -166,6 +190,7 @@ const AddSales = () => {
                   <td>
                     ${((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)}
                   </td>
+                  <td>{sale.sale_type}</td>
                   <td>
                     <button
                       className="remove-btn"
@@ -180,7 +205,7 @@ const AddSales = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="no-sales-message">
+                <td colSpan="6" className="no-sales-message">
                   No sales added yet.
                 </td>
               </tr>
