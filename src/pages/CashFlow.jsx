@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchCashFlow } from "../api/cashFlowAPI"; // API function
+import { fetchCashFlow, fetchOpeningBalance } from "../api/cashFlowAPI"; // Updated API functions
 import "../assets/styles/cashFlow.css"; // CSS for styling
 
 const CashFlow = () => {
@@ -7,16 +7,20 @@ const CashFlow = () => {
   const [loading, setLoading] = useState(true);
   const [openingBalance, setOpeningBalance] = useState(0);
   const [closingBalance, setClosingBalance] = useState(0);
-  const [currentTab, setCurrentTab] = useState("today"); // "today" | "all"
+  const [currentTab, setCurrentTab] = useState("cigarette"); // "cigarette" | "bread_tomato"
 
   useEffect(() => {
     const getCashflow = async () => {
       try {
-        const data = await fetchCashFlow();
-        console.log(data);
+        setLoading(true);
+        // Fetch cash flow data for the selected category
+        const data = await fetchCashFlow(currentTab);
+        console.log("Cashflow data:", data);
 
         if (data.length > 0) {
-          const openingBal = Number(data[0]?.opening_balance) || 0;
+          // Fetch the opening balance for the earliest date in the data
+          const earliestDate = data[0].date;
+          const openingBal = await fetchOpeningBalance(earliestDate, currentTab);
           setOpeningBalance(openingBal);
 
           let balance = openingBal;
@@ -30,41 +34,43 @@ const CashFlow = () => {
           setCashflow(updatedCashflow);
           setClosingBalance(balance);
         } else {
+          // If no data, fetch opening balance for today as a fallback
+          const todayDate = new Date().toISOString().split("T")[0];
+          const openingBal = await fetchOpeningBalance(todayDate, currentTab);
+          setOpeningBalance(openingBal);
           setCashflow([]);
-          setClosingBalance(0);
+          setClosingBalance(openingBal); // Closing balance is same as opening if no entries
         }
       } catch (error) {
-        console.error("Failed to fetch cash flow data");
+        console.error("Failed to fetch cash flow data:", error);
+        setCashflow([]);
+        setOpeningBalance(0);
+        setClosingBalance(0);
       } finally {
         setLoading(false);
       }
     };
     getCashflow();
-  }, []);
+  }, [currentTab]); // Re-fetch when tab changes
 
-  // Get today's date in YYYY-MM-DD format
-  const todayDate = new Date().toISOString().split("T")[0];
-
-  // Filter cash flow based on selected tab
-  const filteredCashFlow = cashflow.filter((entry) =>
-    currentTab === "today" ? entry.date === todayDate : true
-  );
+  // Filter cash flow based on selected tab (already handled by API, but keep for safety)
+  const filteredCashFlow = cashflow.filter((entry) => entry.category === currentTab);
 
   return (
     <div className="cashflow-container">
       {/* Tabs */}
       <div className="tabs">
         <button
-          className={currentTab === "today" ? "active" : ""}
-          onClick={() => setCurrentTab("today")}
+          className={currentTab === "cigarette" ? "active" : ""}
+          onClick={() => setCurrentTab("cigarette")}
         >
-          Today's Cash Flow
+          Cigarette Cash Flow
         </button>
         <button
-          className={currentTab === "all" ? "active" : ""}
-          onClick={() => setCurrentTab("all")}
+          className={currentTab === "bread_tomato" ? "active" : ""}
+          onClick={() => setCurrentTab("bread_tomato")}
         >
-          All Cash Flow
+          Bread/Tomato Cash Flow
         </button>
       </div>
 
