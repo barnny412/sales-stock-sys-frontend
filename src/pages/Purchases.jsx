@@ -125,7 +125,7 @@ const Purchases = () => {
               <th>#</th>
               <th>Product</th>
               <th>Quantity</th>
-              <th>Total Cost ($)</th>
+              <th>Total Cost (K)</th>
               <th>Supplier</th>
               <th>Purchase Date</th>
               <th>Purchase Type</th>

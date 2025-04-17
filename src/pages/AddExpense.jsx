@@ -77,7 +77,7 @@ const AddExpense = () => {
         </label>
 
         <label>
-          Amount ($):
+          Amount (K):
           <input
             type="number"
             name="amount"

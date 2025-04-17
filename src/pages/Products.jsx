@@ -51,8 +51,8 @@ const Products = () => {
           <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Cost Price ($)</th>
-            <th>Selling Price ($)</th>
+            <th>Cost Price (K)</th>
+            <th>Selling Price (K)</th>
             <th>Actions</th>
           </tr>
         </thead>

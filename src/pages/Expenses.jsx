@@ -172,7 +172,7 @@ const Expenses = () => {
               <tr>
                 <th>#</th>
                 <th>Description</th>
-                <th>Amount ($)</th>
+                <th>Amount (K)</th>
                 <th>Date</th>
                 <th>Category</th>
                 <th>Actions</th>
