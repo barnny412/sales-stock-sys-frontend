@@ -33,6 +33,7 @@ html, body {
   border-radius: 5px;
   background-color: #333;
   color: white;
+  box-sizing: border-box; /* Ensure padding and border are included in width */
 }
 
 .add-expense-btn {
@@ -63,6 +64,16 @@ html, body {
 .expenses-table th {
   background-color: #00ff7f;
   color: #1e1e1e;
+}
+
+.expenses-table td select {
+  padding: 8px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .edit-btn,
@@ -107,6 +118,68 @@ html, body {
   cursor: not-allowed;
 }
 
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tabs button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.tabs button.active {
+  background-color: #00ff7f;
+  color: #1e1e1e;
+}
+
+.date-range-filter {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 15px;
+}
+
+.date-range-filter label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: bold;
+  width: 150px; /* Ensure label takes full width on small screens */
+}
+
+.date-range-filter input {
+  padding: 8px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  width: 150px;
+  box-sizing: border-box; /* Ensure padding and border are included in width */
+}
+
+.date-range-filter button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  align-self: flex-end;
+}
+
+.date-range-filter button:hover {
+  background-color: #00cc66;
+}
+
 .expense-form {
   display: flex;
   flex-direction: column;
@@ -123,12 +196,18 @@ html, body {
   font-weight: bold;
 }
 
-.expense-form input {
+.expense-form input,
+.expense-form select {
   padding: 8px;
   border: 1px solid #00ff7f;
   border-radius: 5px;
   background-color: #333;
   color: white;
+  box-sizing: border-box;
+}
+
+.expense-form select {
+  width: 100%;
 }
 
 .error-message {
@@ -143,57 +222,98 @@ html, body {
   }
 
   .header {
-    flex-direction: column; /* Stack search and button vertically */
-    align-items: flex-end; /* Align to the right */
-    gap: 10px; /* Add spacing between elements */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .search-input {
-    width: 100%; /* Full width */
+    width: 100%;
+    padding: 6px; /* Match padding with date inputs for consistent visual width */
   }
 
   .add-expense-btn {
-    width: auto; /* Fit content */
-    padding: 8px 14px; /* Slightly reduce padding */
-    font-size: 14px; /* Smaller font */
+    width: auto;
+    padding: 8px 14px;
+    font-size: 14px;
+    align-self: stretch;
+    text-align: center;
   }
 
-  .expenses-table th,
-  .expenses-table td {
-    padding: 8px; /* Reduce padding */
-    font-size: 14px; /* Smaller font */
+  .tabs {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .tabs button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .date-range-filter {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .date-range-filter label {
+    width: 100%; /* Ensure label takes full width on small screens */
+  }
+
+  .date-range-filter input {
+    padding: 6px; /* Match padding with search input */
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .date-range-filter button {
+    padding: 6px 12px;
+    font-size: 14px;
+    align-self: stretch;
   }
 
   .expenses-table {
     display: block;
-    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-x: auto;
+  }
+
+  .expenses-table th,
+  .expenses-table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .expenses-table td select {
+    padding: 6px;
+    font-size: 14px;
   }
 
   .edit-btn,
   .delete-btn {
-    padding: 4px 8px; /* Reduce padding */
-    font-size: 12px; /* Smaller font */
+    padding: 4px 8px;
+    font-size: 12px;
   }
 
   .pagination button {
-    padding: 5px 10px; /* Reduce padding */
-    font-size: 14px; /* Smaller font */
+    padding: 5px 10px;
+    font-size: 14px;
   }
 
   .expense-form {
-    padding: 15px; /* Reduce padding */
+    padding: 15px;
   }
 
   .expense-form label {
-    font-size: 14px; /* Smaller font */
+    font-size: 14px;
   }
 
-  .expense-form input {
-    padding: 6px; /* Reduce padding */
-    font-size: 14px; /* Smaller font */
+  .expense-form input,
+  .expense-form select {
+    padding: 6px;
+    font-size: 14px;
   }
 
   .error-message {
-    font-size: 14px; /* Smaller font */
+    font-size: 14px;
   }
 }
