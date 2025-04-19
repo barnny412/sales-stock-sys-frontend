@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Drawer, List, ListItem, ListItemText, IconButton, useMediaQuery } from '@mui/material';
+import { Drawer, List, ListItem, ListItemText, IconButton, useMediaQuery, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
@@ -39,9 +39,14 @@ const Navbar = () => {
         )}
         <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
           <div className="drawer-content">
-            <IconButton className="drawer-close" onClick={() => setMenuOpen(false)}>
-              <CloseIcon />
-            </IconButton>
+            <div className="drawer-header">
+              <Typography variant="h6" className="drawer-header-text">
+                FrontMark Trading LTD
+              </Typography>
+              <IconButton className="drawer-close" onClick={() => setMenuOpen(false)}>
+                <CloseIcon />
+              </IconButton>
+            </div>
             <List>
               {[
                 { text: 'Dashboard', path: '/' },

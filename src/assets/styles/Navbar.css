@@ -64,15 +64,30 @@
   background-color: #1e1e1e; /* Match navbar background */
   color: white;
   height: 100%;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0, 255, 127, 0.2); /* Neon green shadow */
 }
 
+/* Drawer Header */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #2a2a2a; /* Slightly lighter than navbar for contrast */
+  border-bottom: 1px solid #00ff7f; /* Neon green border */
+}
+
+/* Drawer Header Text */
+.drawer-header-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #00ff7f; /* Neon green */
+}
+
 /* Close Button */
 .drawer-close {
-  align-self: flex-end;
   color: #00ff7f; /* Neon green */
   transition: color 0.3s;
 }
@@ -88,7 +103,7 @@
   font-size: 18px;
   font-weight: bold;
   width: 100%;
-  padding: 10px;
+  padding: 12px 20px;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -100,7 +115,7 @@
 
 /* Material-UI List and ListItem Overrides */
 .MuiList-root {
-  padding: 0;
+  padding: 10px 0;
 }
 
 .MuiListItem-root {
@@ -158,12 +173,15 @@
 
   .drawer-content {
     width: 200px; /* Slightly narrower for smaller screens */
-    padding: 15px;
+  }
+
+  .drawer-header {
+    padding: 12px 15px;
   }
 
   .drawer-link {
     font-size: 16px;
-    padding: 8px;
+    padding: 10px 15px;
   }
 }
 
@@ -183,11 +201,18 @@
 
   .drawer-content {
     width: 180px;
-    padding: 10px;
+  }
+
+  .drawer-header {
+    padding: 10px 12px;
+  }
+
+  .drawer-header-text {
+    font-size: 1.1rem;
   }
 
   .drawer-link {
     font-size: 14px;
-    padding: 6px;
+    padding: 8px 12px;
   }
 }
