@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { fetchSales } from "../api/salesAPI";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchSales, updateSale, deleteSale } from "../api/salesAPI";
 import { fetchProducts } from "../api/productsAPI";
 import "../assets/styles/sales.css";
 
@@ -9,7 +9,9 @@ const Sales = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTab, setCurrentTab] = useState("today"); // "today" | "all" | "cigarette" | "bread_tomato"
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState("");
   const salesPerPage = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getSalesData = async () => {
@@ -27,30 +29,56 @@ const Sales = () => {
         });
 
         const enhancedSales = salesData.map((sale) => {
-          const sellingPrice = sale.product?.selling_price
-            ? parseFloat(sale.product.selling_price)
-            : 0; // Convert to number, default to 0 if invalid
+          const sellingPrice = sale.price ? parseFloat(sale.price) : 0; // Use sale.price instead of product.selling_price
           return {
             ...sale,
             product_name: productMap[sale.product_id] || "Unknown",
             quantity_sold: sale.quantity_sold || sale.opening_stock - sale.closing_stock,
-            product: {
-              ...sale.product,
-              selling_price: sellingPrice, // Store as a number
-            },
+            price: sellingPrice, // Store as a number
           };
         });
 
         console.log("Enhanced sales:", enhancedSales);
         setSales(enhancedSales);
+        setError("");
       } catch (error) {
         console.error("Failed to fetch sales or products", error);
+        setError("Failed to fetch sales or products. Please try again.");
         setSales([]);
       }
     };
 
     getSalesData();
   }, [currentTab]);
+
+  useEffect(() => {
+    // Clear error messages after 5 seconds
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  const handleEdit = (sale) => {
+    navigate(`/edit-sale/${sale.id}`, { state: { sale } });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this sale?")) {
+      return;
+    }
+
+    try {
+      await deleteSale(id);
+      setSales(sales.filter((sale) => sale.id !== id));
+      setError("");
+    } catch (error) {
+      console.error("Failed to delete sale", error);
+      setError("Failed to delete sale. Please try again.");
+    }
+  };
 
   // Filter sales based on search term and tab selection
   const filteredSales = sales.filter((sale) => {
@@ -132,6 +160,9 @@ const Sales = () => {
         </button>
       </div>
 
+      {/* Error Message */}
+      {error && <div className="error-message">{error}</div>}
+
       {/* Sales Table */}
       <div className="table-wrapper">
         <table className="sales-table">
@@ -140,7 +171,7 @@ const Sales = () => {
               <th>#</th>
               <th>Product</th>
               <th>Quantity Sold</th>
-              <th>Sale Price (K)</th>
+              <th>Price (K)</th>
               <th>Total Price (K)</th>
               <th>Sale Date</th>
               <th>Sale Type</th>
@@ -154,13 +185,17 @@ const Sales = () => {
                   <td>{indexOfFirstSale + index + 1}</td>
                   <td>{sale.product_name}</td>
                   <td>{sale.quantity_sold}</td>
-                  <td>{sale.product?.selling_price ? sale.product.selling_price.toFixed(2) : "N/A"}</td>
-                  <td>{(sale.quantity_sold * (sale.product?.selling_price || 0)).toFixed(2)}</td>
+                  <td>{sale.price.toFixed(2)}</td>
+                  <td>{(sale.quantity_sold * sale.price).toFixed(2)}</td>
                   <td>{new Date(sale.sales_date).toLocaleDateString()}</td>
                   <td>{sale.sale_type}</td>
                   <td>
-                    <button className="edit-btn">Edit</button>
-                    <button className="delete-btn">Delete</button>
+                    <button className="edit-btn" onClick={() => handleEdit(sale)}>
+                      Edit
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(sale.id)}>
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
