@@ -1,6 +1,6 @@
 import api from "./axiosConfig";
 
-// Fetch cash flow data for a 특정 category
+// Fetch cash flow data for a specific category
 export const fetchCashFlow = async (category) => {
   try {
     if (!category) {
@@ -66,5 +66,45 @@ export const fetchOpeningBalance = async (date, category) => {
   } catch (error) {
     console.error("Error fetching opening balance:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to fetch opening balance");
+  }
+};
+
+// Fetch opening balances for all categories
+export const fetchCashflowOpeningBalances = async () => {
+  try {
+    const response = await api.get("/cashflow/opening-balances");
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch opening balances");
+    }
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching opening balances:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch opening balances");
+  }
+};
+
+// Save opening balance for a specific category
+export const saveCashflowOpeningBalance = async (category, openingBalance) => {
+  try {
+    if (!category) {
+      throw new Error("Category is required");
+    }
+    if (!["cigarette", "bread_tomato"].includes(category)) {
+      throw new Error("Category must be either 'cigarette' or 'bread_tomato'");
+    }
+    if (openingBalance === undefined || isNaN(Number(openingBalance)) || Number(openingBalance) < 0) {
+      throw new Error("Opening balance must be a non-negative number");
+    }
+    const response = await api.post("/cashflow/opening-balance", {
+      category,
+      openingBalance,
+    });
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to save opening balance");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error saving opening balance:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to save opening balance");
   }
 };

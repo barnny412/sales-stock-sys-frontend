@@ -1,4 +1,3 @@
-// src/components/Navbar.js (adjust path if different)
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemText, IconButton, useMediaQuery } from '@mui/material';
@@ -26,6 +25,7 @@ const Navbar = () => {
             <li><Link to="/expenses">Expenses</Link></li>
             <li><Link to="/damages">Damages</Link></li>
             <li><Link to="/cashflow">Cashflow</Link></li>
+            <li><Link to="/settings">Settings</Link></li>
           </ul>
         )}
         {isSmallScreen && (
@@ -52,6 +52,7 @@ const Navbar = () => {
                 { text: 'Expenses', path: '/expenses' },
                 { text: 'Damages', path: '/damages' },
                 { text: 'Cashflow', path: '/cashflow' },
+                { text: 'Settings', path: '/settings' },
               ].map((item, index) => (
                 <ListItem
                   key={index}

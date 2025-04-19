@@ -13,6 +13,15 @@ import AddPurchase from "./pages/AddPurchase";
 import AddProduct from "./pages/AddProduct"; // Import Add Product Page
 import AddExpense from "./pages/AddExpense"; // Import Add Expense Page
 import AddDamage from "./pages/AddDamage"; // Import Add Damage Page
+import Settings from "./pages/Settings"; // Import Settings Page
+
+// Simple 404 component for undefined routes
+const NotFound = () => (
+  <div style={{ padding: "20px", color: "white", backgroundColor: "#1e1e1e", minHeight: "100vh" }}>
+    <h1>404 - Page Not Found</h1>
+    <p>The page you're looking for doesn't exist.</p>
+  </div>
+);
 
 function AppRouter() {
   return (
@@ -25,13 +34,15 @@ function AppRouter() {
         <Route path="/purchases" element={<Purchases />} />
         <Route path="/stocks" element={<Stocks />} />
         <Route path="/expenses" element={<Expenses />} />
-        <Route path="/damages" element={<Damages />} /> {/* New Route */}
+        <Route path="/damages" element={<Damages />} />
         <Route path="/cashflow" element={<Cashflow />} />
         <Route path="/add-sales" element={<AddSales />} />
         <Route path="/add-purchase" element={<AddPurchase />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/add-expense" element={<AddExpense />} />
-        <Route path="/add-damage" element={<AddDamage />} /> {/* New Route */}
+        <Route path="/add-damage" element={<AddDamage />} />
+        <Route path="/settings" element={<Settings />} /> {/* New Settings Route */}
+        <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}
       </Routes>
     </Router>
   );
