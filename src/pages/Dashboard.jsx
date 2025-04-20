@@ -8,7 +8,10 @@ const Dashboard = () => {
   const [topSellingProductsOfDay, setTopSellingProductsOfDay] = useState([]);
   const [stockData, setStockData] = useState({});
   const [lowStockProducts, setLowStockProducts] = useState([]);
-  const [cashflow, setCashflow] = useState({});
+  const [cashflow, setCashflow] = useState({
+    cigarette: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
+    bread_tomato: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
+  });
   const [expenses, setExpenses] = useState({});
   const [damages, setDamages] = useState({});
 
@@ -22,8 +25,11 @@ const Dashboard = () => {
           Array.isArray(data.topSellingOfDay) ? data.topSellingOfDay : data.topSellingOfDay ? [data.topSellingOfDay] : []
         );
         setStockData(data.stock || {});
-        setLowStockProducts(data.lowstock || []); 
-        setCashflow(data.cashflow || {});
+        setLowStockProducts(data.lowStock || []); 
+        setCashflow(data.cashflow || {
+          cigarette: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
+          bread_tomato: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
+        });
         setExpenses(data.expenses || {});
         setDamages(data.damages || {});
       } catch (error) {
@@ -59,18 +65,17 @@ const Dashboard = () => {
         </div>
 
         <h3>Top Selling Products</h3>
-<ul className="top-selling-list">
-  {topSellingProductsOfDay.length > 0 ? (
-    topSellingProductsOfDay.map((product, index) => (
-      <li key={index}>
-        {product.product_name || product.name} - {product.quantity_sold ?? 0} Sold
-      </li>
-    ))
-  ) : (
-    <li>No sales recorded today.</li>
-  )}
-</ul>
-
+        <ul className="top-selling-list">
+          {topSellingProductsOfDay.length > 0 ? (
+            topSellingProductsOfDay.map((product, index) => (
+              <li key={index}>
+                {product.product_name || product.name} - {product.quantity_sold ?? 0} Sold
+              </li>
+            ))
+          ) : (
+            <li>No sales recorded today.</li>
+          )}
+        </ul>
       </div>
 
       {/* Stock & Inventory */}
@@ -93,26 +98,42 @@ const Dashboard = () => {
 
         <h3>Low Stock Alerts</h3>
         <ul className="low-stock-list">
-  {lowStockProducts.map((product, index) => (
-    <li key={index}>
-      {product.name} - {product.stock} remaining (Alert: {product.low_stock_alert})
-    </li>
-  ))}
-</ul>
+          {lowStockProducts.map((product, index) => (
+            <li key={index}>
+              {product.name} - {product.stock} remaining (Alert: {product.low_stock_alert})
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Cashflow Summary */}
+      {/* Cashflow Summary - Cigarette */}
       <div className="dashboard_section">
-        <h2>Cashflow Summary</h2>
+        <h2>Cashflow Summary - Cigarette</h2>
         <div className="dashboard_cards">
           <div className="card">
-            Cash In: K{cashflow.totalCashIn ?? "0.00"}
+            Cash In: K{cashflow.cigarette.totalCashIn ?? "0.00"}
           </div>
           <div className="card">
-            Cash Out: K{cashflow.totalCashOut ?? "0.00"}
+            Cash Out: K{cashflow.cigarette.totalCashOut ?? "0.00"}
           </div>
           <div className="card">
-            Current Balance: K{cashflow.currentBalance ?? "0.00"}
+            Current Balance: K{cashflow.cigarette.currentBalance ?? "0.00"}
+          </div>
+        </div>
+      </div>
+
+      {/* Cashflow Summary - Bread & Tomato */}
+      <div className="dashboard_section">
+        <h2>Cashflow Summary - Bread & Tomato</h2>
+        <div className="dashboard_cards">
+          <div className="card">
+            Cash In: K{cashflow.bread_tomato.totalCashIn ?? "0.00"}
+          </div>
+          <div className="card">
+            Cash Out: K{cashflow.bread_tomato.totalCashOut ?? "0.00"}
+          </div>
+          <div className="card">
+            Current Balance: K{cashflow.bread_tomato.currentBalance ?? "0.00"}
           </div>
         </div>
       </div>

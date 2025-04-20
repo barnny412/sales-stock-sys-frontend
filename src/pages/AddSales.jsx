@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { createSale } from "../api/salesAPI";
 import { fetchProducts } from "../api/productsAPI";
 import { fetchLastClosingStock } from "../api/salesAPI";
+import { fetchCategories } from "../api/categoriesAPI";
 import "../assets/styles/addSales.css";
 
 const AddSales = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [closingStock, setClosingStock] = useState("");
   const [price, setPrice] = useState("");
@@ -15,23 +17,30 @@ const AddSales = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [openingStock, setOpeningStock] = useState({});
-  const [currentTab, setCurrentTab] = useState("cigarette"); // "cigarette" | "bread_tomato"
+  const [currentTab, setCurrentTab] = useState("");
 
   useEffect(() => {
-    const getProducts = async () => {
+    const getData = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
+        const [productsData, categoriesData] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+        ]);
+        setProducts(productsData);
+        setCategories(categoriesData);
+        if (categoriesData.length > 0) {
+          setCurrentTab(categoriesData[0].name);
+        }
       } catch (error) {
-        setError("Failed to fetch products.");
-        console.error("Fetch Products Error:", error);
+        setError("Failed to fetch products or categories.");
+        console.error("Fetch Data Error:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    getProducts();
+    getData();
   }, []);
 
   useEffect(() => {
@@ -44,6 +53,14 @@ const AddSales = () => {
       return () => clearTimeout(timer);
     }
   }, [error, successMessage]);
+
+  // Reset form fields when the current tab changes
+  useEffect(() => {
+    setSelectedProduct("");
+    setClosingStock("");
+    setPrice("");
+    setError("");
+  }, [currentTab]);
 
   const handleProductChange = (e) => {
     const productId = e.target.value;
@@ -91,8 +108,8 @@ const AddSales = () => {
         opening_stock: openingStockValue,
         closing_stock: parseInt(closingStock, 10),
         price: Number(price),
-        sales_date: new Date().toISOString().split("T")[0],
-        sale_type: currentTab, // Add sale_type based on active tab
+        sales_date: new Date().toISOString().split("T")[0], // Use current date
+        sale_type: currentTab,
       };
 
       setSalesList([...salesList, saleData]);
@@ -111,6 +128,11 @@ const AddSales = () => {
   const handleSaveSales = async () => {
     if (salesList.length === 0) {
       setError("Please add at least one sale.");
+      return;
+    }
+
+    const confirmSave = window.confirm("Are you sure you want to save these sales?");
+    if (!confirmSave) {
       return;
     }
 
@@ -134,7 +156,17 @@ const AddSales = () => {
     }
   };
 
-  const overallTotalSales = salesList
+  // Filter products based on the active tab (category)
+  const filteredProducts = products.filter(
+    (product) => product.category_name === currentTab
+  );
+
+  // Filter sales based on the active tab
+  const filteredSales = salesList.filter(
+    (sale) => sale.sale_type === currentTab
+  );
+
+  const overallTotalSales = filteredSales
     .reduce((total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.price, 0)
     .toFixed(2);
 
@@ -142,34 +174,29 @@ const AddSales = () => {
     <div className="add-sales-container">
       <h2>Record Sales</h2>
 
+      {/* Dynamic Tabs */}
+      {categories.length > 0 ? (
+        <div className="tabs">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              className={currentTab === category.name ? "active" : ""}
+              onClick={() => setCurrentTab(category.name)}
+            >
+              {category.name.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="error-message">No categories available.</div>
+      )}
+
       {isLoading ? (
-        <div className="loading-message">Loading products...</div>
+        <div className="loading-message">Loading data...</div>
       ) : (
         <>
           {error && <div className="error-message">{error}</div>}
           {successMessage && <div className="success-message">{successMessage}</div>}
-
-          {/* Tabs */}
-          <div className="tabs">
-            <button
-              className={currentTab === "cigarette" ? "active" : ""}
-              onClick={() => {
-                setCurrentTab("cigarette");
-                setSelectedProduct(""); // Reset selected product when tab changes
-              }}
-            >
-              Cigarette
-            </button>
-            <button
-              className={currentTab === "bread_tomato" ? "active" : ""}
-              onClick={() => {
-                setCurrentTab("bread_tomato");
-                setSelectedProduct(""); // Reset selected product when tab changes
-              }}
-            >
-              Bread/Tomato
-            </button>
-          </div>
 
           <div className="add-sales-form">
             <select
@@ -178,11 +205,17 @@ const AddSales = () => {
               className="product-select"
             >
               <option value="">Select Product</option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name} (Price: ${product.selling_price})
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name} (Price: ${product.selling_price})
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No products available for this category
                 </option>
-              ))}
+              )}
             </select>
 
             <input
@@ -212,7 +245,7 @@ const AddSales = () => {
 
           <div className="sales-list">
             <div className="top-bar">
-              <h3>Sales List</h3>
+              <h3>{currentTab.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())} Sales</h3>
               <div className="overall-total-sales">
                 <strong>Overall Total Sales:</strong> ${overallTotalSales}
               </div>
@@ -230,8 +263,8 @@ const AddSales = () => {
                 </tr>
               </thead>
               <tbody>
-                {salesList.length > 0 ? (
-                  salesList.map((sale, index) => (
+                {filteredSales.length > 0 ? (
+                  filteredSales.map((sale, index) => (
                     <tr key={index}>
                       <td>{products.find((p) => p.id === sale.product_id)?.name}</td>
                       <td>{sale.opening_stock}</td>
@@ -240,7 +273,7 @@ const AddSales = () => {
                       <td>
                         ${((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)}
                       </td>
-                      <td>{sale.sale_type}</td>
+                      <td>{sale.sale_type.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}</td>
                       <td>
                         <button
                           className="remove-btn"
@@ -256,7 +289,7 @@ const AddSales = () => {
                 ) : (
                   <tr>
                     <td colSpan="7" className="no-sales-message">
-                      No sales added yet.
+                      No {currentTab.replace("_", "/").toLowerCase()} sales added yet.
                     </td>
                   </tr>
                 )}

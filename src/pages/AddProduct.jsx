@@ -133,6 +133,7 @@ const AddProduct = () => {
             onChange={(e) => setCostPrice(e.target.value)}
             className="product-cost-price"
             min="0"
+            step="0.01"
           />
         </div>
 

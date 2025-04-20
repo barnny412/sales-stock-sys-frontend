@@ -15,8 +15,8 @@ const AddPurchases = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Track initial data loading
-  const [activeTab, setActiveTab] = useState("cigarette"); // Track active tab
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("cigarette");
 
   useEffect(() => {
     const loadData = async () => {
@@ -62,10 +62,12 @@ const AddPurchases = () => {
     e.preventDefault();
 
     const product = products.find((p) => String(p.id) === String(selectedProduct));
-    const supplier = suppliers.find((s) => String(s.id) === String(selectedSupplier));
+    const supplier = selectedSupplier
+      ? suppliers.find((s) => String(s.id) === String(selectedSupplier))
+      : null;
 
-    if (!product || !supplier) {
-      setError("Please select a valid product and supplier.");
+    if (!product) {
+      setError("Please select a valid product.");
       return;
     }
     if (!quantity || Number(quantity) <= 0) {
@@ -80,14 +82,14 @@ const AddPurchases = () => {
     const newPurchase = {
       product_id: product.id,
       product_name: product.name,
-      supplier_id: supplier.id,
-      supplier_name: supplier.name,
+      supplier_id: supplier ? supplier.id : null, // Set to null if no supplier is selected
+      supplier_name: supplier ? supplier.name : null, // Set to null if no supplier
       quantity: Number(quantity),
       items_per_unit: product.items_per_unit,
       price: Number(price),
       total_cost: Number(price) * Number(quantity),
-      date: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
-      purchase_type: activeTab, // Set purchase_type based on active tab
+      date: new Date().toISOString().split("T")[0],
+      purchase_type: activeTab,
     };
 
     setPurchaseList([...purchaseList, newPurchase]);
@@ -110,10 +112,10 @@ const AddPurchases = () => {
 
     const formattedPurchases = purchaseList.map((p) => ({
       product_id: p.product_id,
-      supplier_id: p.supplier_id,
+      supplier_id: p.supplier_id, // Will be null if no supplier
       quantity: p.quantity,
       purchase_date: p.date,
-      price: Number(p.price), // Ensure price is a number
+      price: Number(p.price),
       purchase_type: p.purchase_type,
     }));
 
@@ -122,7 +124,7 @@ const AddPurchases = () => {
     try {
       await createPurchase(formattedPurchases);
       setSuccessMessage("Purchases recorded successfully!");
-      setPurchaseList([]); // Clear the purchase list
+      setPurchaseList([]);
       setSelectedProduct("");
       setSelectedSupplier("");
       setQuantity("");
@@ -143,6 +145,11 @@ const AddPurchases = () => {
   // Filter purchases based on the active tab
   const filteredPurchases = purchaseList.filter(
     (purchase) => purchase.purchase_type === activeTab
+  );
+
+  // Filter products based on the active tab (category)
+  const filteredProducts = products.filter(
+    (product) => product.category_name === activeTab
   );
 
   return (
@@ -178,7 +185,7 @@ const AddPurchases = () => {
               onChange={(e) => setSelectedSupplier(e.target.value)}
               className="supplier-select"
             >
-              <option value="">Select Supplier</option>
+              <option value="">No Supplier</option>
               {suppliers.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -192,11 +199,17 @@ const AddPurchases = () => {
               className="product-select"
             >
               <option value="">Select Product</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No products available for this category
                 </option>
-              ))}
+              )}
             </select>
 
             <input
@@ -243,7 +256,7 @@ const AddPurchases = () => {
                   {filteredPurchases.length > 0 ? (
                     filteredPurchases.map((purchase, index) => (
                       <tr key={index}>
-                        <td>{purchase.supplier_name}</td>
+                        <td>{purchase.supplier_name || "N/A"}</td>
                         <td>{purchase.product_name}</td>
                         <td>{purchase.quantity}</td>
                         <td>K{purchase.price.toFixed(2)}</td>
