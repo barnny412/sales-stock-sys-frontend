@@ -35,59 +35,78 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* Increased for better spacing */
   flex-wrap: wrap;
   gap: 10px;
 }
 
 /* Search input */
 .search-input {
-  padding: 8px;
-  width: 250px;
+  padding: 10px; /* Increased padding for better touch targets */
+  width: 300px; /* Slightly wider for better usability */
   border: 1px solid #00ff7f;
-  border-radius: 5px;
+  border-radius: 4px; /* Consistent with other components */
   background-color: #333;
   color: white;
+  font-size: 14px;
   box-sizing: border-box;
-}
-
-/* Total stock value */
-.total-stock-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #00ff7f;
-  background-color: #222;
-  padding: 8px 15px;
-  border-radius: 5px;
-  border: 1px solid #00ff7f;
-  white-space: nowrap;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth focus transition */
 }
 
 /* Placeholder for search input */
 .search-input::placeholder {
-  color: #aaa;
+  color: #bbb; /* Slightly lighter for better contrast */
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #00e67f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+}
+
+/* Total stock value */
+.total-stock-value {
+  font-size: 16px; /* Slightly smaller for better fit */
+  font-weight: bold;
+  color: #00ff7f;
+  background-color: #222;
+  padding: 8px 15px;
+  border-radius: 4px; /* Consistent with other components */
+  border: 1px solid #00ff7f;
+  white-space: nowrap;
 }
 
 /* Table Styling */
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #222;
+  background-color: #2a2a2a; /* Slightly lighter background for contrast */
+  border-radius: 4px;
+  overflow: hidden; /* Ensure rounded corners are visible */
 }
 
-.products-table th,
-.products-table td {
-  padding: 12px;
-  border: 1px solid #00ff7f;
-  text-align: left;
-}
-
+/* Table Header */
 .products-table th {
+  padding: 12px;
+  text-align: left;
   background-color: #00ff7f;
   color: #1e1e1e;
   font-weight: bold;
 }
 
+/* Table Body */
+.products-table td {
+  padding: 12px;
+  border: 1px solid #444; /* Slightly darker border for better separation */
+  text-align: left;
+}
+
+/* Highlight Low Stock */
+.low-stock-row {
+  background-color: rgba(255, 51, 51, 0.2); /* Subtle red background for low stock */
+}
+
+/* Table Row Hover */
 .products-table tr:hover {
   background-color: rgba(0, 255, 127, 0.1);
 }
@@ -101,51 +120,52 @@ html, body {
   cursor: pointer;
   font-weight: bold;
   border-radius: 4px;
-  transition: 0.3s;
+  transition: background 0.3s ease;
 }
 
 .edit-btn {
-  background-color: #ffa500;
-  color: white;
+  background-color: #ffcc00; /* Updated to match products.css */
+  color: #1e1e1e;
 }
 
 .delete-btn {
-  background-color: #ff4444;
+  background-color: #ff3333; /* Updated to match products.css */
   color: white;
 }
 
 .edit-btn:hover {
-  background-color: #ff9100;
+  background-color: #e6b800;
 }
 
 .delete-btn:hover {
-  background-color: #ff2222;
+  background-color: #e60000;
 }
 
 /* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  align-items: center;
+  margin-top: 20px; /* Increased for better spacing */
+  gap: 10px; /* Added for consistent spacing */
 }
 
-.pagination button {
-  padding: 6px 12px;
-  margin: 0 5px;
+.pagination-btn {
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: #00ff7f;
   color: #1e1e1e;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.3s ease;
 }
 
-.pagination button:hover {
-  background-color: #00cc66;
+.pagination-btn:hover {
+  background-color: #00e67f;
 }
 
-.pagination button:disabled {
+.pagination-btn:disabled {
   background-color: #444;
   cursor: not-allowed;
 }
@@ -161,13 +181,16 @@ html, body {
 /* Error Message */
 .error-message {
   text-align: center;
-  color: #ff4d4d;
+  color: #ff3333; /* Updated to match other components */
   font-weight: bold;
   margin: 20px 0;
+  padding: 8px;
+  background-color: rgba(255, 51, 51, 0.1);
+  border-radius: 4px;
 }
 
 /* Empty Message */
-.empty-message {
+.no-stocks-message { /* Updated class name to match Stocks.jsx */
   text-align: center;
   color: #bbb;
   font-weight: bold;
@@ -176,27 +199,39 @@ html, body {
 
 /* Responsive Design for Smaller Screens */
 @media (max-width: 600px) {
-  .top-bar {
-    flex-direction: column; /* Stack vertically */
-    align-items: flex-end; /* Align children to the right */
-    gap: 10px;
-  }
-
-  .search-input {
-    width: 100%; /* Full width */
-  }
-
-  .total-stock-value {
-    width: auto; /* Fit content */
-    text-align: left; /* Align text naturally */
-  }
-
   .products-container {
     padding: 15px;
   }
 
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start; /* Align to the left for better readability */
+    gap: 10px;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .total-stock-value {
+    width: auto;
+    font-size: 14px;
+    text-align: left;
+  }
+
   .products-table {
     display: block;
-    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-x: auto;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .pagination-btn {
+    padding: 6px 12px;
+    font-size: 14px;
   }
 }

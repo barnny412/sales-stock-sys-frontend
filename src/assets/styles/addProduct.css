@@ -5,6 +5,7 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+
 /* Container */
 .add-product-container {
   flex-grow: 1; /* Makes it take up remaining space */
@@ -39,7 +40,7 @@ h2 {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* Increased margin for better spacing */
 }
 
 /* Labels */
@@ -56,13 +57,16 @@ h2 {
 .product-cost-price,
 .product-selling-price,
 .product-items-per-unit,
-.product-cost-price-per-unit {
+.product-cost-price-per-unit,
+.product-low-stock-alert { /* Added styling for low stock alert */
   width: calc(100% - 20px);
   padding: 10px;
   border: 1px solid #00ff7f;
   border-radius: 4px;
   background-color: #333;
   color: white;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for focus */
 }
 
 /* Different Styling for Each Input */
@@ -83,10 +87,37 @@ h2 {
   border-color: #ff5733;
 }
 
+.product-items-per-unit {
+  border-color: #00c4ff; /* Added distinct color for items per unit */
+}
+
+.product-cost-price-per-unit {
+  border-color: #ff00ff; /* Added distinct color for cost price per unit */
+}
+
+.product-low-stock-alert {
+  border-color: #ff9900; /* Distinct color for low stock alert */
+}
+
+/* Focus State for Inputs */
+.product-name:focus,
+.product-category:focus,
+.product-cost-price:focus,
+.product-selling-price:focus,
+.product-items-per-unit:focus,
+.product-cost-price-per-unit:focus,
+.product-low-stock-alert:focus {
+  outline: none;
+  border-color: #00e67f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5); /* Added focus glow */
+}
+
 /* Placeholder Color */
 .product-name::placeholder,
 .product-cost-price::placeholder,
-.product-selling-price::placeholder {
+.product-selling-price::placeholder,
+.product-items-per-unit::placeholder,
+.product-low-stock-alert::placeholder {
   color: #bbb;
 }
 
@@ -107,7 +138,7 @@ h2 {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
   margin-top: 15px;
 }
 
@@ -122,10 +153,13 @@ h2 {
 
 /* Error Message */
 .error-message {
-  color: red;
+  color: #ff3333; /* Brighter red for better visibility */
   text-align: center;
   font-weight: bold;
-  margin-top: 10px;
+  margin: 10px 0;
+  padding: 8px;
+  background-color: rgba(255, 51, 51, 0.1);
+  border-radius: 4px;
 }
 
 /* Success Message */
@@ -133,7 +167,10 @@ h2 {
   color: #00ff7f;
   text-align: center;
   font-weight: bold;
-  margin-top: 10px;
+  margin: 10px 0;
+  padding: 8px;
+  background-color: rgba(0, 255, 127, 0.1);
+  border-radius: 4px;
 }
 
 /* Responsive Design */
@@ -141,15 +178,24 @@ h2 {
   .add-product-container {
     width: 90%;
     max-width: 100%;
+    padding: 15px; /* Slightly reduced padding for smaller screens */
   }
   
-  .product-category {
-    width: 100%;
+  .product-name,
+  .product-category,
+  .product-cost-price,
+  .product-selling-price,
+  .product-items-per-unit,
+  .product-cost-price-per-unit,
+  .product-low-stock-alert {
+    width: calc(100% - 16px); /* Adjusted for smaller screens */
   }
 
-  .product-name,
-  .product-cost-price,
-  .product-selling-price {
-    width: 94%;
+  .input-group {
+    margin-bottom: 12px;
+  }
+
+  .submit-btn {
+    padding: 8px;
   }
 }

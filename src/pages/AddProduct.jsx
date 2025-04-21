@@ -11,6 +11,7 @@ const AddProduct = () => {
   const [sellingPrice, setSellingPrice] = useState("");
   const [itemsPerUnit, setItemsPerUnit] = useState("");
   const [costPricePerUnit, setCostPricePerUnit] = useState("");
+  const [lowStockAlert, setLowStockAlert] = useState(""); // New state for low stock alert
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -43,7 +44,8 @@ const AddProduct = () => {
     setError("");
     setSuccessMessage("");
 
-    if (!name || !categoryId || !costPrice || !sellingPrice || !itemsPerUnit) {
+    // Validate all required fields, including low_stock_alert
+    if (!name || !categoryId || !costPrice || !sellingPrice || !itemsPerUnit || !lowStockAlert) {
       setError("All fields are required.");
       return;
     }
@@ -58,6 +60,11 @@ const AddProduct = () => {
       return;
     }
 
+    if (parseInt(lowStockAlert) <= 0) {
+      setError("Low stock alert must be greater than zero.");
+      return;
+    }
+
     setIsSaving(true);
 
     const productData = {
@@ -67,6 +74,7 @@ const AddProduct = () => {
       selling_price: parseFloat(sellingPrice),
       items_per_unit: parseInt(itemsPerUnit),
       cost_price_per_unit: parseFloat(costPricePerUnit),
+      low_stock_alert: parseInt(lowStockAlert), // Add low_stock_alert to productData
     };
 
     try {
@@ -78,6 +86,7 @@ const AddProduct = () => {
       setSellingPrice("");
       setItemsPerUnit("");
       setCostPricePerUnit("");
+      setLowStockAlert(""); // Reset low stock alert
     } catch (error) {
       setError("Error adding product. Please try again.");
       console.error("Create Product Error:", error);
@@ -173,6 +182,19 @@ const AddProduct = () => {
             className="product-selling-price"
             min="0"
             step="0.01"
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="lowStockAlert">Low Stock Alert</label>
+          <input
+            type="number"
+            id="lowStockAlert"
+            placeholder="Enter low stock alert threshold"
+            value={lowStockAlert}
+            onChange={(e) => setLowStockAlert(e.target.value)}
+            className="product-low-stock-alert"
+            min="1"
           />
         </div>
 

@@ -1,46 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { fetchDashboardData } from "../api/dashboardAPI"; // Import API calls
+import { fetchDashboardData } from "../api/dashboardAPI";
 import "../assets/styles/dashboard.css";
 
 const Dashboard = () => {
-  // Set state to store fetched data
   const [salesData, setSalesData] = useState({});
   const [topSellingProductsOfDay, setTopSellingProductsOfDay] = useState([]);
   const [stockData, setStockData] = useState({});
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [cashflow, setCashflow] = useState({
-    cigarette: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
-    bread_tomato: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
+    totalCashIn: "0.00",
+    totalCashOut: "0.00",
+    currentBalance: "0.00",
   });
   const [expenses, setExpenses] = useState({});
   const [damages, setDamages] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch dashboard data on component mount
   useEffect(() => {
     const getDashboardData = async () => {
       try {
+        setIsLoading(true);
         const data = await fetchDashboardData();
+
+        const defaultCashflow = {
+          totalCashIn: "0.00",
+          totalCashOut: "0.00",
+          currentBalance: "0.00",
+        };
+
         setSalesData(data.sales || {});
         setTopSellingProductsOfDay(
           Array.isArray(data.topSellingOfDay) ? data.topSellingOfDay : data.topSellingOfDay ? [data.topSellingOfDay] : []
         );
         setStockData(data.stock || {});
-        setLowStockProducts(data.lowStock || []); 
-        setCashflow(data.cashflow || {
-          cigarette: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
-          bread_tomato: { totalCashIn: "0.00", totalCashOut: "0.00", netCashflow: "0.00", currentBalance: "0.00" },
-        });
+        setLowStockProducts(data.lowStock || []);
+        setCashflow(data.cashflow || defaultCashflow);
         setExpenses(data.expenses || {});
         setDamages(data.damages || {});
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+        setCashflow({
+          totalCashIn: "0.00",
+          totalCashOut: "0.00",
+          currentBalance: "0.00",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    console.log(lowStockProducts);
-
     getDashboardData();
   }, []);
+
+  if (isLoading) {
+    return <div className="loading-message">Loading dashboard data...</div>;
+  }
 
   return (
     <div className="dashboard_container">
@@ -100,40 +114,24 @@ const Dashboard = () => {
         <ul className="low-stock-list">
           {lowStockProducts.map((product, index) => (
             <li key={index}>
-              {product.name} - {product.stock} remaining (Alert: {product.low_stock_alert})
+              {product.name} - {product.stock} remaining (Alert: {product.low_stock_alert ?? "N/A"})
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Cashflow Summary - Cigarette */}
+      {/* Cashflow Summary */}
       <div className="dashboard_section">
-        <h2>Cashflow Summary - Cigarette</h2>
+        <h2>Cashflow Summary</h2>
         <div className="dashboard_cards">
           <div className="card">
-            Cash In: K{cashflow.cigarette.totalCashIn ?? "0.00"}
+            Cash In: K{cashflow.totalCashIn}
           </div>
           <div className="card">
-            Cash Out: K{cashflow.cigarette.totalCashOut ?? "0.00"}
+            Cash Out: K{cashflow.totalCashOut}
           </div>
           <div className="card">
-            Current Balance: K{cashflow.cigarette.currentBalance ?? "0.00"}
-          </div>
-        </div>
-      </div>
-
-      {/* Cashflow Summary - Bread & Tomato */}
-      <div className="dashboard_section">
-        <h2>Cashflow Summary - Bread & Tomato</h2>
-        <div className="dashboard_cards">
-          <div className="card">
-            Cash In: K{cashflow.bread_tomato.totalCashIn ?? "0.00"}
-          </div>
-          <div className="card">
-            Cash Out: K{cashflow.bread_tomato.totalCashOut ?? "0.00"}
-          </div>
-          <div className="card">
-            Current Balance: K{cashflow.bread_tomato.currentBalance ?? "0.00"}
+            Current Balance: K{cashflow.currentBalance}
           </div>
         </div>
       </div>
