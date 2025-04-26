@@ -7,13 +7,14 @@ import Purchases from "./pages/Purchases";
 import Stocks from "./pages/Stocks";
 import Expenses from "./pages/Expenses";
 import Cashflow from "./pages/CashFlow";
-import Damages from "./pages/Damages"; // Import Damages Page
+import Damages from "./pages/Damages";
 import AddSales from "./pages/AddSales";
 import AddPurchase from "./pages/AddPurchase";
-import AddProduct from "./pages/AddProduct"; // Import Add Product Page
-import AddExpense from "./pages/AddExpense"; // Import Add Expense Page
-import AddDamage from "./pages/AddDamage"; // Import Add Damage Page
-import Settings from "./pages/Settings"; // Import Settings Page
+import AddProduct from "./pages/AddProduct";
+import EditProduct from "./pages/EditProduct"; // Import EditProduct Page
+import AddExpense from "./pages/AddExpense";
+import AddDamage from "./pages/AddDamage";
+import Settings from "./pages/Settings";
 
 // Simple 404 component for undefined routes
 const NotFound = () => (
@@ -39,9 +40,10 @@ function AppRouter() {
         <Route path="/add-sales" element={<AddSales />} />
         <Route path="/add-purchase" element={<AddPurchase />} />
         <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/edit-product/:id" element={<EditProduct />} /> {/* New EditProduct Route */}
         <Route path="/add-expense" element={<AddExpense />} />
         <Route path="/add-damage" element={<AddDamage />} />
-        <Route path="/settings" element={<Settings />} /> {/* New Settings Route */}
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}
       </Routes>
     </Router>

@@ -3,32 +3,24 @@ import api from "./axiosConfig";
 // Fetch all stocks
 export const fetchStocks = async () => {
   try {
-    const response = await api.get("/stocks");
+    const response = await api.get("/products");
     return response.data;
   } catch (error) {
-    console.error("Error fetching stocks data:", error);
-    throw error;
+    console.error("Error fetching stocks:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch stocks");
   }
 };
 
-// Increase stock for a specific product
-export const increaseStock = async (productId, quantity) => {
+// Adjust stock level for a product
+export const adjustStock = async (id, stock) => {
   try {
-    const response = await api.put(`/stock/increase/${productId}`, { quantity });
+    const response = await api.patch(`/products/${id}`, { stock }); // Updated route
     return response.data;
   } catch (error) {
-    console.error("Error increasing stock:", error);
-    throw error;
-  }
-};
-
-// Decrease stock for a specific product
-export const decreaseStock = async (productId, quantity) => {
-  try {
-    const response = await api.put(`/stock/decrease/${productId}`, { quantity });
-    return response.data;
-  } catch (error) {
-    console.error("Error decreasing stock:", error);
-    throw error;
+    console.error("Error adjusting stock:", error.response?.data || error.message);
+    if (error.response?.status === 404) {
+      throw new Error("Product not found");
+    }
+    throw new Error(error.response?.data?.message || "Failed to adjust stock");
   }
 };

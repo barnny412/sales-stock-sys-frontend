@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPurchase } from "../api/purchasesAPI";
-import { fetchProducts } from "../api/productsAPI";
+import { fetchProductsWithCategory } from "../api/productsAPI"; // Updated to use fetchProductsWithCategory
 import { fetchSuppliers } from "../api/suppliersAPI";
 import "../assets/styles/addpurchases.css";
 
@@ -18,25 +18,26 @@ const AddPurchases = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("cigarette");
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const [productsData, suppliersData] = await Promise.all([
-          fetchProducts(),
-          fetchSuppliers(),
-        ]);
-        setProducts(productsData);
-        setSuppliers(suppliersData);
-      } catch (err) {
-        setError("Failed to load products or suppliers.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      const [productsData, suppliersData] = await Promise.all([
+        fetchProductsWithCategory(), // Updated to use fetchProductsWithCategory
+        fetchSuppliers(),
+      ]);
+      setProducts(productsData);
+      setSuppliers(suppliersData);
+    } catch (err) {
+      setError(err.message || "Failed to load products or suppliers.");
+      console.error("Fetch Data Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    loadData();
+  useEffect(() => {
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -61,6 +62,19 @@ const AddPurchases = () => {
   const handleAddPurchase = (e) => {
     e.preventDefault();
 
+    if (!selectedProduct) {
+      setError("Please select a product.");
+      return;
+    }
+    if (!quantity) {
+      setError("Please enter the quantity.");
+      return;
+    }
+    if (!price) {
+      setError("Please enter the price.");
+      return;
+    }
+
     const product = products.find((p) => String(p.id) === String(selectedProduct));
     const supplier = selectedSupplier
       ? suppliers.find((s) => String(s.id) === String(selectedSupplier))
@@ -70,24 +84,28 @@ const AddPurchases = () => {
       setError("Please select a valid product.");
       return;
     }
-    if (!quantity || Number(quantity) <= 0) {
-      setError("Enter a valid quantity (greater than 0).");
+
+    const quantityValue = Number(quantity);
+    const priceValue = Number(price);
+
+    if (isNaN(quantityValue) || quantityValue <= 0) {
+      setError("Quantity must be a valid number greater than 0.");
       return;
     }
-    if (!price || Number(price) < 0) {
-      setError("Enter a valid price (non-negative).");
+    if (isNaN(priceValue) || priceValue < 0) {
+      setError("Price must be a valid non-negative number.");
       return;
     }
 
     const newPurchase = {
       product_id: product.id,
       product_name: product.name,
-      supplier_id: supplier ? supplier.id : null, // Set to null if no supplier is selected
-      supplier_name: supplier ? supplier.name : null, // Set to null if no supplier
-      quantity: Number(quantity),
+      supplier_id: supplier ? supplier.id : null,
+      supplier_name: supplier ? supplier.name : null,
+      quantity: quantityValue,
       items_per_unit: product.items_per_unit,
-      price: Number(price),
-      total_cost: Number(price) * Number(quantity),
+      price: priceValue,
+      total_cost: priceValue * quantityValue,
       date: new Date().toISOString().split("T")[0],
       purchase_type: activeTab,
     };
@@ -102,7 +120,12 @@ const AddPurchases = () => {
 
   const handleSavePurchases = async () => {
     if (purchaseList.length === 0) {
-      setError("Please add at least one purchase.");
+      setError("Please add at least one purchase before saving.");
+      return;
+    }
+
+    const confirmSave = window.confirm("Are you sure you want to save these purchases?");
+    if (!confirmSave) {
       return;
     }
 
@@ -112,7 +135,7 @@ const AddPurchases = () => {
 
     const formattedPurchases = purchaseList.map((p) => ({
       product_id: p.product_id,
-      supplier_id: p.supplier_id, // Will be null if no supplier
+      supplier_id: p.supplier_id,
       quantity: p.quantity,
       purchase_date: p.date,
       price: Number(p.price),
@@ -129,10 +152,11 @@ const AddPurchases = () => {
       setSelectedSupplier("");
       setQuantity("");
       setPrice("");
+      // Refetch data to ensure consistency
+      await fetchData();
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Failed to save purchases.";
-      setError(errorMessage);
-      console.error(err);
+      setError(err.message || "Failed to save purchases. Please try again.");
+      console.error("Save Purchases Error:", err);
     } finally {
       setIsSaving(false);
     }
@@ -152,6 +176,10 @@ const AddPurchases = () => {
     (product) => product.category_name === activeTab
   );
 
+  const totalPurchaseCost = filteredPurchases
+    .reduce((total, purchase) => total + Number(purchase.total_cost), 0)
+    .toFixed(2);
+
   return (
     <div className="add-purchases-container">
       <h2>Record Purchases</h2>
@@ -161,12 +189,14 @@ const AddPurchases = () => {
         <button
           className={activeTab === "cigarette" ? "active" : ""}
           onClick={() => setActiveTab("cigarette")}
+          aria-label="Switch to cigarette category"
         >
           Cigarette
         </button>
         <button
           className={activeTab === "bread_tomato" ? "active" : ""}
           onClick={() => setActiveTab("bread_tomato")}
+          aria-label="Switch to bread/tomato category"
         >
           Bread/Tomato
         </button>
@@ -184,6 +214,8 @@ const AddPurchases = () => {
               value={selectedSupplier}
               onChange={(e) => setSelectedSupplier(e.target.value)}
               className="supplier-select"
+              disabled={isSaving}
+              aria-label="Select a supplier"
             >
               <option value="">No Supplier</option>
               {suppliers.map((s) => (
@@ -197,12 +229,14 @@ const AddPurchases = () => {
               value={selectedProduct}
               onChange={handleProductChange}
               className="product-select"
+              disabled={isSaving}
+              aria-label="Select a product"
             >
               <option value="">Select Product</option>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name}
+                    {p.name} (Cost Price: K{Number(p.cost_price).toFixed(2)})
                   </option>
                 ))
               ) : (
@@ -219,6 +253,8 @@ const AddPurchases = () => {
               onChange={(e) => setQuantity(e.target.value)}
               className="quantity-input"
               min="1"
+              disabled={isSaving}
+              aria-label="Enter quantity"
             />
 
             <input
@@ -230,26 +266,38 @@ const AddPurchases = () => {
               min="0"
               step="0.01"
               required
+              disabled={isSaving}
+              aria-label="Enter price per unit"
             />
 
-            <button type="submit" className="add-purchase-btn">
+            <button
+              type="submit"
+              className="add-purchase-btn"
+              disabled={isSaving}
+              aria-label="Add purchase to list"
+            >
               Add Purchase
             </button>
           </form>
 
           <div className="purchases-list">
-            <h3>{activeTab === "cigarette" ? "Cigarette" : "Bread/Tomato"} Purchases</h3>
+            <div className="top-bar">
+              <h3>{activeTab === "cigarette" ? "Cigarette" : "Bread/Tomato"} Purchases</h3>
+              <div className="total-purchase-cost">
+                <strong>Total Purchase Cost:</strong> K{totalPurchaseCost}
+              </div>
+            </div>
             <div className="table-wrapper">
               <table className="purchases-table">
                 <thead>
                   <tr>
-                    <th>Supplier</th>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Cost</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th scope="col">Supplier</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total Cost</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -259,15 +307,15 @@ const AddPurchases = () => {
                         <td>{purchase.supplier_name || "N/A"}</td>
                         <td>{purchase.product_name}</td>
                         <td>{purchase.quantity}</td>
-                        <td>K{purchase.price.toFixed(2)}</td>
-                        <td>K{purchase.total_cost.toFixed(2)}</td>
+                        <td>K{Number(purchase.price).toFixed(2)}</td>
+                        <td>K{Number(purchase.total_cost).toFixed(2)}</td>
                         <td>{purchase.date}</td>
                         <td>
                           <button
                             className="remove-btn"
-                            onClick={() => handleRemovePurchase(
-                              purchaseList.findIndex((p) => p === purchase)
-                            )}
+                            onClick={() => handleRemovePurchase(index)}
+                            disabled={isSaving}
+                            aria-label={`Remove purchase for ${purchase.product_name}`}
                           >
                             Remove
                           </button>
@@ -291,6 +339,7 @@ const AddPurchases = () => {
               className="save-purchases-btn"
               onClick={handleSavePurchases}
               disabled={isSaving}
+              aria-label="Save all purchases"
             >
               {isSaving ? "Saving..." : "Save Purchases"}
             </button>

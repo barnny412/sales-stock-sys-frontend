@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchSales, updateSale, deleteSale } from "../api/salesAPI";
-import { fetchProducts } from "../api/productsAPI";
+import { fetchSales, deleteSale } from "../api/salesAPI";
+import { fetchStocks } from "../api/productsAPI"; // Updated to use fetchStocks
 import "../assets/styles/sales.css";
 
 const Sales = () => {
@@ -9,46 +9,52 @@ const Sales = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTab, setCurrentTab] = useState("today"); // "today" | "all" | "cigarette" | "bread_tomato"
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false); // Added for delete loading state
   const [error, setError] = useState("");
   const salesPerPage = 5;
   const navigate = useNavigate();
 
+  const fetchSalesData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
+      console.log("Fetching sales with type:", type);
+      const [salesData, products] = await Promise.all([
+        fetchSales(type),
+        fetchStocks(), // Updated to use fetchStocks
+      ]);
+
+      const productMap = {};
+      products.forEach((product) => {
+        productMap[product.id] = product.name;
+      });
+
+      const enhancedSales = salesData.map((sale) => {
+        const sellingPrice = Number(sale.price) || 0; // Ensure price is a number
+        const quantitySold = Number(sale.quantity_sold) || Number(sale.opening_stock) - Number(sale.closing_stock) || 0; // Ensure quantity is a number
+        return {
+          ...sale,
+          product_name: productMap[sale.product_id] || "Unknown",
+          quantity_sold: quantitySold,
+          price: sellingPrice,
+        };
+      });
+
+      console.log("Enhanced sales:", enhancedSales);
+      setSales(enhancedSales);
+    } catch (error) {
+      console.error("Failed to fetch sales or products:", error);
+      setError(error.message || "Failed to fetch sales or products. Please try again.");
+      setSales([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const getSalesData = async () => {
-      try {
-        const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
-        console.log("Fetching sales with type:", type);
-        const [salesData, products] = await Promise.all([
-          fetchSales(type),
-          fetchProducts(),
-        ]);
-
-        const productMap = {};
-        products.forEach((product) => {
-          productMap[product.id] = product.name;
-        });
-
-        const enhancedSales = salesData.map((sale) => {
-          const sellingPrice = sale.price ? parseFloat(sale.price) : 0; // Use sale.price instead of product.selling_price
-          return {
-            ...sale,
-            product_name: productMap[sale.product_id] || "Unknown",
-            quantity_sold: sale.quantity_sold || sale.opening_stock - sale.closing_stock,
-            price: sellingPrice, // Store as a number
-          };
-        });
-
-        console.log("Enhanced sales:", enhancedSales);
-        setSales(enhancedSales);
-        setError("");
-      } catch (error) {
-        console.error("Failed to fetch sales or products", error);
-        setError("Failed to fetch sales or products. Please try again.");
-        setSales([]);
-      }
-    };
-
-    getSalesData();
+    fetchSalesData();
   }, [currentTab]);
 
   useEffect(() => {
@@ -70,13 +76,17 @@ const Sales = () => {
       return;
     }
 
+    setIsDeleting(true);
     try {
       await deleteSale(id);
-      setSales(sales.filter((sale) => sale.id !== id));
+      // Refetch sales to ensure data consistency
+      await fetchSalesData();
       setError("");
     } catch (error) {
-      console.error("Failed to delete sale", error);
-      setError("Failed to delete sale. Please try again.");
+      console.error("Failed to delete sale:", error);
+      setError(error.message || "Failed to delete sale. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -114,8 +124,9 @@ const Sales = () => {
             setCurrentPage(1);
           }}
           className="search-input"
+          aria-label="Search sales"
         />
-        <Link to="/add-sales" className="add-sale-btn">
+        <Link to="/add-sales" className="add-sale-btn" aria-label="Add a new sale">
           + Add Sale
         </Link>
       </div>
@@ -128,6 +139,7 @@ const Sales = () => {
             setCurrentTab("today");
             setCurrentPage(1);
           }}
+          aria-label="View today's sales"
         >
           Today's Sales
         </button>
@@ -137,6 +149,7 @@ const Sales = () => {
             setCurrentTab("all");
             setCurrentPage(1);
           }}
+          aria-label="View all sales"
         >
           All Sales
         </button>
@@ -146,6 +159,7 @@ const Sales = () => {
             setCurrentTab("cigarette");
             setCurrentPage(1);
           }}
+          aria-label="View cigarette sales"
         >
           Cigarette
         </button>
@@ -155,12 +169,14 @@ const Sales = () => {
             setCurrentTab("bread_tomato");
             setCurrentPage(1);
           }}
+          aria-label="View bread and tomato sales"
         >
           Bread/Tomato
         </button>
       </div>
 
-      {/* Error Message */}
+      {/* Loading and Error Messages */}
+      {loading && <div className="loading-message">Loading sales...</div>}
       {error && <div className="error-message">{error}</div>}
 
       {/* Sales Table */}
@@ -168,14 +184,14 @@ const Sales = () => {
         <table className="sales-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Product</th>
-              <th>Quantity Sold</th>
-              <th>Price (K)</th>
-              <th>Total Price (K)</th>
-              <th>Sale Date</th>
-              <th>Sale Type</th>
-              <th>Actions</th>
+              <th scope="col">#</th>
+              <th scope="col">Product</th>
+              <th scope="col">Quantity Sold</th>
+              <th scope="col">Price (K)</th>
+              <th scope="col">Total Price (K)</th>
+              <th scope="col">Sale Date</th>
+              <th scope="col">Sale Type</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -185,15 +201,25 @@ const Sales = () => {
                   <td>{indexOfFirstSale + index + 1}</td>
                   <td>{sale.product_name}</td>
                   <td>{sale.quantity_sold}</td>
-                  <td>{sale.price.toFixed(2)}</td>
-                  <td>{(sale.quantity_sold * sale.price).toFixed(2)}</td>
+                  <td>{Number(sale.price).toFixed(2)}</td>
+                  <td>{(Number(sale.quantity_sold) * Number(sale.price)).toFixed(2)}</td>
                   <td>{new Date(sale.sales_date).toLocaleDateString()}</td>
-                  <td>{sale.sale_type}</td>
+                  <td>{sale.sale_type || "N/A"}</td>
                   <td>
-                    <button className="edit-btn" onClick={() => handleEdit(sale)}>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(sale)}
+                      disabled={isDeleting}
+                      aria-label={`Edit sale for ${sale.product_name}`}
+                    >
                       Edit
                     </button>
-                    <button className="delete-btn" onClick={() => handleDelete(sale.id)}>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(sale.id)}
+                      disabled={isDeleting}
+                      aria-label={`Delete sale for ${sale.product_name}`}
+                    >
                       Delete
                     </button>
                   </td>
@@ -216,6 +242,7 @@ const Sales = () => {
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
+            aria-label="Previous page"
           >
             Prev
           </button>
@@ -225,6 +252,7 @@ const Sales = () => {
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === totalPages}
+            aria-label="Next page"
           >
             Next
           </button>

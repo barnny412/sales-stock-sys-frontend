@@ -1,0 +1,201 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Container */
+  .add-product-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+    min-height: calc(100vh - 60px);
+    margin-top: 70px;
+  }
+  
+  /* Header */
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00ff7f;
+  }
+  
+  /* Form */
+  .add-product-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Input Group */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  /* Labels */
+  .input-group label {
+    font-size: 14px;
+    color: #00ff7f;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  /* Input Fields */
+  .product-name,
+  .product-category,
+  .product-cost-price,
+  .product-selling-price,
+  .product-items-per-unit,
+  .product-cost-price-per-unit,
+  .product-low-stock-alert {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #00ff7f;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Different Styling for Each Input */
+  .product-name {
+    border-color: #00ff7f;
+  }
+  
+  .product-category {
+    border-color: #007bff;
+    width: 100%;
+  }
+  
+  .product-cost-price {
+    border-color: #ffcc00;
+  }
+  
+  .product-selling-price {
+    border-color: #ff5733;
+  }
+  
+  .product-items-per-unit {
+    border-color: #00c4ff;
+  }
+  
+  .product-cost-price-per-unit {
+    border-color: #ff00ff;
+  }
+  
+  .product-low-stock-alert {
+    border-color: #ff9900;
+  }
+  
+  /* Focus State for Inputs */
+  .product-name:focus,
+  .product-category:focus,
+  .product-cost-price:focus,
+  .product-selling-price:focus,
+  .product-items-per-unit:focus,
+  .product-cost-price-per-unit:focus,
+  .product-low-stock-alert:focus {
+    outline: none;
+    border-color: #00e67f;
+    box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+  }
+  
+  /* Placeholder Color */
+  .product-name::placeholder,
+  .product-cost-price::placeholder,
+  .product-selling-price::placeholder,
+  .product-items-per-unit::placeholder,
+  .product-low-stock-alert::placeholder {
+    color: #bbb;
+  }
+  
+  /* Select Dropdown */
+  .product-category {
+    appearance: none;
+    cursor: pointer;
+    background: #333;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 10px;
+    background: #00ff7f;
+    color: #1e1e1e;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 15px;
+  }
+  
+  .submit-btn:hover {
+    background: #00e67f;
+  }
+  
+  .submit-btn:disabled {
+    background: #444;
+    cursor: not-allowed;
+  }
+  
+  /* Error Message */
+  .error-message {
+    color: #ff3333;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 8px;
+    background-color: rgba(255, 51, 51, 0.1);
+    border-radius: 4px;
+  }
+  
+  /* Success Message */
+  .success-message {
+    color: #00ff7f;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 8px;
+    background-color: rgba(0, 255, 127, 0.1);
+    border-radius: 4px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .add-product-container {
+      width: 90%;
+      max-width: 100%;
+      padding: 15px;
+    }
+    
+    .product-name,
+    .product-category,
+    .product-cost-price,
+    .product-selling-price,
+    .product-items-per-unit,
+    .product-cost-price-per-unit,
+    .product-low-stock-alert {
+      width: calc(100% - 16px);
+    }
+  
+    .input-group {
+      margin-bottom: 12px;
+    }
+  
+    .submit-btn {
+      padding: 8px;
+    }
+  }

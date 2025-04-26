@@ -5,6 +5,7 @@ html, body {
   padding: 0;
   display: flex;
   flex-direction: column;
+  font-family: Arial, sans-serif;
 }
 
 /* Products Container */
@@ -17,7 +18,7 @@ html, body {
   color: white;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
-  min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+  min-height: calc(100vh - 60px);
   margin-top: 70px;
 }
 
@@ -26,101 +27,266 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Ensures responsiveness */
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 /* Search Input */
 .search-input {
-  padding: 8px;
-  width: 200px;
+  padding: 10px;
+  width: 300px;
   border: 1px solid #00ff7f;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: #333;
   color: white;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-input::placeholder {
+  color: #bbb;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #00e67f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
 }
 
 /* Add Product Button */
 .add-product-btn {
   background-color: #00ff7f;
-  color: #000;
+  color: #1e1e1e;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 20px;
   font-size: 16px;
-  border-radius: 5px;
+  font-weight: bold;
+  border-radius: 4px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.3s ease;
   text-decoration: none;
 }
 
 .add-product-btn:hover {
-  background-color: #00cc66;
+  background-color: #00e67f;
 }
 
 /* Products Table */
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #222;
-  overflow-x: auto; /* Ensures table is scrollable on smaller screens */
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 /* Table Headers and Cells */
-.products-table th,
+.products-table th {
+  padding: 12px;
+  text-align: left;
+  background-color: #00ff7f;
+  color: #1e1e1e;
+  font-weight: bold;
+}
+
 .products-table td {
-  padding: 10px;
-  border: 1px solid #00ff7f;
+  padding: 12px;
+  border: 1px solid #444;
   text-align: left;
 }
 
-.products-table th {
-  background-color: #00ff7f;
-  color: #1e1e1e;
+.products-table tbody tr {
+  border-bottom: 1px solid #444;
+}
+
+.products-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Highlight Low Stock */
+.low-stock-row {
+  background-color: rgba(255, 51, 51, 0.2);
+}
+
+/* Table Row Hover */
+.products-table tr:hover {
+  background-color: rgba(0, 255, 127, 0.1);
 }
 
 /* Buttons (Edit/Delete) */
 .edit-btn,
 .delete-btn {
-  padding: 5px 10px;
+  padding: 6px 12px;
   margin-right: 5px;
   border: none;
   cursor: pointer;
   font-weight: bold;
   border-radius: 4px;
+  transition: background 0.3s ease;
 }
 
 .edit-btn {
-  background-color: #ffa500;
-  color: white;
+  background-color: #ffcc00;
+  color: #1e1e1e;
+}
+
+.edit-btn:hover {
+  background-color: #e6b800;
 }
 
 .delete-btn {
-  background-color: #ff4444;
+  background-color: #ff3333;
   color: white;
+}
+
+.delete-btn:hover {
+  background-color: #e60000;
 }
 
 /* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
 }
 
-.pagination button {
-  padding: 6px 12px;
-  margin: 0 5px;
+.pagination-btn {
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: #00ff7f;
   color: #1e1e1e;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.pagination button:disabled {
+.pagination-btn:hover {
+  background-color: #00e67f;
+}
+
+.pagination-btn:disabled {
   background-color: #444;
   cursor: not-allowed;
+}
+
+/* Loading Message */
+.loading-message {
+  text-align: center;
+  color: #00ff7f;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Error Message */
+.error-message {
+  color: #ff3333;
+  text-align: center;
+  font-weight: bold;
+  margin: 20px 0;
+  padding: 8px;
+  background-color: rgba(255, 51, 51, 0.1);
+  border-radius: 4px;
+}
+
+/* Success Message */
+.success-message {
+  color: #00ff7f;
+  text-align: center;
+  font-weight: bold;
+  margin: 20px 0;
+  padding: 8px;
+  background-color: rgba(0, 255, 127, 0.1);
+  border-radius: 4px;
+}
+
+/* No Products Message */
+.no-products-message {
+  text-align: center;
+  color: #bbb;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #00ff7f;
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content h3 {
+  color: #00ff7f;
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-confirm-btn,
+.modal-cancel-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modal-confirm-btn {
+  background-color: #ff3333;
+  color: white;
+}
+
+.modal-confirm-btn:hover {
+  background-color: #e60000;
+}
+
+.modal-cancel-btn {
+  background-color: #00ff7f;
+  color: #1e1e1e;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #00e67f;
 }
 
 /* Responsive Design */
@@ -149,13 +315,12 @@ html, body {
     padding: 10px;
   }
 
-  /* Search Input */
-.search-input {
-  width: 100%;
-}
+  .search-input {
+    width: 100%;
+  }
 
   .add-product-btn {
-    width: 92%;
+    width: 100%;
     text-align: center;
   }
 
@@ -197,8 +362,24 @@ html, body {
     gap: 5px;
   }
 
-  .pagination button {
+  .pagination-btn {
     width: 100%;
     padding: 8px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-confirm-btn,
+  .modal-cancel-btn {
+    width: 100%;
+    padding: 10px;
   }
 }

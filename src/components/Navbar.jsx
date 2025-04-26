@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <div className="logo">FrontMark Trading LTD</div>
+        <div className="logo">BPOS</div>
         {!isSmallScreen && (
           <ul className="nav-links">
             <li><Link to="/">Dashboard</Link></li>

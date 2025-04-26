@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchPurchases, updatePurchase, deletePurchase } from "../api/purchasesAPI";
+import { fetchPurchases, deletePurchase } from "../api/purchasesAPI";
 import "../assets/styles/purchases.css";
 
 const Purchases = () => {
@@ -8,33 +8,48 @@ const Purchases = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTab, setCurrentTab] = useState("today");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
   const purchasesPerPage = 5;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getPurchases = async () => {
-      try {
-        const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
-        console.log("Fetching purchases with type:", type);
-        const data = await fetchPurchases(type);
-        console.log("Fetched purchases data:", data);
-        const typeCounts = data.reduce((acc, purchase) => {
-          acc[purchase.purchase_type] = (acc[purchase.purchase_type] || 0) + 1;
-          return acc;
-        }, {});
-        console.log("Purchase type distribution in response:", typeCounts);
-        setPurchases(Array.isArray(data) ? data : []);
-        setError("");
-      } catch (error) {
-        console.error("Failed to fetch purchases", error);
-        setError("Failed to fetch purchases. Please try again.");
-        setPurchases([]);
-      }
-    };
+  const fetchPurchasesData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
+      console.log("Fetching purchases with type:", type);
+      const data = await fetchPurchases(type);
+      console.log("Fetched purchases data:", data);
+      const typeCounts = data.reduce((acc, purchase) => {
+        acc[purchase.purchase_type] = (acc[purchase.purchase_type] || 0) + 1;
+        return acc;
+      }, {});
+      console.log("Purchase type distribution in response:", typeCounts);
+      setPurchases(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to fetch purchases:", error);
+      setError(error.message || "Failed to fetch purchases. Please try again.");
+      setPurchases([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    getPurchases();
+  useEffect(() => {
+    fetchPurchasesData();
   }, [currentTab]);
+
+  useEffect(() => {
+    // Clear error messages after 5 seconds
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleEdit = (purchase) => {
     navigate(`/edit-purchase/${purchase.id}`, { state: { purchase } });
@@ -45,13 +60,17 @@ const Purchases = () => {
       return;
     }
 
+    setIsDeleting(true);
     try {
       await deletePurchase(id);
-      setPurchases(purchases.filter((purchase) => purchase.id !== id));
+      // Refetch purchases to ensure data consistency
+      await fetchPurchasesData();
       setError("");
     } catch (error) {
-      console.error("Failed to delete purchase", error);
-      setError("Failed to delete purchase. Please try again.");
+      console.error("Failed to delete purchase:", error);
+      setError(error.message || "Failed to delete purchase. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -75,11 +94,15 @@ const Purchases = () => {
   const indexOfLast = currentPage * purchasesPerPage;
   const indexOfFirst = indexOfLast - purchasesPerPage;
   const currentPurchases = filteredPurchases.slice(indexOfFirst, indexOfLast);
-
   const totalPages = Math.ceil(filteredPurchases.length / purchasesPerPage);
 
   // Debug: Log currentPurchases to ensure data integrity
   console.log("Current purchases:", currentPurchases);
+
+  // Calculate total purchase cost for filtered purchases
+  const totalPurchaseCost = filteredPurchases
+    .reduce((total, purchase) => total + Number(purchase.total_cost), 0)
+    .toFixed(2);
 
   return (
     <div className="purchases-container">
@@ -94,8 +117,9 @@ const Purchases = () => {
             setCurrentPage(1);
           }}
           className="search-input"
+          aria-label="Search purchases"
         />
-        <Link to="/add-purchase" className="add-purchase-btn">
+        <Link to="/add-purchase" className="add-purchase-btn" aria-label="Add a new purchase">
           + Add Purchase
         </Link>
       </div>
@@ -108,6 +132,7 @@ const Purchases = () => {
             setCurrentTab("today");
             setCurrentPage(1);
           }}
+          aria-label="View today's purchases"
         >
           Today's Purchases
         </button>
@@ -117,6 +142,7 @@ const Purchases = () => {
             setCurrentTab("all");
             setCurrentPage(1);
           }}
+          aria-label="View all purchases"
         >
           All Purchases
         </button>
@@ -126,6 +152,7 @@ const Purchases = () => {
             setCurrentTab("cigarette");
             setCurrentPage(1);
           }}
+          aria-label="View cigarette purchases"
         >
           Cigarette
         </button>
@@ -135,54 +162,71 @@ const Purchases = () => {
             setCurrentTab("bread_tomato");
             setCurrentPage(1);
           }}
+          aria-label="View bread and tomato purchases"
         >
           Bread/Tomato
         </button>
       </div>
 
-      {/* Error Message */}
+      {/* Loading and Error Messages */}
+      {loading && <div className="loading-message">Loading purchases...</div>}
       {error && <div className="error-message">{error}</div>}
+
+      {/* Total Purchase Cost */}
+      {!loading && filteredPurchases.length > 0 && (
+        <div className="total-purchase-cost">
+          <strong>Total Purchase Cost:</strong> K{totalPurchaseCost}
+        </div>
+      )}
 
       {/* Purchases Table */}
       <div className="table-wrapper">
         <table className="purchases-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Price (K)</th>
-              <th>Total Cost (K)</th>
-              <th>Supplier</th>
-              <th>Purchase Date</th>
-              <th>Purchase Type</th>
-              <th>Actions</th>
+              <th scope="col">#</th>
+              <th scope="col">Product</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Price (K)</th>
+              <th scope="col">Total Cost (K)</th>
+              <th scope="col">Supplier</th>
+              <th scope="col">Purchase Date</th>
+              <th scope="col">Purchase Type</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
             {currentPurchases.length > 0 ? (
-              currentPurchases.map((purchase, index) => {
-                return (
-                  <tr key={purchase.id}>
-                    <td>{indexOfFirst + index + 1}</td>
-                    <td>{purchase.product?.name || "N/A"}</td>
-                    <td>{purchase.quantity}</td>
-                    <td>{Number(purchase.price).toFixed(2)}</td>
-                    <td>{Number(purchase.total_cost).toFixed(2)}</td>
-                    <td>{purchase.supplier?.name || "N/A"}</td>
-                    <td>{new Date(purchase.purchase_date).toLocaleDateString()}</td>
-                    <td>{purchase.purchase_type}</td>
-                    <td>
-                      <button className="edit-btn" onClick={() => handleEdit(purchase)}>
-                        Edit
-                      </button>
-                      <button className="delete-btn" onClick={() => handleDelete(purchase.id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
+              currentPurchases.map((purchase, index) => (
+                <tr key={purchase.id}>
+                  <td>{indexOfFirst + index + 1}</td>
+                  <td>{purchase.product?.name || "N/A"}</td>
+                  <td>{purchase.quantity}</td>
+                  <td>{Number(purchase.price).toFixed(2)}</td>
+                  <td>{Number(purchase.total_cost).toFixed(2)}</td>
+                  <td>{purchase.supplier?.name || "N/A"}</td>
+                  <td>{new Date(purchase.purchase_date).toLocaleDateString()}</td>
+                  <td>{purchase.purchase_type || "N/A"}</td>
+                  <td>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(purchase)}
+                      disabled={isDeleting}
+                      aria-label={`Edit purchase for ${purchase.product?.name || "unknown product"}`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(purchase.id)}
+                      disabled={isDeleting}
+                      aria-label={`Delete purchase for ${purchase.product?.name || "unknown product"}`}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan="9" className="text-center">
@@ -200,6 +244,7 @@ const Purchases = () => {
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
             disabled={currentPage === 1}
+            aria-label="Previous page"
           >
             Prev
           </button>
@@ -209,6 +254,7 @@ const Purchases = () => {
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === totalPages}
+            aria-label="Next page"
           >
             Next
           </button>
