@@ -28,6 +28,7 @@ const Dashboard = () => {
           currentBalance: "0.00",
         };
 
+        // Set dashboard data
         setSalesData(data.sales || {});
         setTopSellingProductsOfDay(
           Array.isArray(data.topSellingOfDay) ? data.topSellingOfDay : data.topSellingOfDay ? [data.topSellingOfDay] : []
@@ -83,7 +84,7 @@ const Dashboard = () => {
           {topSellingProductsOfDay.length > 0 ? (
             topSellingProductsOfDay.map((product, index) => (
               <li key={index}>
-                {product.product_name || product.name} - {product.quantity_sold ?? 0} Sold
+                {product.product_name || product.name} - {product.quantitySold ?? 0} Sold
               </li>
             ))
           ) : (
