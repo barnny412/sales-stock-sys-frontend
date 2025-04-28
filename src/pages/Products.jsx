@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchStocks, deleteProduct } from "../api/productsAPI"; // Updated import
+import { fetchStocks, deleteProduct } from "../api/productsAPI";
 import "../assets/styles/products.css";
 
 const Products = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Initially an empty array
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false); // Added for delete loading state
+  const [isDeleting, setIsDeleting] = useState(false);
   const productsPerPage = 5;
 
   const fetchProductsData = async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await fetchStocks(); // Updated to use fetchStocks
-      setProducts(data);
+      const data = await fetchStocks();
+      // Ensure data is an array; fallback to empty array if not
+      const fetchedProducts = Array.isArray(data) ? data : [];
+      setProducts(fetchedProducts);
     } catch (error) {
       console.error("Failed to fetch products:", error);
       setError("Failed to fetch products. Please try again later.");
+      setProducts([]); // Reset to empty array on error
     } finally {
       setLoading(false);
     }
@@ -63,10 +66,12 @@ const Products = () => {
     setError("");
   };
 
-  // Filter products based on search term
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter products based on search term, ensuring products is an array
+  const filteredProducts = Array.isArray(products)
+    ? products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   // Pagination Logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -91,10 +96,7 @@ const Products = () => {
 
       {loading && <p className="loading-message">Loading products...</p>}
       {error && <div className="error-message">{error}</div>}
-      {!loading && !error && filteredProducts.length === 0 && (
-        <p className="no-products-message">No products available.</p>
-      )}
-      {!loading && !error && filteredProducts.length > 0 && (
+      {!loading && !error && (
         <>
           <table className="products-table">
             <thead>
@@ -108,30 +110,38 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {currentProducts.map((product, index) => (
-                <tr key={product.id}>
-                  <td>{indexOfFirstProduct + index + 1}</td>
-                  <td>{product.name}</td>
-                  <td>{Number(product.cost_price).toFixed(2)}</td>
-                  <td>{Number(product.selling_price).toFixed(2)}</td>
-                  <td>{product.low_stock_alert}</td>
-                  <td>
-                    <Link to={`/edit-product/${product.id}`}>
-                      <button className="edit-btn" aria-label={`Edit ${product.name}`}>
-                        Edit
+              {currentProducts.length > 0 ? (
+                currentProducts.map((product, index) => (
+                  <tr key={product.id}>
+                    <td>{indexOfFirstProduct + index + 1}</td>
+                    <td>{product.name}</td>
+                    <td>{Number(product.cost_price).toFixed(2)}</td>
+                    <td>{Number(product.selling_price).toFixed(2)}</td>
+                    <td>{product.low_stock_alert ?? "N/A"}</td>
+                    <td>
+                      <Link to={`/edit-product/${product.id}`}>
+                        <button className="edit-btn" aria-label={`Edit ${product.name}`}>
+                          Edit
+                        </button>
+                      </Link>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeletePrompt(product)}
+                        aria-label={`Delete ${product.name}`}
+                        disabled={isDeleting}
+                      >
+                        Delete
                       </button>
-                    </Link>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeletePrompt(product)}
-                      aria-label={`Delete ${product.name}`}
-                      disabled={isDeleting}
-                    >
-                      Delete
-                    </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="no-products-message">
+                    No products available.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
 
