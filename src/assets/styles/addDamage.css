@@ -140,8 +140,7 @@ h2 {
 /* Responsive Design */
 @media (max-width: 600px) {
   .add-damage-container {
-    width: 90%;
-    max-width: 100%;
+    width: 95%;
     padding: 15px; /* Slightly reduce padding on smaller screens */
   }
 
@@ -149,7 +148,7 @@ h2 {
   .damage-quantity,
   .damage-reason,
   .submit-btn {
-    width: 100%; /* Ensure full width on smaller screens */
+    width: 98%; /* Ensure full width on smaller screens */
   }
 
   .input-group {

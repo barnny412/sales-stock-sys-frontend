@@ -78,6 +78,19 @@ h2 {
   color: white;
   font-size: 1rem;
   text-align: center;
+  margin-right: 10px;
+}
+
+.price-input {
+  margin-top: 10px;
+  width: 200px; /* Match the select box */
+  padding: 10px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  font-size: 1rem;
+  text-align: center;
 }
 
 /* Add button */
@@ -202,6 +215,10 @@ button.remove-btn:hover {
 .closing-stock-input {
   width: 95%; /* Match the select box */
   margin-top: 10px;
+}
+
+.price-input {
+  width: 95%; /* Match the select box */
 }
 
 }

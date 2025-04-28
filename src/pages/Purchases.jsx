@@ -119,7 +119,7 @@ const Purchases = () => {
           className="search-input"
           aria-label="Search purchases"
         />
-        <Link to="/add-purchase" className="add-purchase-btn" aria-label="Add a new purchase">
+        <Link to="/add-purchase" className="add-purchase-btn1" aria-label="Add a new purchase">
           + Add Purchase
         </Link>
       </div>

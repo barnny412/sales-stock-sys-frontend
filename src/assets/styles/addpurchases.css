@@ -196,9 +196,21 @@
 
   .supplier-select,
   .product-select,
+  .quantity-input {
+    width: 100%;
+  }
+
   .quantity-input,
   .price-input {
+    width: 95%;
+  }
+
+  .add-purchase-btn {
     width: 100%;
+  }
+
+  .add-purchase-btn1 {
+    width: 92%;
   }
 
   .purchases-table th,
@@ -213,6 +225,7 @@
   }
 
   .save-purchases-btn {
+    width: 90%;
     padding: 8px 16px;
     font-size: 14px;
   }
