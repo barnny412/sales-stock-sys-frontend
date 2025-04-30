@@ -228,7 +228,7 @@ const AddSales = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} (Price: ${Number(product.selling_price).toFixed(2)})
+                    {product.name} 
                   </option>
                 ))
               ) : (
@@ -276,7 +276,7 @@ const AddSales = () => {
             <div className="top-bar">
               <h3>{currentTab.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())} Sales</h3>
               <div className="overall-total-sales">
-                <strong>Overall Total Sales:</strong> ${overallTotalSales}
+                <strong>Overall Total Sales:</strong> K{overallTotalSales}
               </div>
             </div>
             <table className="sales-table">

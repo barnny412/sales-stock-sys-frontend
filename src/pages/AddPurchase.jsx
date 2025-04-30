@@ -236,7 +236,7 @@ const AddPurchases = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} (Cost Price: K{Number(p.cost_price).toFixed(2)})
+                    {p.name} 
                   </option>
                 ))
               ) : (
