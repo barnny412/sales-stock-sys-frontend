@@ -18,7 +18,6 @@ html, body {
   padding: 20px;
   background-color: #1e1e1e;
   color: white;
-  border-radius: 8px;
   -webkit-box-shadow: 0 0 10px rgba(0, 255, 127, 0.2); /* Webkit prefix for box-shadow */
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
   min-height: calc(100vh - 60px);
