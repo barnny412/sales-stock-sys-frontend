@@ -12,7 +12,7 @@ export default defineConfig({
       },
       includeAssets: ['apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'FrontMark Trading LTD',
+        name: 'FrontMark POS',
         short_name: 'FrontMark',
         description: 'Inventory and trading management app',
         theme_color: '#00ff7f',
