@@ -1,3 +1,4 @@
+/* Navbar Styles */
 .navbar {
   position: fixed;
   top: 0;
@@ -60,26 +61,12 @@
 /* Drawer Styles */
 .drawer-content {
   width: 250px;
-  background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%); /* Subtle gradient for modern look */
+  background-color: #1e1e1e; /* Match navbar background */
   color: white;
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 15px rgba(0, 255, 127, 0.3); /* Enhanced neon green shadow */
-  backdrop-filter: blur(5px); /* Glassmorphism effect */
-  animation: slideIn 0.3s ease-out; /* Slide-in animation */
-}
-
-/* Slide-in Animation */
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  box-shadow: 2px 0 10px rgba(0, 255, 127, 0.2); /* Neon green shadow */
 }
 
 /* Drawer Header */
@@ -88,30 +75,25 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background: linear-gradient(90deg, #2a2a2a 0%, #333 100%); /* Gradient for header */
-  border-bottom: 2px solid #00ff7f; /* Thicker neon green border */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  background-color: #2a2a2a; /* Slightly lighter than navbar for contrast */
+  border-bottom: 1px solid #00ff7f; /* Neon green border */
 }
 
 /* Drawer Header Text */
 .drawer-header-text {
   font-size: 1.25rem;
-  font-weight: 700;
-  color: #00ff7f;
-  letter-spacing: 0.5px; /* Modern typography */
-  text-transform: uppercase; /* Modern touch */
+  font-weight: bold;
+  color: #00ff7f; /* Neon green */
 }
 
 /* Close Button */
 .drawer-close {
-  color: #00ff7f;
-  font-size: 1.5rem; /* Larger icon for better touch target */
-  transition: color 0.3s, transform 0.3s;
+  color: #00ff7f; /* Neon green */
+  transition: color 0.3s;
 }
 
 .drawer-close:hover {
-  color: #00cc66;
-  transform: rotate(90deg); /* Rotate on hover for interactivity */
+  color: #00cc66; /* Darker green on hover */
 }
 
 /* Drawer Links */
@@ -119,64 +101,42 @@
   text-decoration: none;
   color: white;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: bold;
   width: 100%;
   padding: 12px 20px;
-  border-radius: 8px; /* Softer corners */
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  background-color: transparent; /* Transparent background for modern look */
-  position: relative; /* For pseudo-element animation */
-  overflow: hidden; /* Contain the pseudo-element */
-}
-
-/* Hover Effect with Underline Animation */
-.drawer-content .drawer-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #00ff7f;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-}
-
-.drawer-content .drawer-link:hover::after {
-  transform: translateX(0);
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: #1e1e1e; /* Ensure background matches drawer */
 }
 
 .drawer-content .drawer-link:hover {
-  color: #00ff7f;
-  background-color: rgba(0, 255, 127, 0.1); /* Subtle green tint on hover */
-  transform: translateX(5px); /* Slight shift for interactivity */
+  background-color: #333; /* Match dashboard list background */
+  color: #00ff7f; /* Neon green on hover */
 }
 
 .drawer-content .drawer-link:active,
 .drawer-content .drawer-link:focus {
-  background-color: rgba(0, 255, 127, 0.2); /* Slightly stronger tint on active */
-  color: #00ff7f;
+  background-color: #1e1e1e; /* Prevent white background on active/focus */
+  color: white;
 }
 
 /* Material-UI List and ListItem Overrides */
 .MuiList-root {
-  padding: 15px 0; /* More padding for modern spacing */
+  padding: 10px 0;
 }
 
 .MuiListItem-root {
   padding: 0;
-  margin-bottom: 8px; /* More spacing between items */
-  background-color: transparent !important; /* Override Material-UI default */
-  transition: background-color 0.3s ease;
+  margin-bottom: 5px;
+  background-color: #1e1e1e !important; /* Override Material-UI default */
 }
 
 .MuiListItem-root:hover {
-  background-color: rgba(0, 255, 127, 0.1) !important; /* Subtle tint on hover */
+  background-color: #333 !important; /* Match drawer-link hover */
 }
 
 .MuiListItemText-primary {
-  font-weight: 600;
-  letter-spacing: 0.3px; /* Modern typography */
+  font-weight: bold;
 }
 
 /* Responsive Design */
@@ -231,14 +191,6 @@
     padding: 12px 15px;
   }
 
-  .drawer-header-text {
-    font-size: 1.15rem; /* Adjusted for smaller screens */
-  }
-
-  .drawer-close {
-    font-size: 1.4rem;
-  }
-
   .drawer-content .drawer-link {
     font-size: 16px;
     padding: 10px 15px;
@@ -269,10 +221,6 @@
 
   .drawer-header-text {
     font-size: 1.1rem;
-  }
-
-  .drawer-close {
-    font-size: 1.3rem;
   }
 
   .drawer-content .drawer-link {
