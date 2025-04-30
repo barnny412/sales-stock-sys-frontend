@@ -137,21 +137,60 @@ h2 {
   margin-top: 10px;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-  .add-damage-container {
-    width: 95%;
-    padding: 15px; /* Slightly reduce padding on smaller screens */
+/* RESPONSIVE DESIGN */
+
+/* Tablet Screens */
+@media (max-width: 768px) {
+  .add-damage-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-damage-container select,
   .damage-product-name,
   .damage-quantity,
-  .damage-reason,
-  .submit-btn {
-    width: 98%; /* Ensure full width on smaller screens */
+  .damage-reason {
+    width: 95%; /* Match the select box */
+    margin-top: 10px;
   }
 
-  .input-group {
-    margin-bottom: 8px; /* Slightly reduce spacing */
+  .submit-btn {
+    width: 100%;
+  }
+}
+
+/* Mobile Screens */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .add-damage-container {
+    padding: 15px;
+  }
+
+  .add-damage-container select,
+  .damage-product-name,
+  .damage-quantity,
+  .damage-reason {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .submit-btn,
+  .add-damage-container button.add-damage-btn {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 8px;
   }
 }
