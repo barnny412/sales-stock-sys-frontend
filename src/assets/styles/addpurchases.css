@@ -210,7 +210,8 @@
   }
 
   .add-purchase-btn1 {
-    width: 92%;
+    width: 90%;
+    text-align: center;
   }
 
   .purchases-table th,
