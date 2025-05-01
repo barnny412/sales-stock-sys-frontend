@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import { fetchCashflowOpeningBalances, saveCashflowOpeningBalance } from '../api/cashFlowAPI'; // Updated import
+import { fetchCashflowOpeningBalances, saveCashflowOpeningBalance, resetDatabase, resetProductsTable, resetCashflowTable } from '../api/cashFlowAPI'; // Updated imports
 import '../assets/styles/Settings.css';
 
 const Settings = () => {
@@ -49,6 +49,57 @@ const Settings = () => {
     }
   };
 
+  // Reset entire database
+  const handleResetDatabase = async () => {
+    if (!window.confirm('Are you sure you want to reset the entire database? This will delete all data and cannot be undone.')) {
+      return;
+    }
+
+    setMessage('');
+    setError('');
+
+    try {
+      await resetDatabase();
+      setMessage('Database reset successfully');
+    } catch (error) {
+      setError(error.message || 'Failed to reset database');
+    }
+  };
+
+  // Reset products table
+  const handleResetProductsTable = async () => {
+    if (!window.confirm('Are you sure you want to reset the products table? This will delete all product data and cannot be undone.')) {
+      return;
+    }
+
+    setMessage('');
+    setError('');
+
+    try {
+      await resetProductsTable();
+      setMessage('Products table reset successfully');
+    } catch (error) {
+      setError(error.message || 'Failed to reset products table');
+    }
+  };
+
+  // Reset cashflow table
+  const handleResetCashflowTable = async () => {
+    if (!window.confirm('Are you sure you want to reset the cashflow table? This will delete all cashflow data and cannot be undone.')) {
+      return;
+    }
+
+    setMessage('');
+    setError('');
+
+    try {
+      await resetCashflowTable();
+      setMessage('Cashflow table reset successfully');
+    } catch (error) {
+      setError(error.message || 'Failed to reset cashflow table');
+    }
+  };
+
   return (
     <Container className="settings-container">
       <h1 className="settings-title">Settings</h1>
@@ -87,6 +138,24 @@ const Settings = () => {
           {message && <p className="success-message">{message}</p>}
           {error && <p className="error-message">{error}</p>}
         </form>
+      </div>
+
+      {/* Database Reset Section */}
+      <div className="settings-section">
+        <h2 className="settings-section-title">Reset Database</h2>
+        <div className="settings-form">
+          <button onClick={handleResetDatabase} className="reset-btn reset-all-btn">
+            Reset Entire Database
+          </button>
+          <button onClick={handleResetProductsTable} className="reset-btn reset-products-btn">
+            Reset Products Table
+          </button>
+          <button onClick={handleResetCashflowTable} className="reset-btn reset-cashflow-btn">
+            Reset Cashflow Table
+          </button>
+          {message && <p className="success-message">{message}</p>}
+          {error && <p className="error-message">{error}</p>}
+        </div>
       </div>
     </Container>
   );

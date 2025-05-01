@@ -108,3 +108,45 @@ export const saveCashflowOpeningBalance = async (category, openingBalance) => {
     throw new Error(error.response?.data?.message || "Failed to save opening balance");
   }
 };
+
+// Reset entire database
+export const resetDatabase = async () => {
+  try {
+    const response = await api.delete("/reset/database");
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to reset database");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error resetting database:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to reset database");
+  }
+};
+
+// Reset products table
+export const resetProductsTable = async () => {
+  try {
+    const response = await api.delete("/reset/products");
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to reset products table");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error resetting products table:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to reset products table");
+  }
+};
+
+// Reset cashflow table
+export const resetCashflowTable = async () => {
+  try {
+    const response = await api.delete("/reset/cashflow");
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to reset cashflow table");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error resetting cashflow table:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to reset cashflow table");
+  }
+};

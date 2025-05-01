@@ -1,4 +1,4 @@
-/* Excerpt from src/assets/styles/Settings.css */
+/* Container for the settings page */
 .settings-container {
   padding: 20px;
   background-color: #1e1e1e;
@@ -6,8 +6,10 @@
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
   min-height: calc(100vh - 60px);
   margin-top: 70px;
+  border-radius: 8px; /* Added for consistency with AddSales/AddDamage */
 }
 
+/* Section container for settings */
 .settings-section {
   background-color: #222;
   padding: 20px;
@@ -16,118 +18,206 @@
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
 }
 
+/* Main title of the settings page */
 .settings-title {
   color: white;
   font-size: 2rem;
   margin: 0 0 16px 0;
+  text-align: center; /* Added for better alignment */
 }
 
+/* Section title within settings */
 .settings-section-title {
   color: white;
   font-size: 1.5rem;
   margin: 0 0 16px 0;
+  text-align: center; /* Added for consistency */
 }
 
+/* Form styling */
 .settings-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
+/* Form group for inputs */
 .form-group {
   display: flex;
   flex-direction: column;
 }
 
+/* Labels for form inputs */
 .form-group label {
   color: white;
   font-size: 1rem;
   margin-bottom: 5px;
 }
 
+/* Input fields */
 .form-input {
-  padding: 8px;
+  padding: 10px; /* Increased padding for better usability */
   border: 1px solid #00ff7f;
   border-radius: 5px;
   background-color: #333;
   color: white;
   font-size: 0.9rem;
+  transition: border-color 0.3s ease; /* Added for smoother focus transition */
 }
 
+/* Input focus state */
 .form-input:focus {
   outline: none;
   border-color: #00cc66;
 }
 
+/* Save button */
 .save-btn {
   background-color: #00ff7f;
   color: #1e1e1e;
-  padding: 10px;
+  padding: 12px; /* Increased padding to match AddSales/AddDamage */
   border: none;
   border-radius: 5px;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
   align-self: flex-start;
+  width: 100%; /* Full width for consistency with other buttons */
 }
 
+/* Save button hover state */
 .save-btn:hover {
   background-color: #00cc66;
 }
 
+/* Reset Buttons */
+.reset-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff4444; /* Red to indicate destructive action */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform for interactivity */
+}
+
+/* Reset button hover state */
+.reset-btn:hover {
+  background-color: #e53e36;
+  transform: scale(1.02); /* Subtle scale effect on hover */
+}
+
+/* Specific styling for each reset button */
+.reset-all-btn {
+  background-color: #ff4444;
+}
+
+.reset-all-btn:hover {
+  background-color: #e53e36;
+}
+
+.reset-products-btn {
+  background-color: #ff6347; /* Slightly different shade for distinction */
+}
+
+.reset-products-btn:hover {
+  background-color: #ff4500;
+}
+
+.reset-cashflow-btn {
+  background-color: #ff5733; /* Another shade for distinction */
+}
+
+.reset-cashflow-btn:hover {
+  background-color: #ff2d00;
+}
+
+/* Success message */
 .success-message {
   color: #00ff7f;
   font-size: 0.9rem;
   margin: 10px 0 0;
+  text-align: center; /* Added for better alignment */
 }
 
+/* Error message */
 .error-message {
   color: #ff4444;
   font-size: 0.9rem;
   margin: 10px 0 0;
+  text-align: center; /* Added for better alignment */
 }
 
 /* Responsive styles */
+
+/* Tablet Screens */
 @media (max-width: 768px) {
   .settings-container {
     padding: 15px;
   }
+
+  .settings-section {
+    padding: 15px;
+  }
+
   .settings-title {
     font-size: 1.8rem;
   }
+
   .settings-section-title {
     font-size: 1.3rem;
   }
+
   .form-input {
     font-size: 0.85rem;
+    padding: 8px; /* Adjusted for smaller screens */
   }
-  .save-btn {
+
+  .save-btn,
+  .reset-btn {
     font-size: 0.9rem;
-    padding: 8px;
+    padding: 10px;
+  }
+
+  .success-message,
+  .error-message {
+    font-size: 0.85rem;
   }
 }
 
+/* Mobile Screens */
 @media (max-width: 480px) {
   .settings-container {
     padding: 10px;
   }
+
   .settings-section {
     padding: 15px;
   }
+
   .settings-title {
     font-size: 1.5rem;
   }
+
   .settings-section-title {
     font-size: 1.2rem;
   }
+
   .form-input {
     font-size: 0.8rem;
+    padding: 7px; /* Adjusted for smaller screens */
   }
-  .save-btn {
+
+  .save-btn,
+  .reset-btn {
     font-size: 0.85rem;
-    padding: 7px;
+    padding: 8px;
   }
+
   .success-message,
   .error-message {
     font-size: 0.8rem;
