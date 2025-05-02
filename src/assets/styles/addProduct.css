@@ -175,19 +175,22 @@ h2 {
 /* Responsive Design */
 @media (max-width: 600px) {
   .add-product-container {
-    width: 90%;
+    width: 100%;
     max-width: 100%;
     padding: 15px; /* Slightly reduced padding for smaller screens */
   }
   
   .product-name,
-  .product-category,
   .product-cost-price,
   .product-selling-price,
   .product-items-per-unit,
   .product-cost-price-per-unit,
   .product-low-stock-alert {
-    width: calc(100% - 16px); /* Adjusted for smaller screens */
+    width: calc(98% - 16px); /* Adjusted for smaller screens */
+  }
+
+  .product-category {
+    width: 100%; /* Adjusted for smaller screens */
   }
 
   .input-group {

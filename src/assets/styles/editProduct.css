@@ -175,8 +175,7 @@ html, body {
   /* Responsive Design */
   @media (max-width: 600px) {
     .add-product-container {
-      width: 90%;
-      max-width: 100%;
+      width: 100%;
       padding: 15px;
     }
     
@@ -187,7 +186,7 @@ html, body {
     .product-items-per-unit,
     .product-cost-price-per-unit,
     .product-low-stock-alert {
-      width: calc(100% - 16px);
+      width: 90%;
     }
   
     .input-group {

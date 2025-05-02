@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchCategories } from "../api/categoriesAPI";
 import { getProductById, updateProduct } from "../api/productsAPI";
-import "../assets/styles/editProduct.css";
+import "../assets/styles/addProduct.css";
 
 const EditProduct = () => {
   const { id } = useParams(); // Get the product ID from the URL
