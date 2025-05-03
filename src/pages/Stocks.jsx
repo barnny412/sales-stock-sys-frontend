@@ -11,7 +11,7 @@ const Stocks = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
   const [newStockLevel, setNewStockLevel] = useState("");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const fetchStocksData = async () => {
     try {

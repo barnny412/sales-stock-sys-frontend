@@ -12,7 +12,7 @@ const Sales = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false); // Added for delete loading state
   const [error, setError] = useState("");
-  const salesPerPage = 5;
+  const salesPerPage = 10;
   const navigate = useNavigate();
 
   const fetchSalesData = async () => {

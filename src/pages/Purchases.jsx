@@ -11,7 +11,7 @@ const Purchases = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
-  const purchasesPerPage = 5;
+  const purchasesPerPage = 10;
   const navigate = useNavigate();
 
   const fetchPurchasesData = async () => {

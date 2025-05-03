@@ -12,7 +12,7 @@ const Products = () => {
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const productsPerPage = 5;
+  const productsPerPage = 10;
 
   const fetchProductsData = async () => {
     try {
