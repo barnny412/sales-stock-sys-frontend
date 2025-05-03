@@ -1,14 +1,16 @@
+/* Ensure the entire page doesn't allow horizontal overflow */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden; /* Match AddDamage */
 }
 
 /* Container */
 .add-product-container {
-  flex-grow: 1; /* Makes it take up remaining space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -17,6 +19,9 @@ html, body {
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
   min-height: calc(100vh - 60px);
   margin-top: 70px;
+  width: 100%; /* Full width of viewport */
+  max-width: 100%; /* Ensure it doesn't exceed viewport */
+  box-sizing: border-box; /* Match AddDamage */
 }
 
 /* Header */
@@ -24,6 +29,7 @@ h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #00ff7f;
+  font-size: 1.5rem; /* Added base size for scalability */
 }
 
 /* Form */
@@ -39,7 +45,7 @@ h2 {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 15px; /* Increased margin for better spacing */
+  margin-bottom: 10px; /* Match AddDamage spacing */
 }
 
 /* Labels */
@@ -50,52 +56,66 @@ h2 {
   display: block;
 }
 
-/* Input Fields */
+/* General Input Fields */
 .product-name,
-.product-category,
 .product-cost-price,
 .product-selling-price,
 .product-items-per-unit,
 .product-cost-price-per-unit,
-.product-low-stock-alert { /* Added styling for low stock alert */
-  width: calc(100% - 20px);
+.product-low-stock-alert {
+  width: 100%; /* Match AddDamage full width */
   padding: 10px;
-  border: 1px solid #00ff7f;
+  border: 1px solid;
   border-radius: 4px;
   background-color: #333;
   color: white;
-  font-size: 14px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for focus */
+  box-sizing: border-box; /* Match AddDamage */
+  font-size: 14px; /* Match AddDamage */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Match AddDamage */
 }
 
-/* Different Styling for Each Input */
+/* Specific Input Styling */
 .product-name {
-  border-color: #00ff7f;
-}
-
-.product-category {
-  border-color: #007bff;
-  width: 100%;
+  border-color: #00ff7f; /* Match AddDamage select border */
 }
 
 .product-cost-price {
-  border-color: #ffcc00;
+  border-color: #ffcc00; /* Match AddDamage quantity border */
 }
 
 .product-selling-price {
-  border-color: #ff5733;
+  border-color: #ff5733; /* Match AddDamage reason border */
 }
 
 .product-items-per-unit {
-  border-color: #00c4ff; /* Added distinct color for items per unit */
+  border-color: #00c4ff;
 }
 
 .product-cost-price-per-unit {
-  border-color: #ff00ff; /* Added distinct color for cost price per unit */
+  border-color: #ff00ff;
 }
 
 .product-low-stock-alert {
-  border-color: #ff9900; /* Distinct color for low stock alert */
+  border-color: #ff9900;
+}
+
+/* Select Dropdown (Separate Styling) */
+.product-category {
+  width: 100%; /* Match AddDamage */
+  padding: 10px;
+  border: 1px solid #00ff7f; /* Match AddDamage */
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  box-sizing: border-box; /* Match AddDamage */
+  appearance: none; /* Match AddDamage */
+  cursor: pointer;
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300ff7f' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); /* Match AddDamage custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  font-size: 14px; /* Match AddDamage */
 }
 
 /* Focus State for Inputs */
@@ -107,8 +127,8 @@ h2 {
 .product-cost-price-per-unit:focus,
 .product-low-stock-alert:focus {
   outline: none;
-  border-color: #00e67f;
-  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5); /* Added focus glow */
+  border-color: #00e67f; /* Match AddDamage focus */
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5); /* Match AddDamage */
 }
 
 /* Placeholder Color */
@@ -117,14 +137,7 @@ h2 {
 .product-selling-price::placeholder,
 .product-items-per-unit::placeholder,
 .product-low-stock-alert::placeholder {
-  color: #bbb;
-}
-
-/* Select Dropdown */
-.product-category {
-  appearance: none;
-  cursor: pointer;
-  background: #333;
+  color: #bbb; /* Match AddDamage */
 }
 
 /* Submit Button */
@@ -139,12 +152,15 @@ h2 {
   cursor: pointer;
   transition: background 0.3s ease;
   margin-top: 15px;
+  box-sizing: border-box; /* Match AddDamage */
 }
 
+/* Submit Button Hover */
 .submit-btn:hover {
   background: #00e67f;
 }
 
+/* Submit Button Disabled */
 .submit-btn:disabled {
   background: #444;
   cursor: not-allowed;
@@ -152,13 +168,10 @@ h2 {
 
 /* Error Message */
 .error-message {
-  color: #ff3333; /* Brighter red for better visibility */
+  color: red; /* Match AddDamage */
   text-align: center;
   font-weight: bold;
-  margin: 10px 0;
-  padding: 8px;
-  background-color: rgba(255, 51, 51, 0.1);
-  border-radius: 4px;
+  margin-top: 10px; /* Match AddDamage */
 }
 
 /* Success Message */
@@ -166,38 +179,57 @@ h2 {
   color: #00ff7f;
   text-align: center;
   font-weight: bold;
-  margin: 10px 0;
-  padding: 8px;
-  background-color: rgba(0, 255, 127, 0.1);
-  border-radius: 4px;
+  margin-top: 10px; /* Match AddDamage */
 }
 
 /* Responsive Design */
-@media (max-width: 600px) {
+
+/* Tablet Screens (up to 768px) */
+@media (max-width: 768px) {
   .add-product-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 15px; /* Slightly reduced padding for smaller screens */
+    padding: 15px;
   }
-  
+
   .product-name,
+  .product-category,
   .product-cost-price,
   .product-selling-price,
   .product-items-per-unit,
   .product-cost-price-per-unit,
   .product-low-stock-alert {
-    width: calc(98% - 16px); /* Adjusted for smaller screens */
-  }
-
-  .product-category {
-    width: 100%; /* Adjusted for smaller screens */
-  }
-
-  .input-group {
-    margin-bottom: 12px;
+    width: 95%; /* Match AddDamage */
+    margin-top: 10px;
   }
 
   .submit-btn {
-    padding: 8px;
+    width: 100%;
+  }
+}
+
+/* Mobile Screens (up to 480px) */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem; /* Match AddDamage */
+    text-align: center;
+  }
+
+  .add-product-container {
+    padding: 15px;
+  }
+
+  .product-name,
+  .product-category,
+  .product-cost-price,
+  .product-selling-price,
+  .product-items-per-unit,
+  .product-cost-price-per-unit,
+  .product-low-stock-alert {
+    width: 100%; /* Match AddDamage */
+    font-size: 0.9rem; /* Match AddDamage */
+  }
+
+  .submit-btn {
+    font-size: 0.9rem; /* Match AddDamage */
+    padding: 10px; /* Match AddDamage */
   }
 }
