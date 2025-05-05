@@ -18,6 +18,7 @@ const Navbar = () => {
         {!isSmallScreen && (
           <ul className="nav-links">
             <li><Link to="/">Dashboard</Link></li>
+            <li><Link to="/pos">POS</Link></li>
             <li><Link to="/products">Products</Link></li>
             <li><Link to="/sales">Sales</Link></li>
             <li><Link to="/purchases">Purchases</Link></li>
@@ -50,6 +51,7 @@ const Navbar = () => {
             <List>
               {[
                 { text: 'Dashboard', path: '/' },
+                { text: 'POS', path: '/pos' },
                 { text: 'Products', path: '/products' },
                 { text: 'Sales', path: '/sales' },
                 { text: 'Purchases', path: '/purchases' },

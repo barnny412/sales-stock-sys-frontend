@@ -1,0 +1,442 @@
+/* General Layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* POS Container */
+  .pos-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
+    min-height: calc(100vh - 60px);
+    margin-top: 70px;
+    padding-bottom: 60px; /* Add space for the fixed bottom panel */
+  }
+  
+  /* Header Section */
+  .pos-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00ff7f;
+    font-size: 1.5rem;
+  }
+  
+  /* Grid Layout */
+  .pos-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  /* Item Selection (Left Panel) */
+  .item-selection {
+    flex: 2;
+    min-width: 0;
+  }
+  
+  /* Category Dropdown */
+  .category-select {
+    margin-bottom: 20px;
+  }
+  
+  .category-label {
+    color: #bbb;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .category-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #00ff7f;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+  }
+  
+  .category-dropdown:focus {
+    outline: none;
+    border-color: #00e67f;
+    box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+  }
+  
+  /* Item Grid */
+  .item-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .item-card {
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    transition: transform 0.2s, background-color 0.2s;
+    flex: 1 1 calc(25% - 20px);
+    box-sizing: border-box;
+  }
+  
+  .item-card:hover {
+    transform: scale(1.05);
+    background-color: rgba(0, 255, 127, 0.1);
+  }
+  
+  .item-name {
+    margin: 5px 0;
+    font-size: 14px;
+    color: white;
+    display: block;
+  }
+  
+  .item-price {
+    font-weight: bold;
+    color: #00ff7f;
+    display: block;
+  }
+  
+  /* Ticket Panel (Right Panel) */
+  .ticket-panel {
+    flex: 1;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 0;
+  }
+  
+  .ticket-header {
+    margin-bottom: 10px;
+    color: #00ff7f;
+    font-size: 1.25rem;
+  }
+  
+  .ticket-options {
+    margin-bottom: 10px;
+  }
+  
+  .ticket-options label {
+    color: #bbb;
+  }
+  
+  .ticket-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    color: white;
+  }
+  
+  .ticket-item-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .ticket-total {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .remove-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ff3333;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .remove-btn:hover {
+    background-color: #e60000;
+  }
+  
+  /* Bottom Panel */
+  .bottom-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #2a2a2a;
+    border-top: 1px solid #444;
+    z-index: 1000;
+  }
+  
+  .bottom-left {
+    flex: 1;
+    /* Leave empty for future use or add content as needed */
+  }
+  
+  .bottom-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Ticket Actions */
+  .ticket-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .ticket-btn,
+  .charge-btn {
+    padding: 10px 20px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: auto;
+  }
+  
+  .ticket-btn {
+    background-color: #00ff7f;
+    color: #1e1e1e;
+    display: none; /* Hidden by default, shown on mobile */
+  }
+  
+  .ticket-btn:hover {
+    background-color: #00e67f;
+  }
+  
+  .charge-btn {
+    background-color: #ffcc00;
+    color: #1e1e1e;
+  }
+  
+  .charge-btn:hover {
+    background-color: #e6b800;
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #00ff7f;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .modal-header {
+    color: #00ff7f;
+    margin-bottom: 15px;
+  }
+  
+  .modal-body {
+    margin-bottom: 20px;
+  }
+  
+  .no-items-message {
+    color: #bbb;
+    font-weight: bold;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .close-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #00ff7f;
+    color: #1e1e1e;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .close-btn:hover {
+    background-color: #00e67f;
+  }
+  
+  /* Responsive Design */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .pos-container {
+      padding: 15px;
+      padding-bottom: 50px;
+    }
+  
+    .item-grid {
+      gap: 15px;
+    }
+  
+    .item-card {
+      flex: 1 1 calc(33.33% - 15px);
+    }
+  
+    .ticket-panel {
+      margin-top: 15px;
+    }
+  
+    .bottom-panel {
+      padding: 10px 15px;
+    }
+  
+    .charge-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .pos-container {
+      padding: 10px;
+      padding-bottom: 40px;
+    }
+  
+    .pos-title {
+      font-size: 1.2rem;
+    }
+  
+    .pos-grid {
+      flex-direction: column;
+    }
+  
+    .item-selection {
+      flex: 1;
+    }
+  
+    .item-card {
+      flex: 1 1 calc(50% - 15px);
+      padding: 8px;
+    }
+  
+    .item-name {
+      font-size: 12px;
+    }
+  
+    .ticket-panel {
+      display: none; /* Hide ticket panel on mobile */
+    }
+  
+    .bottom-panel {
+      flex-direction: row;
+      padding: 10px;
+    }
+  
+    .bottom-right {
+      margin-top: 0;
+    }
+  
+    .ticket-btn {
+      display: block; /* Show Ticket button on mobile */
+    }
+  
+    .charge-btn {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .pos-container {
+      padding: 10px;
+      padding-bottom: 30px;
+    }
+  
+    .pos-title {
+      font-size: 1rem;
+    }
+  
+    .item-grid {
+      gap: 10px;
+    }
+  
+    .item-card {
+      flex: 1 1 calc(50% - 10px);
+      padding: 6px;
+    }
+  
+    .item-name {
+      font-size: 10px;
+    }
+  
+    .item-price {
+      font-size: 12px;
+    }
+  
+    .bottom-panel {
+      flex-direction: column;
+      padding: 8px;
+    }
+  
+    .bottom-right {
+      margin-top: 10px;
+    }
+  
+    .ticket-btn,
+    .charge-btn {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 14px;
+    }
+  
+    .modal-content {
+      width: 95%;
+      padding: 15px;
+    }
+  
+    .modal-actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .charge-btn,
+    .close-btn {
+      width: 100%;
+      padding: 10px;
+    }
+  }
