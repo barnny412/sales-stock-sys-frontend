@@ -83,40 +83,32 @@ const POS = () => {
         <div className="ticket-panel">
           <h2 className="ticket-header">Ticket</h2>
           <div className="ticket-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={takeout}
-                onChange={(e) => setTakeout(e.target.checked)}
-              />
-              Take out
-            </label>
           </div>
           {ticketItems.map((item, index) => (
             <div key={index} className="ticket-item">
               <span>{item.name} x {item.quantity}</span>
               <div className="ticket-item-actions">
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>K{(item.price * item.quantity).toFixed(2)}</span>
                 <button
                   className="remove-btn"
                   onClick={() => handleRemoveItem(index)}
                 >
-                  Remove
+                  X
                 </button>
               </div>
             </div>
           ))}
           <div className="ticket-total">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>K{subtotal.toFixed(2)}</span>
           </div>
           <div className="ticket-total">
             <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>K{tax.toFixed(2)}</span>
           </div>
           <div className="ticket-total">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>K{total.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -160,7 +152,7 @@ const POS = () => {
                   <div key={index} className="ticket-item">
                     <span>{item.name} x {item.quantity}</span>
                     <div className="ticket-item-actions">
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <span>K{(item.price * item.quantity).toFixed(2)}</span>
                       <button
                         className="remove-btn"
                         onClick={() => handleRemoveItem(index)}
@@ -173,15 +165,15 @@ const POS = () => {
               )}
               <div className="ticket-total">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>K{subtotal.toFixed(2)}</span>
               </div>
               <div className="ticket-total">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>K{tax.toFixed(2)}</span>
               </div>
               <div className="ticket-total">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>K{total.toFixed(2)}</span>
               </div>
             </div>
             <div className="modal-actions">
