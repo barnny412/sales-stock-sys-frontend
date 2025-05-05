@@ -136,14 +136,6 @@ const POS = () => {
             <h3 className="modal-header">Ticket</h3>
             <div className="modal-body">
               <div className="ticket-options">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={takeout}
-                    onChange={(e) => setTakeout(e.target.checked)}
-                  />
-                  Take out
-                </label>
               </div>
               {ticketItems.length === 0 ? (
                 <p className="no-items-message">No items in the ticket.</p>
