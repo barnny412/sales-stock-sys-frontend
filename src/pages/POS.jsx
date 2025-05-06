@@ -6,6 +6,7 @@ const POS = () => {
   const [selectedCategory, setSelectedCategory] = useState('Breakfast');
   const [takeout, setTakeout] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Sample menu items
   const menuItems = {
@@ -30,6 +31,11 @@ const POS = () => {
     ],
   };
 
+  // Filter items based on search query
+  const filteredItems = menuItems[selectedCategory].filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleAddItem = (item) => {
     setTicketItems([...ticketItems, { ...item, quantity: 1 }]);
   };
@@ -51,6 +57,15 @@ const POS = () => {
       <div className="pos-grid">
         {/* Left Panel: Item Selection */}
         <div className="item-selection">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
           <div className="category-select">
             <select
               id="category"
@@ -66,49 +81,51 @@ const POS = () => {
             </select>
           </div>
           <div className="item-grid">
-            {menuItems[selectedCategory].map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={item.id}
                 className="item-card"
                 onClick={() => handleAddItem(item)}
               >
                 <span className="item-name">{item.name}</span>
-                <span className="item-price">${item.price.toFixed(2)}</span>
+                <span className="item-price">K{item.price.toFixed(2)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right Panel: Ticket (Hidden on Mobile) */}
+        {/* Right Panel: Ticket (Fixed) */}
         <div className="ticket-panel">
-          <h2 className="ticket-header">Ticket</h2>
-          <div className="ticket-options">
-          </div>
-          {ticketItems.map((item, index) => (
-            <div key={index} className="ticket-item">
-              <span>{item.name} x {item.quantity}</span>
-              <div className="ticket-item-actions">
-                <span>K{(item.price * item.quantity).toFixed(2)}</span>
-                <button
-                  className="remove-btn"
-                  onClick={() => handleRemoveItem(index)}
-                >
-                  X
-                </button>
+          <div className="ticket-options"></div>
+          <div className="ticket-items-scroll">
+            {ticketItems.map((item, index) => (
+              <div key={index} className="ticket-item">
+                <span>{item.name} x {item.quantity}</span>
+                <div className="ticket-item-actions">
+                  <span>K{(item.price * item.quantity).toFixed(2)}</span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemoveItem(index)}
+                  >
+                    X
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+          <div className="ticket-totals">
+            <div className="ticket-total">
+              <span>Subtotal</span>
+              <span>K{subtotal.toFixed(2)}</span>
             </div>
-          ))}
-          <div className="ticket-total">
-            <span>Subtotal</span>
-            <span>K{subtotal.toFixed(2)}</span>
-          </div>
-          <div className="ticket-total">
-            <span>Tax</span>
-            <span>K{tax.toFixed(2)}</span>
-          </div>
-          <div className="ticket-total">
-            <span>Total</span>
-            <span>K{total.toFixed(2)}</span>
+            <div className="ticket-total">
+              <span>Tax</span>
+              <span>K{tax.toFixed(2)}</span>
+            </div>
+            <div className="ticket-total">
+              <span>Total</span>
+              <span>K{total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -135,8 +152,7 @@ const POS = () => {
           <div className="modal-content">
             <h3 className="modal-header">Ticket</h3>
             <div className="modal-body">
-              <div className="ticket-options">
-              </div>
+              <div className="ticket-options"></div>
               {ticketItems.length === 0 ? (
                 <p className="no-items-message">No items in the ticket.</p>
               ) : (
