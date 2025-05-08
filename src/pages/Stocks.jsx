@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { fetchStocks, setStock } from "../api/productsAPI";
 import "../assets/styles/stocks.css";
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all"); // Default to "all" categories
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
   const [newStockLevel, setNewStockLevel] = useState("");
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(8); // Initial value, will be dynamic
+  const stockInputRef = useRef(null); // Ref for the input field
 
   const fetchStocksData = async () => {
     try {
@@ -29,6 +31,48 @@ const Stocks = () => {
 
   useEffect(() => {
     fetchStocksData();
+  }, []);
+
+  // Calculate itemsPerPage based on screen height
+  useEffect(() => {
+    const calculateItemsPerPage = () => {
+      // Row height based on CSS (.products-table td)
+      const rowHeight = 50; // 24px (content) + 24px (padding) + 2px (border)
+
+      // Fixed heights based on CSS
+      const tableHeaderHeight = 50; // 24px (content) + 24px (padding) + 2px (border)
+      const paginationHeight = 60; // 40px (pagination) + 20px (margin-top)
+      const containerPaddingAndMargin = 110; // 40px (padding) + 70px (margin-top)
+      const navbarHeight = 60; // From min-height: calc(100vh - 60px)
+
+      // Determine top-bar height based on screen width (responsive layout)
+      const isSmallScreen = window.innerWidth <= 768;
+      const topBarHeight = isSmallScreen ? 171 : 66; // 151px + 20px (margin-bottom) vs 46px + 20px
+
+      // Total fixed height
+      const fixedHeight =
+        topBarHeight +
+        tableHeaderHeight +
+        paginationHeight +
+        containerPaddingAndMargin +
+        navbarHeight;
+
+      // Available height for the table body
+      const availableHeight = window.innerHeight - fixedHeight;
+
+      // Calculate maximum number of rows that can fit
+      const maxRows = Math.floor(availableHeight / rowHeight);
+
+      // Ensure at least 1 item per page, with a reasonable minimum and maximum
+      const newItemsPerPage = Math.max(1, Math.min(maxRows, 15)); // Cap at 15 for practicality
+      setItemsPerPage(newItemsPerPage);
+    };
+
+    calculateItemsPerPage();
+    window.addEventListener("resize", calculateItemsPerPage);
+
+    // Cleanup event listener
+    return () => window.removeEventListener("resize", calculateItemsPerPage);
   }, []);
 
   const handleAdjustStockPrompt = (stock) => {
@@ -70,10 +114,28 @@ const Stocks = () => {
     setError("");
   };
 
-  // Filter stocks based on search term
-  const filteredStocks = stocks.filter((stock) =>
-    stock.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Handle Enter key press to update stock
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleAdjustStock();
+    }
+  };
+
+  // Focus and select input when modal opens
+  useEffect(() => {
+    if (showModal && stockInputRef.current) {
+      stockInputRef.current.focus();
+      stockInputRef.current.select(); // Highlights the input content
+    }
+  }, [showModal]);
+
+  // Filter stocks based on search term and selected category
+  const filteredStocks = stocks.filter((stock) => {
+    const matchesSearch = stock.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || stock.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   // Calculate total stock value with type safety
   const totalStockValue = filteredStocks.reduce((total, stock) => {
@@ -87,9 +149,15 @@ const Stocks = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredStocks.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Extract unique categories for the select options
+  const categories = [
+    "all",
+    ...new Set(stocks.map((stock) => stock.category).filter(Boolean)),
+  ];
+
   return (
     <div className="products-container">
-      {/* Search Input & Total Stock Value */}
+      {/* Search Input, Category Select & Total Stock Value */}
       <div className="top-bar">
         <input
           type="text"
@@ -99,6 +167,18 @@ const Stocks = () => {
           className="search-input"
           aria-label="Search stocks"
         />
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="category-select"
+          aria-label="Filter by category"
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category === "all" ? "All Categories" : category}
+            </option>
+          ))}
+        </select>
         <div className="total-stock-value">
           <strong>Total Stock Value:</strong> K {totalStockValue.toFixed(2)}
         </div>
@@ -161,7 +241,7 @@ const Stocks = () => {
             </button>
             <span>Page {currentPage}</span>
             <button
-              onClick={() => setCurrentPage(currentPage + 1)}
+              onClick={() => setCurrentPage(currentPage + 1)} // Fixed typo from onChange to onClick
               disabled={indexOfLastItem >= filteredStocks.length}
               className="pagination-btn"
               aria-label="Next page"
@@ -182,6 +262,9 @@ const Stocks = () => {
               type="number"
               value={newStockLevel}
               onChange={(e) => setNewStockLevel(e.target.value)}
+              onKeyPress={handleKeyPress} // Add Enter key listener
+              ref={stockInputRef} // Attach ref to input
+              autoFocus // Automatically focus on modal open
               className="stock-input"
               min="0"
               placeholder="Enter new stock level"

@@ -75,6 +75,15 @@ html, body {
   white-space: nowrap;
 }
 
+.category-select {
+  padding: 10px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  font-size: 16px;
+}
+
 /* Table Styling */
 .products-table {
   width: 100%;
