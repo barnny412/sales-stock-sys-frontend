@@ -2,10 +2,12 @@
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh; /* Changed from height: 100% to min-height: 100vh */
+  min-height: 100vh; /* Allow body to grow with content */
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto; /* Ensure scrolling works */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  touch-action: auto; /* Ensure touch events are handled correctly */
 }
 
 /* Dashboard Container */
@@ -16,7 +18,10 @@ html, body {
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
   min-height: calc(100vh - 60px); /* Ensure it takes at least viewport height minus navbar */
-  flex: 1; /* Allow the container to grow and shrink within the flex layout */
+  flex: 1; /* Allow container to grow within flex layout */
+  overflow-y: auto; /* Explicitly enable scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+  touch-action: manipulation; /* Allow touch actions but optimize for performance */
 }
 
 /* Dashboard Sections */
@@ -61,6 +66,10 @@ h1, h2, h3 {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
   margin-top: 10px;
+  max-height: 200px; /* Limit height for better mobile scrolling */
+  overflow-y: auto; /* Enable scrolling within the list */
+  -webkit-overflow-scrolling: touch;
+  touch-action: auto;
 }
 
 .low-stock-list li {
@@ -82,6 +91,10 @@ h1, h2, h3 {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
   margin-top: 10px;
+  max-height: 200px; /* Limit height for better mobile scrolling */
+  overflow-y: auto; /* Enable scrolling within the list */
+  -webkit-overflow-scrolling: touch;
+  touch-action: auto;
 }
 
 .top-selling-list li {
