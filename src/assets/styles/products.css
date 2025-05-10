@@ -1,11 +1,14 @@
 /* General Layout */
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
+  min-height: 100vh; /* Changed from height: 100% to allow growth */
   display: flex;
   flex-direction: column;
   font-family: Arial, sans-serif;
+  overflow-y: auto; /* Enable scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  touch-action: auto; /* Ensure touch events work */
 }
 
 /* Products Container */
@@ -19,6 +22,9 @@ html, body {
   box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
   min-height: calc(100vh - 60px);
   margin-top: 70px;
+  overflow-y: auto; /* Enable scrolling within the container */
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation; /* Optimize touch performance */
 }
 
 /* Header Section */

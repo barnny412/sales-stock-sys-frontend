@@ -11,10 +11,11 @@ import Damages from "./pages/Damages";
 import AddSales from "./pages/AddSales";
 import AddPurchase from "./pages/AddPurchase";
 import AddProduct from "./pages/AddProduct";
-import EditProduct from "./pages/EditProduct"; // Import EditProduct Page
+import EditProduct from "./pages/EditProduct";
 import AddExpense from "./pages/AddExpense";
 import AddDamage from "./pages/AddDamage";
 import Settings from "./pages/Settings";
+import POS from "./pages/POS"; // Import the new POS page
 
 // Simple 404 component for undefined routes
 const NotFound = () => (
@@ -40,9 +41,10 @@ function AppRouter() {
         <Route path="/add-sales" element={<AddSales />} />
         <Route path="/add-purchase" element={<AddPurchase />} />
         <Route path="/add-product" element={<AddProduct />} />
-        <Route path="/edit-product/:id" element={<EditProduct />} /> {/* New EditProduct Route */}
+        <Route path="/edit-product/:id" element={<EditProduct />} />
         <Route path="/add-expense" element={<AddExpense />} />
         <Route path="/add-damage" element={<AddDamage />} />
+        <Route path="/pos" element={<POS />} /> {/* Added POS route */}
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}
       </Routes>

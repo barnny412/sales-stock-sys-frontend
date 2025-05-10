@@ -11,7 +11,7 @@ const Purchases = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
-  const purchasesPerPage = 5;
+  const [purchasesPerPage, setPurchasesPerPage] = useState(10); // Initial value, will be dynamic
   const navigate = useNavigate();
 
   const fetchPurchasesData = async () => {
@@ -40,6 +40,48 @@ const Purchases = () => {
   useEffect(() => {
     fetchPurchasesData();
   }, [currentTab]);
+
+  // Calculate purchasesPerPage based on screen height
+  useEffect(() => {
+    const calculatePurchasesPerPage = () => {
+      // Row height based on screen size
+      const rowHeight = window.innerWidth > 768 ? 48 : 37;
+
+      // Fixed heights based on screen size
+      const isSmallScreen = window.innerWidth <= 768;
+      const headerHeight = isSmallScreen ? 115 : 46;
+      const tabsHeight = isSmallScreen ? 105 : 40;
+      const tableHeaderHeight = isSmallScreen ? 37 : 48;
+      const paginationHeight = isSmallScreen ? 52 : 55;
+      const containerPaddingAndMargin = 110; // 40px (padding) + 70px (margin-top)
+      const navbarHeight = 60; // From min-height: calc(100vh - 60px)
+
+      // Total fixed height
+      const fixedHeight =
+        headerHeight +
+        tabsHeight +
+        tableHeaderHeight +
+        paginationHeight +
+        containerPaddingAndMargin +
+        navbarHeight;
+
+      // Available height for the table body
+      const availableHeight = window.innerHeight - fixedHeight;
+
+      // Calculate maximum number of rows that can fit
+      const maxRows = Math.floor(availableHeight / rowHeight);
+
+      // Ensure at least 1 item per page, with a reasonable maximum
+      const newPurchasesPerPage = Math.max(1, Math.min(maxRows, 15));
+      setPurchasesPerPage(newPurchasesPerPage);
+    };
+
+    calculatePurchasesPerPage();
+    window.addEventListener("resize", calculatePurchasesPerPage);
+
+    // Cleanup event listener
+    return () => window.removeEventListener("resize", calculatePurchasesPerPage);
+  }, []);
 
   useEffect(() => {
     // Clear error messages after 5 seconds

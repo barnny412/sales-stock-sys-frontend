@@ -12,7 +12,7 @@ const Products = () => {
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const productsPerPage = 5;
+  const [productsPerPage, setProductsPerPage] = useState(10); // Initial value, will be dynamic
 
   const fetchProductsData = async () => {
     try {
@@ -33,6 +33,47 @@ const Products = () => {
 
   useEffect(() => {
     fetchProductsData();
+  }, []);
+
+  // Calculate productsPerPage based on screen height
+  useEffect(() => {
+    const calculateProductsPerPage = () => {
+      // Row height based on screen size
+      const rowHeight = window.innerWidth > 768 ? 50 : 42;
+
+      // Fixed heights based on screen size
+      const isVerySmallScreen = window.innerWidth <= 480;
+      const isSmallToMediumScreen = window.innerWidth <= 768;
+      const tableHeaderHeight = isSmallToMediumScreen ? 42 : 50;
+      const paginationHeight = isVerySmallScreen ? 85 : 60;
+      const headerHeight = isSmallToMediumScreen ? 129 : 46;
+      const containerPaddingAndMargin = 110; // 40px (padding) + 70px (margin-top)
+      const navbarHeight = 60; // From min-height: calc(100vh - 60px)
+
+      // Total fixed height
+      const fixedHeight =
+        headerHeight +
+        tableHeaderHeight +
+        paginationHeight +
+        containerPaddingAndMargin +
+        navbarHeight;
+
+      // Available height for the table body
+      const availableHeight = window.innerHeight - fixedHeight;
+
+      // Calculate maximum number of rows that can fit
+      const maxRows = Math.floor(availableHeight / rowHeight);
+
+      // Ensure at least 1 item per page, with a reasonable maximum
+      const newProductsPerPage = Math.max(1, Math.min(maxRows, 15));
+      setProductsPerPage(newProductsPerPage);
+    };
+
+    calculateProductsPerPage();
+    window.addEventListener("resize", calculateProductsPerPage);
+
+    // Cleanup event listener
+    return () => window.removeEventListener("resize", calculateProductsPerPage);
   }, []);
 
   const handleDeletePrompt = (product) => {

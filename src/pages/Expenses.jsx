@@ -13,7 +13,7 @@ const Expenses = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingExpense, setEditingExpense] = useState(null);
-  const expensesPerPage = 5;
+  const expensesPerPage = 10;
 
   // Fetch expenses based on category and date range
   const fetchData = async () => {

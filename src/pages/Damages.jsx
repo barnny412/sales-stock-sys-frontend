@@ -7,7 +7,7 @@ const Damages = () => {
   const [damages, setDamages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const getDamages = async () => {
