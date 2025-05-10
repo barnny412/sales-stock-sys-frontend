@@ -26,6 +26,7 @@ const Navbar = () => {
             <li><Link to="/damages">Damages</Link></li>
             <li><Link to="/cashflow">Cashflow</Link></li>
             <li><Link to="/settings">Settings</Link></li>
+            <li><Link to="/pos">POS</Link></li> {/* Added POS link */}
           </ul>
         )}
         {isSmallScreen && (
@@ -58,6 +59,7 @@ const Navbar = () => {
                 { text: 'Damages', path: '/damages' },
                 { text: 'Cashflow', path: '/cashflow' },
                 { text: 'Settings', path: '/settings' },
+                { text: 'POS', path: '/pos' }, // Added POS to the drawer menu
               ].map((item, index) => (
                 <ListItem
                   key={index}

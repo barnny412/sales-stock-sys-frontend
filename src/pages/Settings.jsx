@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import { fetchCashflowOpeningBalances, saveCashflowOpeningBalance, resetDatabase, resetProductsTable, resetCashflowTable } from '../api/cashFlowAPI'; // Updated imports
+import { fetchCashflowOpeningBalances, saveCashflowOpeningBalance, resetDatabase, resetProductsTable, resetCashflowTable } from '../api/cashFlowAPI';
 import '../assets/styles/Settings.css';
 
 const Settings = () => {
-  const [cigarettesBalance, setCigarettesBalance] = useState('');
-  const [breadTomatoBalance, setBreadTomatoBalance] = useState('');
+  const [cigarettesBalance, setCigarettesBalance] = useState(0); // Initialize as number
+  const [breadTomatoBalance, setBreadTomatoBalance] = useState(0); // Initialize as number
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -13,10 +13,14 @@ const Settings = () => {
     const loadBalances = async () => {
       try {
         const balances = await fetchCashflowOpeningBalances();
-        setCigarettesBalance(balances.cigarette || '');
-        setBreadTomatoBalance(balances.bread_tomato || '');
+        if (!balances.success) {
+          setError(balances.error || 'Failed to load opening balances');
+          return;
+        }
+        setCigarettesBalance(balances.data.cigarette || 0); // Set as number
+        setBreadTomatoBalance(balances.data.bread_tomato || 0); // Set as number
       } catch (error) {
-        setError(error.message || 'Failed to load opening balances');
+        setError(error.error || 'Failed to load opening balances');
       }
     };
     loadBalances();
@@ -33,7 +37,7 @@ const Settings = () => {
     ];
 
     for (const { category, value } of balances) {
-      if (value === '' || isNaN(value) || Number(value) < 0) {
+      if (value === '' || isNaN(value) || value < 0) {
         setError(`Please enter a valid non-negative number for ${category === 'cigarette' ? 'Cigarettes' : 'Bread/Tomato'}`);
         return;
       }
@@ -41,11 +45,11 @@ const Settings = () => {
 
     try {
       for (const { category, value } of balances) {
-        await saveCashflowOpeningBalance(category, Number(value));
+        await saveCashflowOpeningBalance(category, value); // Use number directly
       }
       setMessage('Opening balances saved successfully');
     } catch (error) {
-      setError(error.message || 'Failed to save opening balances');
+      setError(error.error || 'Failed to save opening balances');
     }
   };
 
@@ -62,7 +66,7 @@ const Settings = () => {
       await resetDatabase();
       setMessage('Database reset successfully');
     } catch (error) {
-      setError(error.message || 'Failed to reset database');
+      setError(error.error || 'Failed to reset database');
     }
   };
 
@@ -79,7 +83,7 @@ const Settings = () => {
       await resetProductsTable();
       setMessage('Products table reset successfully');
     } catch (error) {
-      setError(error.message || 'Failed to reset products table');
+      setError(error.error || 'Failed to reset products table');
     }
   };
 
@@ -96,7 +100,7 @@ const Settings = () => {
       await resetCashflowTable();
       setMessage('Cashflow table reset successfully');
     } catch (error) {
-      setError(error.message || 'Failed to reset cashflow table');
+      setError(error.error || 'Failed to reset cashflow table');
     }
   };
 
@@ -114,7 +118,7 @@ const Settings = () => {
               type="number"
               id="cigarettesBalance"
               value={cigarettesBalance}
-              onChange={(e) => setCigarettesBalance(e.target.value)}
+              onChange={(e) => setCigarettesBalance(Number(e.target.value) || 0)}
               placeholder="Enter amount"
               className="form-input"
               step="0.01"
@@ -127,7 +131,7 @@ const Settings = () => {
               type="number"
               id="breadTomatoBalance"
               value={breadTomatoBalance}
-              onChange={(e) => setBreadTomatoBalance(e.target.value)}
+              onChange={(e) => setBreadTomatoBalance(Number(e.target.value) || 0)}
               placeholder="Enter amount"
               className="form-input"
               step="0.01"
