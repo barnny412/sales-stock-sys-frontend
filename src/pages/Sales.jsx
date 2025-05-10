@@ -12,7 +12,7 @@ const Sales = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false); // Added for delete loading state
   const [error, setError] = useState("");
-  const salesPerPage = 10;
+  const [salesPerPage, setSalesPerPage] = useState(10); // Initial value, will be dynamic
   const navigate = useNavigate();
 
   const fetchSalesData = async () => {
@@ -56,6 +56,48 @@ const Sales = () => {
   useEffect(() => {
     fetchSalesData();
   }, [currentTab]);
+
+  // Calculate salesPerPage based on screen height
+  useEffect(() => {
+    const calculateSalesPerPage = () => {
+      // Row height based on screen size
+      const rowHeight = window.innerWidth > 600 ? 48 : 37;
+
+      // Fixed heights based on screen size
+      const isSmallScreen = window.innerWidth <= 600;
+      const headerHeight = isSmallScreen ? 120 : 46;
+      const tabsHeight = isSmallScreen ? 118 : 44;
+      const tableHeaderHeight = isSmallScreen ? 37 : 48;
+      const paginationHeight = isSmallScreen ? 57 : 64;
+      const containerPaddingAndMargin = 110; // 40px (padding) + 70px (margin-top)
+      const navbarHeight = 60; // From min-height: calc(100vh - 60px)
+
+      // Total fixed height
+      const fixedHeight =
+        headerHeight +
+        tabsHeight +
+        tableHeaderHeight +
+        paginationHeight +
+        containerPaddingAndMargin +
+        navbarHeight;
+
+      // Available height for the table body
+      const availableHeight = window.innerHeight - fixedHeight;
+
+      // Calculate maximum number of rows that can fit
+      const maxRows = Math.floor(availableHeight / rowHeight);
+
+      // Ensure at least 1 item per page, with a reasonable maximum
+      const newSalesPerPage = Math.max(1, Math.min(maxRows, 15));
+      setSalesPerPage(newSalesPerPage);
+    };
+
+    calculateSalesPerPage();
+    window.addEventListener("resize", calculateSalesPerPage);
+
+    // Cleanup event listener
+    return () => window.removeEventListener("resize", calculateSalesPerPage);
+  }, []);
 
   useEffect(() => {
     // Clear error messages after 5 seconds

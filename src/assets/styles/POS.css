@@ -6,56 +6,56 @@ html, body {
     display: flex;
     flex-direction: column;
     font-family: Arial, sans-serif;
-  }
-  
-  /* POS Container */
-  .pos-container {
+    overflow: hidden; /* Prevent overall scrolling */
+}
+
+/* POS Container */
+.pos-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 20px 5px;
     background-color: #1e1e1e;
     color: white;
     box-shadow: 0 0 10px rgba(0, 255, 127, 0.2);
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - 70px); /* Adjusted to fit viewport minus navbar and bottom panel */
     margin-top: 70px;
-    padding-bottom: 60px; /* Add space for the fixed bottom panel */
-  }
-  
-  /* Header Section */
-  .pos-title {
+    overflow: hidden; /* Prevent container scrolling */
+}
+
+/* Header Section */
+.pos-title {
     text-align: center;
     margin-bottom: 20px;
     color: #00ff7f;
     font-size: 1.5rem;
-  }
-  
-  /* Grid Layout */
-  .pos-grid {
+}
+
+/* Grid Layout */
+.pos-grid {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  
-  /* Item Selection (Left Panel) */
-  .item-selection {
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+    flex-wrap: nowrap; /* Prevent wrapping to ensure side-by-side layout */
+}
+
+/* Item Selection (Left Panel) */
+.item-selection {
     flex: 2;
     min-width: 0;
-  }
-  
-  /* Category Dropdown */
-  .category-select {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Search Input */
+.search-container {
     margin-bottom: 20px;
-  }
-  
-  .category-label {
-    color: #bbb;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .category-dropdown {
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.search-input {
     width: 100%;
     padding: 10px;
     border: 1px solid #00ff7f;
@@ -65,97 +65,147 @@ html, body {
     font-size: 14px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     box-sizing: border-box;
-  }
-  
-  .category-dropdown:focus {
+}
+
+.search-input::placeholder {
+    color: #bbb;
+}
+
+.search-input:focus {
     outline: none;
     border-color: #00e67f;
     box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
-  }
-  
-  /* Item Grid */
-  .item-grid {
+}
+
+/* Category Dropdown */
+.category-select {
+    margin-bottom: 20px;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.category-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #00ff7f;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+
+.category-dropdown:focus {
+    outline: none;
+    border-color: #00e67f;
+    box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+}
+
+/* Item Grid */
+.item-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .item-card {
-    padding: 12px;
+    gap: 10px;
+    flex: 1; /* Take remaining space */
+    overflow-y: auto; /* Enable scrolling for product cards */
+    padding-right: 5px; /* Prevent horizontal scrollbar */
+}
+
+/* Item Card */
+.item-card {
+    padding: 6px; /* Reduced from 10px to reduce height */
     text-align: center;
     cursor: pointer;
-    background-color: #2a2a2a;
-    border: 1px solid #444;
-    border-radius: 4px;
+    background-color: #111;
+    border: 2px solid #00ff7f;
+    border-radius: 5px;
     transition: transform 0.2s, background-color 0.2s;
-    flex: 1 1 calc(25% - 20px);
+    flex: 1 1 calc(25% - 10px);
     box-sizing: border-box;
-  }
-  
-  .item-card:hover {
+    min-width: 120px;
+    max-height: 70px; /* Explicitly set max height to reduce card height */
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+.item-card:hover {
     transform: scale(1.05);
     background-color: rgba(0, 255, 127, 0.1);
-  }
-  
-  .item-name {
-    margin: 5px 0;
-    font-size: 14px;
+}
+
+.item-name {
+    margin: 2px 0; /* Reduced from 5px to reduce vertical spacing */
+    font-size: 12px; /* Reduced from 14px to fit within shorter height */
     color: white;
     display: block;
-  }
-  
-  .item-price {
+    font-weight: bold;
+    line-height: 1.2; /* Reduced line height for tighter text */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis for long text */
+}
+
+.item-price {
     font-weight: bold;
     color: #00ff7f;
     display: block;
-  }
-  
-  /* Ticket Panel (Right Panel) */
-  .ticket-panel {
+    font-size: 14px; /* Reduced from 16px to fit within shorter height */
+    line-height: 1.2; /* Reduced line height for tighter text */
+}
+
+/* Ticket Panel (Right Panel, No Overlay) */
+.ticket-panel {
     flex: 1;
     padding: 20px;
     background-color: #2a2a2a;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     min-width: 0;
-  }
-  
-  .ticket-header {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px; /* Limit width to prevent overlap */
+    height: calc(100vh - 195px); /* Extend to bottom panel (adjust based on navbar/bottom panel height) */
+    overflow: hidden; /* Prevent panel scrolling */
+}
+
+.ticket-options {
     margin-bottom: 10px;
-    color: #00ff7f;
-    font-size: 1.25rem;
-  }
-  
-  .ticket-options {
-    margin-bottom: 10px;
-  }
-  
-  .ticket-options label {
-    color: #bbb;
-  }
-  
-  .ticket-item {
+    flex-shrink: 0;
+}
+
+.ticket-items-scroll {
+    flex: 1;
+    overflow-y: auto; /* Enable scrolling for ticket items */
+    margin-bottom: 20px;
+}
+
+.ticket-item {
     display: flex;
     justify-content: space-between;
     margin: 5px 0;
     color: white;
-  }
-  
-  .ticket-item-actions {
+}
+
+.ticket-item-actions {
     display: flex;
     gap: 10px;
     align-items: center;
-  }
-  
-  .ticket-total {
+}
+
+.ticket-totals {
+    flex-shrink: 0;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+}
+
+.ticket-total {
     display: flex;
     justify-content: space-between;
-    margin: 10px 0;
+    margin: 5px 0;
     font-weight: bold;
     color: white;
-  }
-  
-  .remove-btn {
+}
+
+.remove-btn {
     padding: 4px 8px;
     border: none;
     border-radius: 4px;
@@ -164,14 +214,14 @@ html, body {
     font-weight: bold;
     cursor: pointer;
     transition: background 0.3s ease;
-  }
-  
-  .remove-btn:hover {
+}
+
+.remove-btn:hover {
     background-color: #e60000;
-  }
-  
-  /* Bottom Panel */
-  .bottom-panel {
+}
+
+/* Bottom Panel */
+.bottom-panel {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -182,27 +232,66 @@ html, body {
     background-color: #2a2a2a;
     border-top: 1px solid #444;
     z-index: 1000;
-  }
-  
-  .bottom-left {
+    height: 60px; /* Fixed height for bottom panel */
+}
+
+.bottom-left {
     flex: 1;
-    /* Leave empty for future use or add content as needed */
-  }
-  
-  .bottom-right {
+}
+
+.bottom-right {
     flex: 1;
     display: flex;
     justify-content: flex-end;
-  }
-  
-  /* Ticket Actions */
-  .ticket-actions {
+}
+
+@media (max-width: 768px) {
+    .bottom-panel {
+        flex-direction: row;
+        padding: 10px;
+    }
+
+    .bottom-right {
+        flex: 1;
+        display: flex;
+        justify-content: stretch;
+    }
+
+    .ticket-actions {
+        flex: 1;
+        display: flex;
+        gap: 10px;
+    }
+
+    .ticket-btn,
+    .charge-btn {
+        flex: 1;
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .ticket-panel {
+        display: none; /* Hide on mobile, modal handles ticket */
+    }
+
+    .item-grid {
+        max-height: calc(100vh - 150px); /* Adjust for mobile layout */
+    }
+
+    .item-selection {
+        flex: 1;
+    }
+}
+
+/* Ticket Actions */
+.ticket-actions {
     display: flex;
     gap: 10px;
-  }
-  
-  .ticket-btn,
-  .charge-btn {
+}
+
+.ticket-btn,
+.charge-btn {
     padding: 10px 20px;
     border: none;
     font-size: 16px;
@@ -211,29 +300,29 @@ html, body {
     cursor: pointer;
     transition: background 0.3s ease;
     width: auto;
-  }
-  
-  .ticket-btn {
+}
+
+.ticket-btn {
     background-color: #00ff7f;
     color: #1e1e1e;
-    display: none; /* Hidden by default, shown on mobile */
-  }
-  
-  .ticket-btn:hover {
+    display: none;
+}
+
+.ticket-btn:hover {
     background-color: #00e67f;
-  }
-  
-  .charge-btn {
+}
+
+.charge-btn {
     background-color: #ffcc00;
     color: #1e1e1e;
-  }
-  
-  .charge-btn:hover {
+}
+
+.charge-btn:hover {
     background-color: #e6b800;
-  }
-  
-  /* Modal Styles */
-  .modal-overlay {
+}
+
+/* Modal Styles */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -246,15 +335,15 @@ html, body {
     z-index: 2000;
     opacity: 0;
     animation: fadeIn 0.3s ease forwards;
-  }
-  
-  @keyframes fadeIn {
+}
+
+@keyframes fadeIn {
     to {
-      opacity: 1;
+        opacity: 1;
     }
-  }
-  
-  .modal-content {
+}
+
+.modal-content {
     background-color: #2a2a2a;
     padding: 20px;
     border-radius: 8px;
@@ -263,29 +352,29 @@ html, body {
     width: 90%;
     max-width: 400px;
     text-align: center;
-  }
-  
-  .modal-header {
+}
+
+.modal-header {
     color: #00ff7f;
     margin-bottom: 15px;
-  }
-  
-  .modal-body {
+}
+
+.modal-body {
     margin-bottom: 20px;
-  }
-  
-  .no-items-message {
+}
+
+.no-items-message {
     color: #bbb;
     font-weight: bold;
-  }
-  
-  .modal-actions {
+}
+
+.modal-actions {
     display: flex;
     justify-content: center;
     gap: 10px;
-  }
-  
-  .close-btn {
+}
+
+.close-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
@@ -294,149 +383,171 @@ html, body {
     font-weight: bold;
     cursor: pointer;
     transition: background 0.3s ease;
-  }
-  
-  .close-btn:hover {
+}
+
+.close-btn:hover {
     background-color: #00e67f;
-  }
-  
-  /* Responsive Design */
-  @media (min-width: 768px) and (max-width: 1024px) {
+}
+
+/* Responsive Design */
+@media (min-width: 768px) and (max-width: 1024px) {
     .pos-container {
-      padding: 15px;
-      padding-bottom: 50px;
+        padding: 15px;
+        padding-bottom: 50px;
     }
-  
+
     .item-grid {
-      gap: 15px;
+        gap: 15px;
     }
-  
+
     .item-card {
-      flex: 1 1 calc(33.33% - 15px);
+        flex: 1 1 calc(33.33% - 15px);
+        padding: 6px; /* Match reduced padding */
+        max-height: 60px; /* Slightly smaller height for tablet */
     }
-  
-    .ticket-panel {
-      margin-top: 15px;
-    }
-  
-    .bottom-panel {
-      padding: 10px 15px;
-    }
-  
-    .charge-btn {
-      padding: 8px 16px;
-      font-size: 14px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .pos-container {
-      padding: 10px;
-      padding-bottom: 40px;
-    }
-  
-    .pos-title {
-      font-size: 1.2rem;
-    }
-  
-    .pos-grid {
-      flex-direction: column;
-    }
-  
-    .item-selection {
-      flex: 1;
-    }
-  
-    .item-card {
-      flex: 1 1 calc(50% - 15px);
-      padding: 8px;
-    }
-  
+
     .item-name {
-      font-size: 12px;
+        font-size: 12px;
+        margin: 2px 0;
     }
-  
-    .ticket-panel {
-      display: none; /* Hide ticket panel on mobile */
-    }
-  
-    .bottom-panel {
-      flex-direction: row;
-      padding: 10px;
-    }
-  
-    .bottom-right {
-      margin-top: 0;
-    }
-  
-    .ticket-btn {
-      display: block; /* Show Ticket button on mobile */
-    }
-  
-    .charge-btn {
-      width: auto;
-      padding: 8px 16px;
-      font-size: 14px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .pos-container {
-      padding: 10px;
-      padding-bottom: 30px;
-    }
-  
-    .pos-title {
-      font-size: 1rem;
-    }
-  
-    .item-grid {
-      gap: 10px;
-    }
-  
-    .item-card {
-      flex: 1 1 calc(50% - 10px);
-      padding: 6px;
-    }
-  
-    .item-name {
-      font-size: 10px;
-    }
-  
+
     .item-price {
-      font-size: 12px;
+        font-size: 14px;
     }
-  
+
+    .ticket-panel {
+        max-width: 250px; /* Slightly narrower on tablet */
+        height: calc(100vh - 140px);
+    }
+
     .bottom-panel {
-      flex-direction: column;
-      padding: 8px;
+        padding: 10px 15px;
     }
-  
+
+    .charge-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pos-container {
+        padding: 10px;
+        padding-bottom: 40px;
+    }
+
+    .pos-title {
+        font-size: 1.2rem;
+    }
+
+    .pos-grid {
+        flex-direction: column;
+    }
+
+    .item-selection {
+        flex: 1;
+    }
+
+    .item-card {
+        flex: 1 1 calc(50% - 10px);
+        padding: 6px; /* Match reduced padding */
+        max-height: 80px; /* Slightly smaller height for mobile */
+        min-width: 100px; /* Reduced for mobile */
+    }
+
+    .item-name {
+        font-size: 12px;
+        margin: 2px 0;
+    }
+
+    .item-price {
+        font-size: 14px;
+    }
+
+    .ticket-panel {
+        display: none;
+    }
+
+    .bottom-panel {
+        flex-direction: row;
+        padding: 10px;
+    }
+
     .bottom-right {
-      margin-top: 10px;
+        margin-top: 0;
     }
-  
+
+    .ticket-btn {
+        display: block;
+    }
+
+    .charge-btn {
+        width: auto;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pos-container {
+        padding: 10px;
+        padding-bottom: 30px;
+    }
+
+    .pos-title {
+        font-size: 1rem;
+    }
+
+    .item-grid {
+        gap: 10px;
+    }
+
+    .item-card {
+        flex: 1 1 calc(50% - 10px);
+        padding: 4px; /* Further reduced for smaller screens */
+        max-height: 50px; /* Further reduced height */
+        min-width: 90px; /* Further reduced */
+    }
+
+    .item-name {
+        font-size: 10px; /* Further reduced */
+        margin: 1px 0; /* Further reduced */
+    }
+
+    .item-price {
+        font-size: 12px; /* Further reduced */
+    }
+
+    .bottom-panel {
+        flex-direction: column;
+        padding: 8px;
+    }
+
+    .bottom-right {
+        margin-top: 10px;
+    }
+
     .ticket-btn,
     .charge-btn {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      font-size: 14px;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 14px;
     }
-  
+
     .modal-content {
-      width: 95%;
-      padding: 15px;
+        width: 95%;
+        padding: 15px;
     }
-  
+
     .modal-actions {
-      flex-direction: column;
-      gap: 8px;
+        flex-direction: column;
+        gap: 8px;
     }
-  
+
     .charge-btn,
     .close-btn {
-      width: 100%;
-      padding: 10px;
+        width: 100%;
+        padding: 10px;
     }
-  }
+}

@@ -1,32 +1,67 @@
-import React, { useState, useEffect } from "react";
-import { fetchCashFlow, fetchOpeningBalance } from "../api/cashFlowAPI"; // Updated API functions
-import "../assets/styles/cashFlow.css"; // CSS for styling
+import React, { useState, useEffect, useCallback } from "react";
+import { fetchCashFlow, fetchCashflowOpeningBalances } from "../api/cashFlowAPI";
+import "../assets/styles/cashFlow.css";
 
 const CashFlow = () => {
   const [cashflow, setCashflow] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openingBalance, setOpeningBalance] = useState(0);
+  const [openingBalances, setOpeningBalances] = useState({ cigarette: 0, bread_tomato: 0 }); // Store balances for both categories
+  const [openingBalance, setOpeningBalance] = useState(0); // Current tab's balance
   const [closingBalance, setClosingBalance] = useState(0);
-  const [currentTab, setCurrentTab] = useState("cigarette"); // "cigarette" | "bread_tomato"
+  const [currentTab, setCurrentTab] = useState("cigarette");
+  const [error, setError] = useState(null);
+
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const debouncedSetCurrentTab = useCallback(
+    debounce((tab) => {
+      setCurrentTab(tab);
+    }, 300),
+    []
+  );
 
   useEffect(() => {
     const getCashflow = async () => {
       try {
         setLoading(true);
-        // Fetch cash flow data for the selected category
-        const data = await fetchCashFlow(currentTab);
-        console.log("Cashflow data:", data);
+        setError(null);
+
+        // Fetch opening balances for all categories
+        const openingBalResult = await fetchCashflowOpeningBalances();
+        if (!openingBalResult.success) {
+          setError(openingBalResult.error);
+          setOpeningBalances({ cigarette: 0, bread_tomato: 0 });
+          setOpeningBalance(0);
+          setCashflow([]);
+          setClosingBalance(0);
+          return;
+        }
+        const balances = openingBalResult.data;
+        setOpeningBalances(balances); // Store balances for both categories
+        const openingBal = balances[currentTab] || 0; // Select balance for current tab
+        setOpeningBalance(openingBal);
+
+        // Fetch cash flow data for the current tab
+        const dataResult = await fetchCashFlow(currentTab);
+        if (!dataResult.success) {
+          setError(dataResult.error);
+          setCashflow([]);
+          setClosingBalance(0);
+          return;
+        }
+        const data = dataResult.data;
 
         if (data.length > 0) {
-          // Fetch the opening balance for the earliest date in the data
-          const earliestDate = data[0].date;
-          const openingBal = await fetchOpeningBalance(earliestDate, currentTab);
-          setOpeningBalance(openingBal);
-
           let balance = openingBal;
           const updatedCashflow = data.map((entry) => {
-            const cashIn = Number(entry.cash_in) || 0;
-            const cashOut = Number(entry.cash_out) || 0;
+            const cashIn = parseFloat(entry.cash_in) || 0; // Convert to number
+            const cashOut = parseFloat(entry.cash_out) || 0; // Convert to number
             balance += cashIn - cashOut;
             return { ...entry, cash_in: cashIn, cash_out: cashOut, balance };
           });
@@ -34,45 +69,47 @@ const CashFlow = () => {
           setCashflow(updatedCashflow);
           setClosingBalance(balance);
         } else {
-          // If no data, fetch opening balance for today as a fallback
-          const todayDate = new Date().toISOString().split("T")[0];
-          const openingBal = await fetchOpeningBalance(todayDate, currentTab);
-          setOpeningBalance(openingBal);
           setCashflow([]);
-          setClosingBalance(openingBal); // Closing balance is same as opening if no entries
+          setClosingBalance(openingBal);
         }
       } catch (error) {
-        console.error("Failed to fetch cash flow data:", error);
-        setCashflow([]);
+        console.error("Unexpected error in getCashflow:", error.message);
+        setError("An unexpected error occurred while fetching cash flow data");
+        setOpeningBalances({ cigarette: 0, bread_tomato: 0 });
         setOpeningBalance(0);
+        setCashflow([]);
         setClosingBalance(0);
       } finally {
         setLoading(false);
       }
     };
     getCashflow();
-  }, [currentTab]); // Re-fetch when tab changes
+  }, [currentTab]);
 
-  // Filter cash flow based on selected tab (already handled by API, but keep for safety)
   const filteredCashFlow = cashflow.filter((entry) => entry.category === currentTab);
 
   return (
     <div className="cashflow-container">
-      {/* Tabs */}
       <div className="tabs">
         <button
           className={currentTab === "cigarette" ? "active" : ""}
-          onClick={() => setCurrentTab("cigarette")}
+          onClick={() => debouncedSetCurrentTab("cigarette")}
         >
           Cigarette Cash Flow
         </button>
         <button
           className={currentTab === "bread_tomato" ? "active" : ""}
-          onClick={() => setCurrentTab("bread_tomato")}
+          onClick={() => debouncedSetCurrentTab("bread_tomato")}
         >
           Bread/Tomato Cash Flow
         </button>
       </div>
+
+      {error && (
+        <div className="error-message" style={{ color: "red", margin: "10px 0" }}>
+          {error}
+        </div>
+      )}
 
       <table className="cashflow-table">
         <thead>
@@ -91,7 +128,6 @@ const CashFlow = () => {
             </tr>
           ) : (
             <>
-              {/* Opening Balance */}
               <tr className="opening-balance">
                 <td>-</td>
                 <td><strong>Opening Balance</strong></td>
@@ -99,8 +135,6 @@ const CashFlow = () => {
                 <td>-</td>
                 <td><strong>{openingBalance.toFixed(2)}</strong></td>
               </tr>
-
-              {/* Cash Flow Entries */}
               {filteredCashFlow.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="no-data">No records found</td>
@@ -116,8 +150,6 @@ const CashFlow = () => {
                   </tr>
                 ))
               )}
-
-              {/* Closing Balance */}
               <tr className="closing-balance">
                 <td>-</td>
                 <td><strong>Closing Balance</strong></td>
