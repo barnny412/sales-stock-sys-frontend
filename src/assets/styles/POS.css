@@ -1,13 +1,17 @@
-/* General Layout */
-html, body {
-    height: 100%;
+/* Remove global html, body styles */
+/* html, body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     font-family: Arial, sans-serif;
-    overflow: hidden; /* Prevent overall scrolling */
-}
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: auto;
+} */
+
+/* POS Container */
 
 /* POS Container */
 .pos-container {
