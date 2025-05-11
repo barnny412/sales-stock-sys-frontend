@@ -5,8 +5,8 @@ import "../assets/styles/POS.css";
 const POS = () => {
   const [ticketItems, setTicketItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('cigarette');
-  const [takeout, setTakeout] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChargeModalOpen, setIsChargeModalOpen] = useState(false); // Renamed for clarity
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false); // Added for ticket modal
   const [searchQuery, setSearchQuery] = useState('');
   const [menuItems, setMenuItems] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -83,11 +83,19 @@ const POS = () => {
   ) || [];
 
   const handleChargeClick = () => {
-    setIsModalOpen(true);
+    setIsChargeModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleTicketClick = () => {
+    setIsTicketModalOpen(true);
+  };
+
+  const handleCloseChargeModal = () => {
+    setIsChargeModalOpen(false);
+  };
+
+  const handleCloseTicketModal = () => {
+    setIsTicketModalOpen(false);
   };
 
   return (
@@ -144,16 +152,6 @@ const POS = () => {
 
             {/* Right Panel: Ticket */}
             <div className="ticket-panel">
-              <div className="ticket-options">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={takeout}
-                    onChange={() => setTakeout(!takeout)}
-                  />
-                  Takeout
-                </label>
-              </div>
               <div className="ticket-items-scroll">
                 {ticketItems.length > 0 ? (
                   ticketItems.map((item, index) => (
@@ -165,7 +163,7 @@ const POS = () => {
                           className="remove-btn"
                           onClick={() => handleRemoveItem(index)}
                         >
-                          Remove
+                          X
                         </button>
                       </div>
                     </div>
@@ -200,7 +198,9 @@ const POS = () => {
             </div>
             <div className="bottom-right">
               <div className="ticket-actions">
-                <button className="ticket-btn">Ticket</button>
+                <button className="ticket-btn" onClick={handleTicketClick}>
+                  Ticket ({ticketItems.length})
+                </button>
                 <button className="charge-btn" onClick={handleChargeClick}>
                   Charge ${total.toFixed(2)}
                 </button>
@@ -208,8 +208,50 @@ const POS = () => {
             </div>
           </div>
 
+          {/* Modal for Ticket Confirmation */}
+          {isTicketModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2 className="modal-header">Ticket Details</h2>
+                <div className="modal-body">
+                  {ticketItems.length > 0 ? (
+                    <>
+                      {ticketItems.map((item, index) => (
+                        <div key={index} className="ticket-item">
+                          <span>{item.name} x {item.quantity}</span>
+                          <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div className="ticket-totals">
+                        <div className="ticket-total">
+                          <span>Subtotal:</span>
+                          <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="ticket-total">
+                          <span>Tax:</span>
+                          <span>${tax.toFixed(2)}</span>
+                        </div>
+                        <div className="ticket-total">
+                          <span>Total:</span>
+                          <span>${total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="no-items-message">No items in ticket.</div>
+                  )}
+                </div>
+                <div className="modal-actions">
+                  <button className="close-btn" onClick={handleCloseTicketModal}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Modal for Charge Confirmation */}
-          {isModalOpen && (
+          {isChargeModalOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
                 <h2 className="modal-header">Confirm Charge</h2>
@@ -242,7 +284,7 @@ const POS = () => {
                   )}
                 </div>
                 <div className="modal-actions">
-                  <button className="close-btn" onClick={handleCloseModal}>
+                  <button className="close-btn" onClick={handleCloseChargeModal}>
                     Close
                   </button>
                 </div>
