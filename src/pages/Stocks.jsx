@@ -50,7 +50,7 @@ const Stocks = () => {
       const maxRows = Math.floor(availableHeight / baseRowHeight);
 
       // Adjust itemsPerPage based on common smartphone screen heights
-      let newItemsPerPage = Math.max(4, Math.min(maxRows, 10)); // Min 4, max 10 items
+      let newItemsPerPage = Math.max(6, Math.min(maxRows, 10)); // Min 4, max 10 items
 
       // Fine-tune for specific device ranges (approximate viewport heights)
       if (window.innerHeight <= 812) { // e.g., iPhone X (812px)
