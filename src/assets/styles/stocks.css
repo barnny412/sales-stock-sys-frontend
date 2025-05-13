@@ -63,6 +63,37 @@ html, body {
   box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
 }
 
+/* Category Select Dropdown */
+.category-select {
+  padding: 10px;
+  width: 200px;
+  border: 1px solid #00ff7f;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  appearance: none; /* Remove default dropdown arrow */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%2300ff7f" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* Remove default focus outline and add custom focus styling */
+.category-select:focus {
+  outline: none;
+  border-color: #00e67f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+}
+
+/* Style for options (if supported by browser) */
+.category-select option {
+  background-color: #333;
+  color: white;
+}
+
 /* Total stock value */
 .total-stock-value {
   font-size: 16px;
@@ -302,6 +333,10 @@ html, body {
   .search-input {
     width: 100%;
   }
+
+  .category-select {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -315,6 +350,10 @@ html, body {
   }
 
   .search-input {
+    width: 100%;
+  }
+
+  .category-select {
     width: 100%;
   }
 
@@ -351,6 +390,10 @@ html, body {
   }
 
   .search-input {
+    width: 100%;
+  }
+
+  .category-select {
     width: 100%;
   }
 

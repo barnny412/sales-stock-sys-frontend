@@ -15,6 +15,9 @@ const Stocks = () => {
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const stockInputRef = useRef(null);
 
+  // List of products that should display stock with one decimal place
+  const decimalStockProducts = ["Tomatoe", "Onion", "Potatoes Per Kg"];
+
   const fetchStocksData = async () => {
     try {
       setLoading(true);
@@ -56,14 +59,14 @@ const Stocks = () => {
 
   const handleAdjustStockPrompt = (stock) => {
     setSelectedStock(stock);
-    setNewStockLevel(stock.stock?.toString() || ""); // Handle null stock
+    setNewStockLevel(stock.stock?.toString() || "");
     setShowModal(true);
   };
 
   const handleAdjustStock = async () => {
     if (!selectedStock) return;
 
-    const stockValue = parseFloat(newStockLevel); // Changed from parseInt to parseFloat
+    const stockValue = parseFloat(newStockLevel);
     if (isNaN(stockValue)) {
       setError("Please enter a valid stock level.");
       return;
@@ -107,7 +110,7 @@ const Stocks = () => {
 
   const filteredStocks = stocks.filter((stock) => {
     const matchesSearch = stock.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || stock.category === selectedCategory;
+    const matchesCategory = selectedCategory === "all" || stock.category_name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -123,7 +126,7 @@ const Stocks = () => {
 
   const categories = [
     "all",
-    ...new Set(stocks.map((stock) => stock.category).filter(Boolean)),
+    ...new Set(stocks.map((stock) => stock.category_name).filter(Boolean)),
   ];
 
   return (
@@ -181,7 +184,11 @@ const Stocks = () => {
                 >
                   <td>{indexOfFirstItem + index + 1}</td>
                   <td>{stock.name}</td>
-                  <td>{Number(stock.stock).toFixed(1)}</td> {/* Display with 1 decimal place */}
+                  <td>
+                    {decimalStockProducts.includes(stock.name)
+                      ? Number(stock.stock).toFixed(1)
+                      : Math.floor(Number(stock.stock))}
+                  </td>
                   <td>{stock.low_stock_alert}</td>
                   <td>{Number(stock.selling_price).toFixed(2)}</td>
                   <td>{(Number(stock.stock) * Number(stock.selling_price)).toFixed(2)}</td>
@@ -235,7 +242,7 @@ const Stocks = () => {
               autoFocus
               className="stock-input"
               min="0"
-              step="0.1" // Added to allow decimal inputs (e.g., 0.1 increments)
+              step="0.1"
               placeholder="Enter new stock level"
               aria-label={`New stock level for ${selectedStock?.name}`}
             />

@@ -144,7 +144,7 @@ export const setStock = async (id, stock) => {
     throw new Error("Stock must be a valid non-negative number");
   }
   try {
-    const response = await api.put(`/products/${id}/stock`, { stock: parseInt(stock) });
+    const response = await api.put(`/products/${id}/stock`, { stock: parseFloat(stock) });
     return response.data;
   } catch (error) {
     console.error("Error setting stock:", error.response?.data || error.message);
