@@ -38,7 +38,7 @@ const Stocks = () => {
 
   useEffect(() => {
     const calculateItemsPerPage = () => {
-      const rowHeight = 50;
+      const baseRowHeight = window.innerWidth <= 480 ? 40 : 50; // Adjust row height for smaller screens
       const tableHeaderHeight = 50;
       const paginationHeight = 60;
       const containerPaddingAndMargin = 110;
@@ -47,8 +47,20 @@ const Stocks = () => {
       const topBarHeight = isSmallScreen ? 171 : 66;
       const fixedHeight = topBarHeight + tableHeaderHeight + paginationHeight + containerPaddingAndMargin + navbarHeight;
       const availableHeight = window.innerHeight - fixedHeight;
-      const maxRows = Math.floor(availableHeight / rowHeight);
-      const newItemsPerPage = Math.max(1, Math.min(maxRows, 15));
+      const maxRows = Math.floor(availableHeight / baseRowHeight);
+
+      // Adjust itemsPerPage based on common smartphone screen heights
+      let newItemsPerPage = Math.max(4, Math.min(maxRows, 10)); // Min 4, max 10 items
+
+      // Fine-tune for specific device ranges (approximate viewport heights)
+      if (window.innerHeight <= 812) { // e.g., iPhone X (812px)
+        newItemsPerPage = Math.min(6, newItemsPerPage); // Limit to 6 for smaller screens
+      } else if (window.innerHeight <= 873) { // e.g., Pixel 7 (873px)
+        newItemsPerPage = Math.min(7, newItemsPerPage); // Limit to 7
+      } else if (window.innerHeight <= 1920) { // e.g., Huawei Mate 8 (1920px)
+        newItemsPerPage = Math.min(8, newItemsPerPage); // Limit to 8
+      }
+
       setItemsPerPage(newItemsPerPage);
     };
 
