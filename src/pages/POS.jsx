@@ -264,25 +264,51 @@ const POS = () => {
                 <div className="modal-body">
                   {cartItems.length > 0 ? (
                     <>
-                      {cartItems.map((item, index) => (
-                        <div key={index} className="cart-modal-item">
-                          <span className="cart-modal-item-name">{item.name}</span>
-                          <span className="cart-modal-item-quantity">x {item.quantity}</span>
-                          <span className="cart-modal-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
+                      <div className="cart-items-scroll">
+                        {cartItems.map((item, index) => (
+                          <div key={index} className="cart-item">
+                            <span className="cart-item-name">{item.name}</span>
+                            <span className="cart-item-quantity-label">x</span>
+                            <button
+                              className="cart-item-decrease-btn"
+                              onClick={() => handleQuantityChange(index, -1)}
+                              title="Decrease quantity"
+                            >
+                              −
+                            </button>
+                            <span className="cart-item-quantity">{item.quantity}</span>
+                            <button
+                              className="cart-item-increase-btn"
+                              onClick={() => handleQuantityChange(index, 1)}
+                              title="Increase quantity"
+                            >
+                              +
+                            </button>
+                            <div className="cart-item-actions">
+                              <span className="cart-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
+                              <button
+                                className="cart-item-remove-btn"
+                                onClick={() => handleRemoveItem(index)}
+                                title="Remove item from cart"
+                              >
+                                X
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="cart-totals">
+                        <div className="cart-total cart-subtotal">
+                          <span className="cart-total-label">Subtotal:</span>
+                          <span className="cart-total-value">K{subtotal.toFixed(2)}</span>
                         </div>
-                      ))}
-                      <div className="cart-modal-totals">
-                        <div className="cart-modal-total cart-modal-subtotal">
-                          <span className="cart-modal-total-label">Subtotal:</span>
-                          <span className="cart-modal-total-value">K{subtotal.toFixed(2)}</span>
+                        <div className="cart-total cart-tax">
+                          <span className="cart-total-label">Tax:</span>
+                          <span className="cart-total-value">K{tax.toFixed(2)}</span>
                         </div>
-                        <div className="cart-modal-total cart-modal-tax">
-                          <span className="cart-modal-total-label">Tax:</span>
-                          <span className="cart-modal-total-value">K{tax.toFixed(2)}</span>
-                        </div>
-                        <div className="cart-modal-total cart-modal-total-amount">
-                          <span className="cart-modal-total-label">Total:</span>
-                          <span className="cart-modal-total-value">K{total.toFixed(2)}</span>
+                        <div className="cart-total cart-total-amount">
+                          <span className="cart-total-label">Total:</span>
+                          <span className="cart-total-value">K{total.toFixed(2)}</span>
                         </div>
                       </div>
                     </>

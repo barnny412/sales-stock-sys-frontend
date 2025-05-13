@@ -1,4 +1,4 @@
-/* Updated on Tuesday, May 13, 2025, 03:39 PM CAT */
+/* Updated on Tuesday, May 13, 2025, 07:30 PM CAT */
 
 /* POS Container */
 .pos-container {
@@ -441,6 +441,9 @@
     width: 90%;
     max-width: 400px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh; /* Limit modal height on mobile */
 }
 
 .modal-header {
@@ -449,6 +452,8 @@
 }
 
 .modal-body {
+    flex: 1;
+    overflow-y: auto;
     margin-bottom: 20px;
 }
 
@@ -461,6 +466,7 @@
     display: flex;
     justify-content: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .close-btn {
@@ -637,6 +643,37 @@
         padding: 8px 16px;
         font-size: 14px;
     }
+
+    /* Cart modal adjustments */
+    .cart-item {
+        padding: 8px 0;
+    }
+
+    .cart-item-decrease-btn,
+    .cart-item-increase-btn,
+    .cart-item-remove-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .cart-item-name {
+        font-size: 12px;
+    }
+
+    .cart-item-quantity-label,
+    .cart-item-quantity,
+    .cart-item-price {
+        font-size: 12px;
+    }
+
+    .cart-totals {
+        padding-top: 15px;
+    }
+
+    .cart-total {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -752,6 +789,38 @@
     .charge-btn:hover {
         background-color: #e6b800;
     }
+
+    /* Ensure cart modal items are touch-friendly on mobile */
+    .cart-item {
+        padding: 8px 0; /* Increased padding for touch targets */
+    }
+
+    .cart-item-decrease-btn,
+    .cart-item-increase-btn,
+    .cart-item-remove-btn {
+        padding: 4px 8px; /* Larger touch targets */
+        min-width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .cart-item-name {
+        font-size: 12px;
+    }
+
+    .cart-item-quantity-label,
+    .cart-item-quantity,
+    .cart-item-price {
+        font-size: 12px;
+    }
+
+    .cart-totals {
+        padding-top: 15px;
+    }
+
+    .cart-total {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -808,6 +877,45 @@
     .modal-content {
         width: 95%;
         padding: 15px;
+        max-height: 90vh; /* Slightly more space on smaller screens */
+    }
+
+    .modal-header {
+        font-size: 16px;
+    }
+
+    .modal-body {
+        margin-bottom: 15px;
+    }
+
+    .cart-item {
+        padding: 6px 0;
+    }
+
+    .cart-item-decrease-btn,
+    .cart-item-increase-btn,
+    .cart-item-remove-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .cart-item-name {
+        font-size: 11px;
+    }
+
+    .cart-item-quantity-label,
+    .cart-item-quantity,
+    .cart-item-price {
+        font-size: 11px;
+    }
+
+    .cart-totals {
+        padding-top: 10px;
+    }
+
+    .cart-total {
+        font-size: 12px;
     }
 
     .modal-actions {
@@ -819,5 +927,6 @@
     .close-btn {
         width: 100%;
         padding: 10px;
+        font-size: 14px;
     }
 }
