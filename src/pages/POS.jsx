@@ -44,26 +44,36 @@ const POS = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   const handleAddItem = (item) => {
     const price = Number(item.price) || 0;
     if (isNaN(price)) {
       console.warn(`Invalid price for item ${item.name}: setting price to 0`);
       return;
     }
-    setCartItems([...cartItems, { ...item, price, quantity: 1 }]);
+    const existingItem = cartItems.find((i) => i.id === item.id);
+    if (existingItem) {
+      setCartItems(
+        cartItems.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        )
+      );
+    } else {
+      setCartItems([...cartItems, { ...item, price, quantity: 1 }]);
+    }
   };
 
   const handleRemoveItem = (index) => {
     setCartItems(cartItems.filter((_, i) => i !== index));
+  };
+
+  const handleQuantityChange = (index, delta) => {
+    setCartItems(
+      cartItems
+        .map((item, idx) =>
+          idx === index ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+        )
+        .filter(item => item.quantity > 0)
+    );
   };
 
   const calculateTotal = () => {
@@ -83,7 +93,11 @@ const POS = () => {
   ) || [];
 
   const handleChargeClick = () => {
-    setIsChargeModalOpen(true);
+    if (cartItems.length > 0) {
+      if (window.confirm(`Confirm charge of K${total.toFixed(2)}?`)) {
+        setIsChargeModalOpen(true);
+      }
+    }
   };
 
   const handleCartClick = () => {
@@ -100,10 +114,21 @@ const POS = () => {
 
   return (
     <div className="pos-container">
-      {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
-      {isLoading ? (
-        <div style={{ color: 'white', textAlign: 'center' }}>Loading...</div>
-      ) : (
+      {error && (
+        <div className="error-alert">
+          <span>{error}</span>
+          <button className="error-close-btn" onClick={() => setError('')}>
+            X
+          </button>
+        </div>
+      )}
+      {isLoading && (
+        <div className="loading-container">
+          <div className="spinner" />
+          Loading...
+        </div>
+      )}
+      {!isLoading && (
         <>
           <div className="pos-grid">
             {/* Left Panel: Item Selection */}
@@ -129,6 +154,11 @@ const POS = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                {searchQuery && (
+                  <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
+                    X
+                  </button>
+                )}
               </div>
               <div className="item-grid">
                 {filteredItems.length > 0 ? (
@@ -137,6 +167,7 @@ const POS = () => {
                       key={item.id}
                       className="item-card"
                       onClick={() => handleAddItem(item)}
+                      title="Click to add to cart"
                     >
                       <span className="item-name">{item.name}</span>
                       <span className="item-price">K{item.price.toFixed(2)}</span>
@@ -156,12 +187,29 @@ const POS = () => {
                 {cartItems.length > 0 ? (
                   cartItems.map((item, index) => (
                     <div key={index} className="cart-item">
-                      <span>{item.name} x {item.quantity}</span>
+                      <span className="cart-item-name">{item.name}</span>
+                      <span className="cart-item-quantity-label">x</span>
+                      <button
+                        className="cart-item-decrease-btn"
+                        onClick={() => handleQuantityChange(index, -1)}
+                        title="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="cart-item-quantity">{item.quantity}</span>
+                      <button
+                        className="cart-item-increase-btn"
+                        onClick={() => handleQuantityChange(index, 1)}
+                        title="Increase quantity"
+                      >
+                        +
+                      </button>
                       <div className="cart-item-actions">
-                        <span>K{(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="cart-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
                         <button
-                          className="remove-btn"
+                          className="cart-item-remove-btn"
                           onClick={() => handleRemoveItem(index)}
+                          title="Remove item from cart"
                         >
                           X
                         </button>
@@ -169,23 +217,23 @@ const POS = () => {
                     </div>
                   ))
                 ) : (
-                  <div style={{ color: 'white', textAlign: 'center' }}>
+                  <div className="cart-empty-message" style={{ color: 'white', textAlign: 'center' }}>
                     No items in cart.
                   </div>
                 )}
               </div>
               <div className="cart-totals">
-                <div className="cart-total">
-                  <span>Subtotal:</span>
-                  <span>K{subtotal.toFixed(2)}</span>
+                <div className="cart-total cart-subtotal">
+                  <span className="cart-total-label">Subtotal:</span>
+                  <span className="cart-total-value">K{subtotal.toFixed(2)}</span>
                 </div>
-                <div className="cart-total">
-                  <span>Tax:</span>
-                  <span>K{tax.toFixed(2)}</span>
+                <div className="cart-total cart-tax">
+                  <span className="cart-total-label">Tax:</span>
+                  <span className="cart-total-value">K{tax.toFixed(2)}</span>
                 </div>
-                <div className="cart-total">
-                  <span>Total:</span>
-                  <span>K{total.toFixed(2)}</span>
+                <div className="cart-total cart-total-amount">
+                  <span className="cart-total-label">Total:</span>
+                  <span className="cart-total-value">K{total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -217,23 +265,24 @@ const POS = () => {
                   {cartItems.length > 0 ? (
                     <>
                       {cartItems.map((item, index) => (
-                        <div key={index} className="cart-item">
-                          <span>{item.name} x {item.quantity}</span>
-                          <span>K{(item.price * item.quantity).toFixed(2)}</span>
+                        <div key={index} className="cart-modal-item">
+                          <span className="cart-modal-item-name">{item.name}</span>
+                          <span className="cart-modal-item-quantity">x {item.quantity}</span>
+                          <span className="cart-modal-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
                         </div>
                       ))}
-                      <div className="cart-totals">
-                        <div className="cart-total">
-                          <span>Subtotal:</span>
-                          <span>K{subtotal.toFixed(2)}</span>
+                      <div className="cart-modal-totals">
+                        <div className="cart-modal-total cart-modal-subtotal">
+                          <span className="cart-modal-total-label">Subtotal:</span>
+                          <span className="cart-modal-total-value">K{subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="cart-total">
-                          <span>Tax:</span>
-                          <span>K{tax.toFixed(2)}</span>
+                        <div className="cart-modal-total cart-modal-tax">
+                          <span className="cart-modal-total-label">Tax:</span>
+                          <span className="cart-modal-total-value">K{tax.toFixed(2)}</span>
                         </div>
-                        <div className="cart-total">
-                          <span>Total:</span>
-                          <span>K{total.toFixed(2)}</span>
+                        <div className="cart-modal-total cart-modal-total-amount">
+                          <span className="cart-modal-total-label">Total:</span>
+                          <span className="cart-modal-total-value">K{total.toFixed(2)}</span>
                         </div>
                       </div>
                     </>
@@ -259,23 +308,24 @@ const POS = () => {
                   {cartItems.length > 0 ? (
                     <>
                       {cartItems.map((item, index) => (
-                        <div key={index} className="cart-item">
-                          <span>{item.name} x {item.quantity}</span>
-                          <span>K{(item.price * item.quantity).toFixed(2)}</span>
+                        <div key={index} className="charge-modal-item">
+                          <span className="charge-modal-item-name">{item.name}</span>
+                          <span className="charge-modal-item-quantity">x {item.quantity}</span>
+                          <span className="charge-modal-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
                         </div>
                       ))}
-                      <div className="cart-totals">
-                        <div className="cart-total">
-                          <span>Subtotal:</span>
-                          <span>K{subtotal.toFixed(2)}</span>
+                      <div className="charge-modal-totals">
+                        <div className="charge-modal-total charge-modal-subtotal">
+                          <span className="charge-modal-total-label">Subtotal:</span>
+                          <span className="charge-modal-total-value">K{subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="cart-total">
-                          <span>Tax:</span>
-                          <span>K{tax.toFixed(2)}</span>
+                        <div className="charge-modal-total charge-modal-tax">
+                          <span className="charge-modal-total-label">Tax:</span>
+                          <span className="charge-modal-total-value">K{tax.toFixed(2)}</span>
                         </div>
-                        <div className="cart-total">
-                          <span>Total:</span>
-                          <span>K{total.toFixed(2)}</span>
+                        <div className="charge-modal-total charge-modal-total-amount">
+                          <span className="charge-modal-total-label">Total:</span>
+                          <span className="charge-modal-total-value">K{total.toFixed(2)}</span>
                         </div>
                       </div>
                     </>
