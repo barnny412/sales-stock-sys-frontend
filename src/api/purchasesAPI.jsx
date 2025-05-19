@@ -1,33 +1,75 @@
 import api from "./axiosConfig";
 
+// Helper function to sanitize purchase data
+const sanitizePurchaseData = (data) => {
+  // Handle both single purchase and array of purchases
+  const purchases = Array.isArray(data) ? data : [data];
+  
+  return purchases.map(purchase => {
+    // Convert all numeric fields to proper types
+    const sanitized = {
+      ...purchase,
+      product_id: parseInt(purchase.product_id, 10),
+      supplier_id: purchase.supplier_id ? parseInt(purchase.supplier_id, 10) : null,
+      quantity: parseFloat(purchase.quantity),
+      price: parseFloat(purchase.price),
+      total_cost: parseFloat(purchase.total_cost || purchase.price * purchase.quantity)
+    };
+
+    // Validate the conversions
+    if (isNaN(sanitized.product_id)) {
+      throw new Error(`Invalid product ID: ${purchase.product_id}`);
+    }
+    if (sanitized.supplier_id !== null && isNaN(sanitized.supplier_id)) {
+      throw new Error(`Invalid supplier ID: ${purchase.supplier_id}`);
+    }
+    if (isNaN(sanitized.quantity)) {
+      throw new Error(`Invalid quantity: ${purchase.quantity}`);
+    }
+    if (isNaN(sanitized.price)) {
+      throw new Error(`Invalid price: ${purchase.price}`);
+    }
+
+    return sanitized;
+  });
+};
+
 // Fetch all purchases
 export const fetchPurchases = async (type = null) => {
   try {
     const params = type ? { type } : {};
     const response = await api.get("/purchases", { params });
-    console.log("Full response object:", response);
-    console.log("response.data:", response.data);
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
-    console.error("Error fetching purchases data:", error.response?.data || error.message);
-    return [];
+    console.error("Error fetching purchases:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch purchases");
   }
 };
 
 // Create one or more new purchase records
 export const createPurchase = async (purchaseData) => {
   try {
-    console.log("Sending purchase data to backend:", purchaseData);
-    const response = await api.post("/purchases/", purchaseData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("Create purchase response:", response.data);
+    // Sanitize and validate the input data first
+    const sanitizedData = sanitizePurchaseData(purchaseData);
+    console.log("Sanitized purchase data:", sanitizedData);
+
+    const response = await api.post("/purchases/", 
+      Array.isArray(purchaseData) ? sanitizedData : sanitizedData[0], 
+      {
+        headers: { "Content-Type": "application/json" }
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error("Error creating purchase(s):", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Failed to create purchase(s)");
+    console.error("Error creating purchase:", {
+      error: error.response?.data || error.message,
+      originalData: purchaseData
+    });
+    throw new Error(
+      error.response?.data?.message || 
+      error.message || 
+      "Failed to create purchase(s)"
+    );
   }
 };
 
@@ -35,27 +77,26 @@ export const createPurchase = async (purchaseData) => {
 export const fetchPurchaseById = async (purchaseId) => {
   try {
     const response = await api.get(`/purchases/${purchaseId}`);
-    console.log(`Fetched purchase with ID ${purchaseId}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching purchase with ID ${purchaseId}:`, error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Failed to fetch purchase details");
+    console.error(`Error fetching purchase ${purchaseId}:`, error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch purchase");
   }
 };
 
 // Update a purchase by ID
 export const updatePurchase = async (purchaseId, purchaseData) => {
   try {
-    console.log(`Updating purchase with ID ${purchaseId}:`, purchaseData);
-    const response = await api.put(`/purchases/${purchaseId}`, purchaseData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    // Sanitize and validate the input data
+    const sanitizedData = sanitizePurchaseData(purchaseData)[0];
+    console.log(`Updating purchase ${purchaseId}:`, sanitizedData);
+
+    const response = await api.put(`/purchases/${purchaseId}`, sanitizedData, {
+      headers: { "Content-Type": "application/json" }
     });
-    console.log(`Update purchase response for ID ${purchaseId}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`Error updating purchase with ID ${purchaseId}:`, error.response?.data || error.message);
+    console.error(`Error updating purchase ${purchaseId}:`, error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to update purchase");
   }
 };
@@ -64,10 +105,9 @@ export const updatePurchase = async (purchaseId, purchaseData) => {
 export const deletePurchase = async (purchaseId) => {
   try {
     const response = await api.delete(`/purchases/${purchaseId}`);
-    console.log(`Deleted purchase with ID ${purchaseId}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`Error deleting purchase with ID ${purchaseId}:`, error.response?.data || error.message);
+    console.error(`Error deleting purchase ${purchaseId}:`, error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to delete purchase");
   }
 };

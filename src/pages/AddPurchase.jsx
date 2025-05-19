@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { createPurchase } from "../api/purchasesAPI";
-import { fetchProductsWithCategory } from "../api/productsAPI"; // Updated to use fetchProductsWithCategory
+import { fetchProductsWithCategory } from "../api/productsAPI";
 import { fetchSuppliers } from "../api/suppliersAPI";
 import "../assets/styles/addpurchases.css";
 
-const AddPurchases = () => {
+const AddPurchase = () => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null); // Changed to null initially
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [purchaseList, setPurchaseList] = useState([]);
@@ -23,11 +24,11 @@ const AddPurchases = () => {
       setIsLoading(true);
       setError("");
       const [productsData, suppliersData] = await Promise.all([
-        fetchProductsWithCategory(), // Updated to use fetchProductsWithCategory
+        fetchProductsWithCategory(),
         fetchSuppliers(),
       ]);
-      setProducts(productsData);
-      setSuppliers(suppliersData);
+      setProducts(productsData || []);
+      setSuppliers(suppliersData || []);
     } catch (err) {
       setError(err.message || "Failed to load products or suppliers.");
       console.error("Fetch Data Error:", err);
@@ -41,7 +42,6 @@ const AddPurchases = () => {
   }, []);
 
   useEffect(() => {
-    // Clear success/error messages after 5 seconds
     if (error || successMessage) {
       const timer = setTimeout(() => {
         setError("");
@@ -51,12 +51,25 @@ const AddPurchases = () => {
     }
   }, [error, successMessage]);
 
-  const handleProductChange = (e) => {
-    const productId = e.target.value;
+  const handleProductChange = (selectedOption) => {
+    console.log("Selected Option:", selectedOption); // Debug log
+    const productId = selectedOption ? selectedOption.value : null;
     setSelectedProduct(productId);
 
+    if (!selectedOption) {
+      setPrice(""); // Reset price when cleared
+      console.log("Cleared selection, price reset");
+      return;
+    }
+
     const product = products.find((p) => String(p.id) === String(productId));
-    setPrice(product ? Number(product.cost_price).toFixed(2) : "");
+    console.log("Found Product:", product); // Debug log
+    if (product) {
+      const costPrice = parseFloat(product.cost_price);
+      setPrice(isNaN(costPrice) || costPrice < 0 ? "" : costPrice.toFixed(2));
+    } else {
+      setPrice("");
+    }
   };
 
   const handleAddPurchase = (e) => {
@@ -85,8 +98,8 @@ const AddPurchases = () => {
       return;
     }
 
-    const quantityValue = Number(quantity);
-    const priceValue = Number(price);
+    const quantityValue = parseFloat(quantity);
+    const priceValue = parseFloat(price);
 
     if (isNaN(quantityValue) || quantityValue <= 0) {
       setError("Quantity must be a valid number greater than 0.");
@@ -111,7 +124,7 @@ const AddPurchases = () => {
     };
 
     setPurchaseList([...purchaseList, newPurchase]);
-    setSelectedProduct("");
+    setSelectedProduct(null); // Reset to null after adding
     setSelectedSupplier("");
     setQuantity("");
     setPrice("");
@@ -148,12 +161,11 @@ const AddPurchases = () => {
       await createPurchase(formattedPurchases);
       setSuccessMessage("Purchases recorded successfully!");
       setPurchaseList([]);
-      setSelectedProduct("");
+      setSelectedProduct(null);
       setSelectedSupplier("");
       setQuantity("");
       setPrice("");
-      // Refetch data to ensure consistency
-      await fetchData();
+      await fetchData(); // Refresh data after saving
     } catch (err) {
       setError(err.message || "Failed to save purchases. Please try again.");
       console.error("Save Purchases Error:", err);
@@ -166,15 +178,21 @@ const AddPurchases = () => {
     setPurchaseList(purchaseList.filter((_, i) => i !== index));
   };
 
-  // Filter purchases based on the active tab
   const filteredPurchases = purchaseList.filter(
     (purchase) => purchase.purchase_type === activeTab
   );
 
-  // Filter products based on the active tab (category)
   const filteredProducts = products.filter(
     (product) => product.category_name === activeTab
   );
+
+  const productOptions = filteredProducts.map((p) => ({
+    value: String(p.id), // Ensure value is a string to match selectedProduct
+    label: p.name,
+  }));
+
+  console.log("Product Options:", productOptions); // Debug log
+  console.log("Selected Product:", selectedProduct); // Debug log
 
   const totalPurchaseCost = filteredPurchases
     .reduce((total, purchase) => total + Number(purchase.total_cost), 0)
@@ -184,7 +202,6 @@ const AddPurchases = () => {
     <div className="add-purchases-container">
       <h2>Record Purchases</h2>
 
-      {/* Tabs */}
       <div className="tabs">
         <button
           className={activeTab === "cigarette" ? "active" : ""}
@@ -225,26 +242,19 @@ const AddPurchases = () => {
               ))}
             </select>
 
-            <select
-              value={selectedProduct}
+            <Select
+              value={
+                productOptions.find((option) => String(option.value) === String(selectedProduct)) || null
+              } // Strict type matching
               onChange={handleProductChange}
-              className="product-select"
-              disabled={isSaving}
-              aria-label="Select a product"
-            >
-              <option value="">Select Product</option>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} 
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No products available for this category
-                </option>
-              )}
-            </select>
+              options={productOptions}
+              classNamePrefix="react-select"
+              isClearable={true}
+              isDisabled={isSaving}
+              isLoading={isLoading}
+              placeholder="Search or select product..."
+              aria-label="Search or select a product"
+            />
 
             <input
               type="number"
@@ -252,7 +262,8 @@ const AddPurchases = () => {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               className="quantity-input"
-              min="1"
+              min="0.01"
+              step="0.01"
               disabled={isSaving}
               aria-label="Enter quantity"
             />
@@ -350,4 +361,4 @@ const AddPurchases = () => {
   );
 };
 
-export default AddPurchases;
+export default AddPurchase;

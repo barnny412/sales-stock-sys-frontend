@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createSale, fetchLastClosingStock } from "../api/salesAPI";
-import { fetchProductsWithCategory } from "../api/productsAPI"; // Updated to use fetchProductsWithCategory
+import { fetchProductsWithCategory } from "../api/productsAPI";
 import { fetchCategories } from "../api/categoriesAPI";
 import "../assets/styles/addSales.css";
 
@@ -23,7 +23,7 @@ const AddSales = () => {
       setIsLoading(true);
       setError("");
       const [productsData, categoriesData] = await Promise.all([
-        fetchProductsWithCategory(), // Updated to use fetchProductsWithCategory
+        fetchProductsWithCategory(),
         fetchCategories(),
       ]);
       setProducts(productsData);
@@ -67,7 +67,7 @@ const AddSales = () => {
     setSelectedProduct(productId);
 
     const product = products.find((p) => String(p.id) === String(productId));
-    setPrice(product ? Number(product.selling_price).toFixed(2) : "");
+    setPrice(product ? parseFloat(product.selling_price).toFixed(2) : ""); // Format for display
   };
 
   const handleAddSale = async () => {
@@ -89,8 +89,8 @@ const AddSales = () => {
       return;
     }
 
-    const priceValue = Number(price);
-    const closingStockValue = parseInt(closingStock, 10);
+    const priceValue = parseFloat(price);
+    const closingStockValue = parseFloat(closingStock); // Changed to parseFloat
 
     if (isNaN(priceValue) || priceValue < 0) {
       setError("Price must be a valid non-negative number.");
@@ -105,7 +105,7 @@ const AddSales = () => {
       const lastClosingStock = await fetchLastClosingStock(selectedProduct);
       console.log("Last Closing Stock: ", lastClosingStock);
 
-      const openingStockValue = Number(lastClosingStock?.lastClosingStock) || 0;
+      const openingStockValue = parseFloat(lastClosingStock?.lastClosingStock) || 0.0; // Changed to parseFloat
 
       if (closingStockValue > openingStockValue) {
         setError(`Closing stock (${closingStockValue}) cannot exceed opening stock (${openingStockValue}).`);
@@ -123,7 +123,7 @@ const AddSales = () => {
         opening_stock: openingStockValue,
         closing_stock: closingStockValue,
         price: priceValue,
-        sales_date: new Date().toISOString().split("T")[0], // Use current date
+        sales_date: new Date().toISOString().split("T")[0],
         sale_type: currentTab,
       };
 
@@ -163,7 +163,6 @@ const AddSales = () => {
       setSelectedProduct("");
       setClosingStock("");
       setPrice("");
-      // Refetch data to ensure consistency
       await fetchData();
     } catch (error) {
       setError(error.message || "Error while saving sales. Please try again.");
@@ -183,9 +182,10 @@ const AddSales = () => {
     (sale) => sale.sale_type === currentTab
   );
 
-  const overallTotalSales = filteredSales
-    .reduce((total, sale) => total + (Number(sale.opening_stock) - Number(sale.closing_stock)) * Number(sale.price), 0)
-    .toFixed(2);
+  const overallTotalSales = filteredSales.reduce(
+    (total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.price,
+    0
+  ); // Removed .toFixed(2) for calculation, added below for display
 
   return (
     <div className="add-sales-container">
@@ -228,7 +228,7 @@ const AddSales = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} 
+                    {product.name}
                   </option>
                 ))
               ) : (
@@ -245,6 +245,7 @@ const AddSales = () => {
               onChange={(e) => setClosingStock(e.target.value)}
               className="closing-stock-input"
               min="0"
+              step="0.01" // Allow decimals for FLOAT
               disabled={isSaving}
               aria-label="Enter closing stock"
             />
@@ -276,7 +277,7 @@ const AddSales = () => {
             <div className="top-bar">
               <h3>{currentTab.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())} Sales</h3>
               <div className="overall-total-sales">
-                <strong>Overall Total Sales:</strong> K{overallTotalSales}
+                <strong>Overall Total Sales:</strong> K{overallTotalSales.toFixed(2)} {/* Format for display */}
               </div>
             </div>
             <table className="sales-table">
@@ -296,11 +297,11 @@ const AddSales = () => {
                   filteredSales.map((sale, index) => (
                     <tr key={index}>
                       <td>{products.find((p) => p.id === sale.product_id)?.name || "Unknown"}</td>
-                      <td>{sale.opening_stock}</td>
-                      <td>{sale.closing_stock}</td>
-                      <td>{Number(sale.price).toFixed(2)}</td>
+                      <td>{sale.opening_stock.toFixed(2)}</td> {/* Format for display */}
+                      <td>{sale.closing_stock.toFixed(2)}</td> {/* Format for display */}
+                      <td>{sale.price.toFixed(2)}</td> {/* Format for display */}
                       <td>
-                        {(Number(sale.opening_stock) - Number(sale.closing_stock)) * Number(sale.price).toFixed(2)}
+                        {((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)} {/* Format for display */}
                       </td>
                       <td>{sale.sale_type.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}</td>
                       <td>
