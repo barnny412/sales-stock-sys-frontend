@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { createSale, fetchLastClosingStock } from "../api/salesAPI";
 import { fetchProductsWithCategory } from "../api/productsAPI";
 import { fetchCategories } from "../api/categoriesAPI";
@@ -7,7 +8,7 @@ import "../assets/styles/addSales.css";
 const AddSales = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null); // Changed to null for react-select
   const [closingStock, setClosingStock] = useState("");
   const [price, setPrice] = useState("");
   const [salesList, setSalesList] = useState([]);
@@ -26,8 +27,8 @@ const AddSales = () => {
         fetchProductsWithCategory(),
         fetchCategories(),
       ]);
-      setProducts(productsData);
-      setCategories(categoriesData);
+      setProducts(productsData || []);
+      setCategories(categoriesData || []);
       if (categoriesData.length > 0) {
         setCurrentTab(categoriesData[0].name);
       }
@@ -56,14 +57,14 @@ const AddSales = () => {
 
   // Reset form fields when the current tab changes
   useEffect(() => {
-    setSelectedProduct("");
+    setSelectedProduct(null); // Changed to null for react-select
     setClosingStock("");
     setPrice("");
     setError("");
   }, [currentTab]);
 
-  const handleProductChange = (e) => {
-    const productId = e.target.value;
+  const handleProductChange = (selectedOption) => {
+    const productId = selectedOption ? selectedOption.value : null;
     setSelectedProduct(productId);
 
     const product = products.find((p) => String(p.id) === String(productId));
@@ -90,7 +91,7 @@ const AddSales = () => {
     }
 
     const priceValue = parseFloat(price);
-    const closingStockValue = parseFloat(closingStock); // Changed to parseFloat
+    const closingStockValue = parseFloat(closingStock);
 
     if (isNaN(priceValue) || priceValue < 0) {
       setError("Price must be a valid non-negative number.");
@@ -105,7 +106,7 @@ const AddSales = () => {
       const lastClosingStock = await fetchLastClosingStock(selectedProduct);
       console.log("Last Closing Stock: ", lastClosingStock);
 
-      const openingStockValue = parseFloat(lastClosingStock?.lastClosingStock) || 0.0; // Changed to parseFloat
+      const openingStockValue = parseFloat(lastClosingStock?.lastClosingStock) || 0.0;
 
       if (closingStockValue > openingStockValue) {
         setError(`Closing stock (${closingStockValue}) cannot exceed opening stock (${openingStockValue}).`);
@@ -130,7 +131,7 @@ const AddSales = () => {
       setSalesList([...salesList, saleData]);
       setOpeningStock({ ...openingStock, [selectedProduct]: openingStockValue });
 
-      setSelectedProduct("");
+      setSelectedProduct(null); // Reset to null for react-select
       setClosingStock("");
       setPrice("");
       setError("");
@@ -160,7 +161,7 @@ const AddSales = () => {
       setSuccessMessage("Sales recorded successfully!");
       setSalesList([]);
       setOpeningStock({});
-      setSelectedProduct("");
+      setSelectedProduct(null); // Reset to null for react-select
       setClosingStock("");
       setPrice("");
       await fetchData();
@@ -182,10 +183,17 @@ const AddSales = () => {
     (sale) => sale.sale_type === currentTab
   );
 
+  const productOptions = filteredProducts.map((product) => ({
+    value: String(product.id),
+    label: product.name,
+  }));
+
+  const selectedProductValue = productOptions.find((option) => String(option.value) === String(selectedProduct)) || null;
+
   const overallTotalSales = filteredSales.reduce(
     (total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.price,
     0
-  ); // Removed .toFixed(2) for calculation, added below for display
+  );
 
   return (
     <div className="add-sales-container">
@@ -217,26 +225,27 @@ const AddSales = () => {
           {successMessage && <div className="success-message">{successMessage}</div>}
 
           <div className="add-sales-form">
-            <select
-              value={selectedProduct}
+            <Select
+              value={selectedProductValue}
               onChange={handleProductChange}
-              className="product-select"
-              disabled={isSaving}
-              aria-label="Select a product"
-            >
-              <option value="">Select Product</option>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No products available for this category
-                </option>
-              )}
-            </select>
+              options={productOptions}
+              classNamePrefix="react-select"
+              isClearable={true}
+              isDisabled={isSaving}
+              isLoading={isLoading}
+              placeholder="Search or select product..."
+              aria-label="Search or select a product"
+              styles={{
+                input: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+              }}
+            />
 
             <input
               type="number"
@@ -245,7 +254,7 @@ const AddSales = () => {
               onChange={(e) => setClosingStock(e.target.value)}
               className="closing-stock-input"
               min="0"
-              step="0.01" // Allow decimals for FLOAT
+              step="0.01"
               disabled={isSaving}
               aria-label="Enter closing stock"
             />
@@ -277,7 +286,7 @@ const AddSales = () => {
             <div className="top-bar">
               <h3>{currentTab.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())} Sales</h3>
               <div className="overall-total-sales">
-                <strong>Overall Total Sales:</strong> K{overallTotalSales.toFixed(2)} {/* Format for display */}
+                <strong>Overall Total Sales:</strong> K{overallTotalSales.toFixed(2)}
               </div>
             </div>
             <table className="sales-table">
@@ -297,11 +306,11 @@ const AddSales = () => {
                   filteredSales.map((sale, index) => (
                     <tr key={index}>
                       <td>{products.find((p) => p.id === sale.product_id)?.name || "Unknown"}</td>
-                      <td>{sale.opening_stock.toFixed(2)}</td> {/* Format for display */}
-                      <td>{sale.closing_stock.toFixed(2)}</td> {/* Format for display */}
-                      <td>{sale.price.toFixed(2)}</td> {/* Format for display */}
+                      <td>{sale.opening_stock.toFixed(2)}</td>
+                      <td>{sale.closing_stock.toFixed(2)}</td>
+                      <td>{sale.price.toFixed(2)}</td>
                       <td>
-                        {((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)} {/* Format for display */}
+                        {((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)}
                       </td>
                       <td>{sale.sale_type.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}</td>
                       <td>

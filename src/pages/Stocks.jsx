@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import Select from "react-select";
 import { fetchStocks, setStock } from "../api/productsAPI";
 import "../assets/styles/stocks.css";
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState(null); // Changed to null for react-select
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,7 +24,7 @@ const Stocks = () => {
       setLoading(true);
       setError("");
       const data = await fetchStocks();
-      setStocks(data);
+      setStocks(data || []);
     } catch (error) {
       console.error("Failed to fetch stocks:", error);
       setError("Failed to fetch stocks. Please try again later.");
@@ -50,7 +51,7 @@ const Stocks = () => {
       const maxRows = Math.floor(availableHeight / baseRowHeight);
 
       // Adjust itemsPerPage based on common smartphone screen heights
-      let newItemsPerPage = Math.max(5, Math.min(maxRows, 10)); // Min 4, max 10 items
+      let newItemsPerPage = Math.max(5, Math.min(maxRows, 10)); // Min 5, max 10 items
 
       // Fine-tune for specific device ranges (approximate viewport heights)
       if (window.innerHeight <= 812) { // e.g., iPhone X (812px)
@@ -120,9 +121,23 @@ const Stocks = () => {
     }
   }, [showModal]);
 
+  const categories = [
+    { value: "all", label: "All Categories" },
+    ...[...new Set(stocks.map((stock) => stock.category_name).filter(Boolean))].map((category) => ({
+      value: category,
+      label: category,
+    })),
+  ];
+
+  const selectedCategoryValue = categories.find((option) => option.value === selectedCategory) || null;
+
+  const handleCategoryChange = (selectedOption) => {
+    setSelectedCategory(selectedOption ? selectedOption.value : null);
+  };
+
   const filteredStocks = stocks.filter((stock) => {
     const matchesSearch = stock.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || stock.category_name === selectedCategory;
+    const matchesCategory = !selectedCategory || selectedCategory === "all" || stock.category_name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -136,11 +151,6 @@ const Stocks = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredStocks.slice(indexOfFirstItem, indexOfLastItem);
 
-  const categories = [
-    "all",
-    ...new Set(stocks.map((stock) => stock.category_name).filter(Boolean)),
-  ];
-
   return (
     <div className="products-container">
       <div className="top-bar">
@@ -152,18 +162,25 @@ const Stocks = () => {
           className="search-input"
           aria-label="Search stocks"
         />
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="category-select"
+        <Select
+          value={selectedCategoryValue}
+          onChange={handleCategoryChange}
+          options={categories}
+          classNamePrefix="react-select"
+          isClearable={false} // Categories are required, no clear option
+          placeholder="Filter by category..."
           aria-label="Filter by category"
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category === "all" ? "All Categories" : category}
-            </option>
-          ))}
-        </select>
+          styles={{
+            input: (provided) => ({
+              ...provided,
+              color: '#fff',
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              color: '#fff',
+            }),
+          }}
+        />
         <div className="total-stock-value">
           <strong>Total Stock Value:</strong> K {totalStockValue.toFixed(2)}
         </div>

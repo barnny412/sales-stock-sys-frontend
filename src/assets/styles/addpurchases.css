@@ -89,7 +89,7 @@
   background-color: #333;
   color: #fff;
   font-size: 16px;
-  box-sizing: border-box; /* Ensure padding doesn't affect width */
+  box-sizing: border-box;
 }
 
 .supplier-select {
@@ -110,7 +110,7 @@
   border-radius: 5px;
   background: linear-gradient(135deg, #333, #2a2a2a);
   color: #fff;
-  box-sizing: border-box; /* Ensure padding doesn't affect width */
+  box-sizing: border-box;
 }
 
 .add-purchases-container .react-select__control:hover {
@@ -139,16 +139,16 @@
 }
 
 .add-purchases-container .react-select__input input {
+  color: #fff !important; /* Force white text for typed input */
   background: transparent;
   border: 0;
   padding: 0;
   margin: 0;
   outline: none;
-  color: #fff;
 }
 
 .add-purchases-container .react-select__input input:focus {
-  color: #00ff7f;
+  color: #00ff7f !important; /* Green text when focused */
 }
 
 .add-purchases-container .react-select__placeholder {
@@ -335,19 +335,19 @@
 
   .add-purchases-form {
     flex-direction: column;
-    align-items: stretch; /* Ensure all children stretch to full width */
-    padding: 0; /* Remove any extra padding */
-    margin: 0; /* Remove any extra margin */
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
   }
 
   .add-purchases-container .react-select__control,
   .supplier-select,
   .quantity-input,
   .price-input {
-    width: 100%; /* Ensure all elements take full width */
-    margin: 0; /* Remove any margins */
-    padding: 10px; /* Consistent padding */
-    box-sizing: border-box; /* Include padding and border in width */
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    box-sizing: border-box;
   }
 
   .add-purchase-btn {

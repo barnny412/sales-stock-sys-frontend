@@ -8,8 +8,8 @@ import "../assets/styles/addpurchases.css";
 const AddPurchase = () => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [selectedSupplier, setSelectedSupplier] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState(null); // Changed to null initially
+  const [selectedSupplier, setSelectedSupplier] = useState(null); // Change to null for react-select
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [purchaseList, setPurchaseList] = useState([]);
@@ -51,19 +51,24 @@ const AddPurchase = () => {
     }
   }, [error, successMessage]);
 
+  const handleSupplierChange = (selectedOption) => {
+    const supplierId = selectedOption ? selectedOption.value : null;
+    setSelectedSupplier(supplierId);
+  };
+
   const handleProductChange = (selectedOption) => {
-    console.log("Selected Option:", selectedOption); // Debug log
+    console.log("Selected Option:", selectedOption);
     const productId = selectedOption ? selectedOption.value : null;
     setSelectedProduct(productId);
 
     if (!selectedOption) {
-      setPrice(""); // Reset price when cleared
+      setPrice("");
       console.log("Cleared selection, price reset");
       return;
     }
 
     const product = products.find((p) => String(p.id) === String(productId));
-    console.log("Found Product:", product); // Debug log
+    console.log("Found Product:", product);
     if (product) {
       const costPrice = parseFloat(product.cost_price);
       setPrice(isNaN(costPrice) || costPrice < 0 ? "" : costPrice.toFixed(2));
@@ -113,7 +118,7 @@ const AddPurchase = () => {
     const newPurchase = {
       product_id: product.id,
       product_name: product.name,
-      supplier_id: supplier ? supplier.id : null,
+      supplier_id: selectedSupplier, // Use selectedSupplier directly
       supplier_name: supplier ? supplier.name : null,
       quantity: quantityValue,
       items_per_unit: product.items_per_unit,
@@ -124,8 +129,8 @@ const AddPurchase = () => {
     };
 
     setPurchaseList([...purchaseList, newPurchase]);
-    setSelectedProduct(null); // Reset to null after adding
-    setSelectedSupplier("");
+    setSelectedProduct(null);
+    setSelectedSupplier(null); // Reset to null for react-select
     setQuantity("");
     setPrice("");
     setError("");
@@ -162,10 +167,10 @@ const AddPurchase = () => {
       setSuccessMessage("Purchases recorded successfully!");
       setPurchaseList([]);
       setSelectedProduct(null);
-      setSelectedSupplier("");
+      setSelectedSupplier(null);
       setQuantity("");
       setPrice("");
-      await fetchData(); // Refresh data after saving
+      await fetchData();
     } catch (err) {
       setError(err.message || "Failed to save purchases. Please try again.");
       console.error("Save Purchases Error:", err);
@@ -187,12 +192,26 @@ const AddPurchase = () => {
   );
 
   const productOptions = filteredProducts.map((p) => ({
-    value: String(p.id), // Ensure value is a string to match selectedProduct
+    value: String(p.id),
     label: p.name,
   }));
 
-  console.log("Product Options:", productOptions); // Debug log
-  console.log("Selected Product:", selectedProduct); // Debug log
+  const supplierOptions = [
+    { value: "", label: "No Supplier" },
+    ...suppliers.map((s) => ({
+      value: String(s.id),
+      label: s.name,
+    })),
+  ];
+
+  const selectedSupplierValue = supplierOptions.find((option) => String(option.value) === String(selectedSupplier)) || null;
+
+  const selectedProductValue = productOptions.find((option) => String(option.value) === String(selectedProduct)) || null;
+
+  console.log("Supplier Options:", supplierOptions);
+  console.log("Selected Supplier:", selectedSupplier);
+  console.log("Product Options:", productOptions);
+  console.log("Selected Product:", selectedProduct);
 
   const totalPurchaseCost = filteredPurchases
     .reduce((total, purchase) => total + Number(purchase.total_cost), 0)
@@ -227,25 +246,30 @@ const AddPurchase = () => {
           {successMessage && <div className="success-message">{successMessage}</div>}
 
           <form className="add-purchases-form" onSubmit={handleAddPurchase}>
-            <select
-              value={selectedSupplier}
-              onChange={(e) => setSelectedSupplier(e.target.value)}
-              className="supplier-select"
-              disabled={isSaving}
-              aria-label="Select a supplier"
-            >
-              <option value="">No Supplier</option>
-              {suppliers.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={selectedSupplierValue}
+              onChange={handleSupplierChange}
+              options={supplierOptions}
+              classNamePrefix="react-select"
+              isClearable={true}
+              isDisabled={isSaving}
+              isLoading={isLoading}
+              placeholder="Search or select supplier..."
+              aria-label="Search or select a supplier"
+              styles={{
+                input: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+              }}
+            />
 
             <Select
-              value={
-                productOptions.find((option) => String(option.value) === String(selectedProduct)) || null
-              } // Strict type matching
+              value={selectedProductValue}
               onChange={handleProductChange}
               options={productOptions}
               classNamePrefix="react-select"
@@ -254,6 +278,16 @@ const AddPurchase = () => {
               isLoading={isLoading}
               placeholder="Search or select product..."
               aria-label="Search or select a product"
+              styles={{
+                input: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: '#fff',
+                }),
+              }}
             />
 
             <input

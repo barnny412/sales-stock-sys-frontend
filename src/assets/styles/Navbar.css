@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   background-color: #1e1e1e;
-  padding: 15px 20px;
+  padding: 5px 20px;
   z-index: 1000;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -175,6 +175,11 @@
 
 /* At 768px */
 @media (max-width: 768px) {
+
+  .navbar {
+  padding: 15px 20px;  
+}
+
   .nav-container {
     max-width: 85%;
   }

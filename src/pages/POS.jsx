@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { fetchProductsWithCategory } from "../api/productsAPI";
 import "../assets/styles/POS.css";
 
 const POS = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('cigarette');
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,6 +35,8 @@ const POS = () => {
           return acc;
         }, {});
         setMenuItems(groupedItems);
+        const categories = Object.keys(groupedItems);
+        setSelectedCategory(categories.includes('cigarette') ? 'cigarette' : categories[0] || null);
       } catch (err) {
         setError(err.message || "Failed to load menu items.");
         console.error("Fetch Data Error:", err);
@@ -88,9 +91,22 @@ const POS = () => {
 
   const { subtotal, tax, total } = calculateTotal();
 
-  const filteredItems = menuItems[selectedCategory]?.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const categories = Object.keys(menuItems).map((category) => ({
+    value: category,
+    label: category,
+  }));
+
+  const selectedCategoryValue = categories.find((option) => option.value === selectedCategory) || null;
+
+  const handleCategoryChange = (selectedOption) => {
+    setSelectedCategory(selectedOption ? selectedOption.value : null);
+  };
+
+  const filteredItems = selectedCategory && menuItems[selectedCategory]
+    ? menuItems[selectedCategory].filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   const handleChargeClick = () => {
     if (cartItems.length > 0) {
@@ -133,19 +149,6 @@ const POS = () => {
           <div className="pos-grid">
             {/* Left Panel: Item Selection */}
             <div className="item-selection">
-              <div className="category-select2">
-                <select
-                  className="category-dropdown2"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  {Object.keys(menuItems).map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="search-container">
                 <input
                   type="text"
@@ -160,6 +163,29 @@ const POS = () => {
                   </button>
                 )}
               </div>
+
+              <div className="category-select2">
+                <Select
+                  value={selectedCategoryValue}
+                  onChange={handleCategoryChange}
+                  options={categories}
+                  classNamePrefix="react-select"
+                  isClearable={false}
+                  placeholder="Select category..."
+                  aria-label="Select a category"
+                  styles={{
+                    input: (provided) => ({
+                      ...provided,
+                      color: '#fff',
+                    }),
+                    singleValue: (provided) => ({
+                      ...provided,
+                      color: '#fff',
+                    }),
+                  }}
+                />
+              </div>
+                                              
               <div className="item-grid">
                 {filteredItems.length > 0 ? (
                   filteredItems.map((item) => (
@@ -181,14 +207,14 @@ const POS = () => {
               </div>
             </div>
 
-            {/* Right Panel: Cart */}
-            <div className="cart-panel">
+            {/* Right Panel: Cart (Visible only on Desktop) */}
+            <div className="cart-panel desktop-only">
               <div className="cart-items-scroll">
                 {cartItems.length > 0 ? (
                   cartItems.map((item, index) => (
                     <div key={index} className="cart-item">
                       <span className="cart-item-name">{item.name}</span>
-                      <span className="cart-item-quantity-label">x</span>
+                      <span className="cart-item-quantity-label"></span>
                       <button
                         className="cart-item-decrease-btn"
                         onClick={() => handleQuantityChange(index, -1)}
