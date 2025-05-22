@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   background-color: #1e1e1e;
-  padding: 5px 20px;
+  padding: 10px 20px;
   z-index: 1000;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -151,7 +151,7 @@
 /* At 900px (Mobile Drawer) */
 @media (max-width: 900px) {
   .nav-container {
-    max-width: 90%;
+    max-width: 100%;
   }
 
   .nav-links {
@@ -181,7 +181,8 @@
 }
 
   .nav-container {
-    max-width: 85%;
+    max-width: 100%;
+    padding: 0 0px;
   }
 
   .menu-toggle {
@@ -205,7 +206,7 @@
 /* At 480px */
 @media (max-width: 480px) {
   .nav-container {
-    max-width: 85%;
+    max-width: 100%;
   }
 
   .logo {
