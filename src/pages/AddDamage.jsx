@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { addDamage } from "../api/damagesAPI";
-import { fetchStocks } from "../api/productsAPI"; // Updated to use fetchStocks
+import { fetchStocks } from "../api/productsAPI";
 import "../assets/styles/addDamage.css";
 
 const AddDamage = () => {
@@ -18,7 +19,7 @@ const AddDamage = () => {
     try {
       setIsLoading(true);
       setMessage({ type: "", text: "" });
-      const data = await fetchStocks(); // Updated to use fetchStocks
+      const data = await fetchStocks();
       setProducts(data);
     } catch (error) {
       setMessage({ type: "error", text: error.message || "Failed to fetch products!" });
@@ -33,7 +34,6 @@ const AddDamage = () => {
   }, []);
 
   useEffect(() => {
-    // Clear success/error messages after 5 seconds
     if (message.text) {
       const timer = setTimeout(() => {
         setMessage({ type: "", text: "" });
@@ -44,6 +44,10 @@ const AddDamage = () => {
 
   const handleChange = (e) => {
     setDamageData({ ...damageData, [e.target.name]: e.target.value });
+  };
+
+  const handleProductChange = (selectedOption) => {
+    setDamageData({ ...damageData, product_id: selectedOption ? selectedOption.value : "" });
   };
 
   const handleSubmit = async (e) => {
@@ -80,7 +84,6 @@ const AddDamage = () => {
       await addDamage(formattedData);
       setMessage({ type: "success", text: "Damage recorded successfully!" });
       setDamageData({ product_id: "", quantity_damaged: "", damage_reason: "" });
-      // Refetch products to reflect any stock changes
       await fetchProductsData();
     } catch (error) {
       setMessage({ type: "error", text: error.message || "Failed to record damage!" });
@@ -88,6 +91,22 @@ const AddDamage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const productOptions = products.map((product) => ({
+    value: product.id,
+    label: `${product.name} (Stock: ${product.stock})`,
+  }));
+
+  const customStyles = {
+    input: (provided) => ({
+      ...provided,
+      color: "#fff",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#fff",
+    }),
   };
 
   return (
@@ -105,35 +124,26 @@ const AddDamage = () => {
           )}
 
           <form className="add-damage-form" onSubmit={handleSubmit}>
-            {/* Product Name (Dropdown) */}
-            <div className="input-group">
-              <label htmlFor="product_id">Product Name</label>
-              <select
+            <label>
+              Product Name:
+              <Select
                 id="product_id"
                 name="product_id"
-                className="damage-product-name"
-                value={damageData.product_id}
-                onChange={handleChange}
-                disabled={isSubmitting}
+                className="product-select" // Updated className for consistency
+                classNamePrefix="react-select"
+                value={productOptions.find((option) => option.value === parseInt(damageData.product_id))}
+                onChange={handleProductChange}
+                options={productOptions}
+                isDisabled={isSubmitting}
+                placeholder="Select product..."
+                isClearable={false}
+                required
+                styles={customStyles}
                 aria-label="Select a product"
                 aria-required="true"
-              >
-                <option value="">Select product</option>
-                {products.length > 0 ? (
-                  products.map((product) => (
-                    <option key={product.id} value={product.id}>
-                      {product.name} (Stock: {product.stock})
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No products available
-                  </option>
-                )}
-              </select>
-            </div>
+              />
+            </label>
 
-            {/* Damage Quantity */}
             <div className="input-group">
               <label htmlFor="quantity_damaged">Quantity Damaged</label>
               <input
@@ -151,7 +161,6 @@ const AddDamage = () => {
               />
             </div>
 
-            {/* Damage Reason */}
             <div className="input-group">
               <label htmlFor="damage_reason">Reason for Damage</label>
               <textarea
@@ -168,7 +177,6 @@ const AddDamage = () => {
               ></textarea>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="submit-btn"

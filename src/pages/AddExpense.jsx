@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select"; // Import react-select
 import { addExpense } from "../api/expensesAPI";
 import "../assets/styles/expenses.css";
 
@@ -12,18 +13,29 @@ const AddExpense = () => {
     category: "cigarette", // Default category
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Options for react-select
+  const categoryOptions = [
+    { value: "cigarette", label: "Cigarette" },
+    { value: "bread_tomato", label: "Bread/Tomato" },
+  ];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleCategoryChange = (selectedOption) => {
+    setFormData({ ...formData, category: selectedOption ? selectedOption.value : "" });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
-    // Validate form fields
     if (!formData.description || !formData.amount || !formData.expense_date || !formData.category) {
       setError("All fields are required.");
       setLoading(false);
@@ -50,7 +62,10 @@ const AddExpense = () => {
 
     try {
       await addExpense(formData);
-      navigate("/expenses"); // Redirect to expenses page after adding
+      setSuccess("Expense added successfully!");
+      setFormData({ description: "", amount: "", expense_date: "", category: "cigarette" }); // Reset form
+      setTimeout(() => setSuccess(""), 5000); // Clear success message after 5 seconds
+      navigate("/expenses");
     } catch (err) {
       setError(err.message || "Failed to add expense. Please try again.");
     } finally {
@@ -62,6 +77,7 @@ const AddExpense = () => {
     <div className="expenses-container">
       <h2>Add Expense</h2>
       {error && <p className="error-message">{error}</p>}
+      {success && <p className="success-message">{success}</p>}
 
       <form onSubmit={handleSubmit} className="expense-form">
         <label>
@@ -104,16 +120,28 @@ const AddExpense = () => {
 
         <label>
           Category:
-          <select
+          <Select
             name="category"
-            value={formData.category}
-            onChange={handleChange}
+            value={categoryOptions.find((option) => option.value === formData.category)}
+            onChange={handleCategoryChange}
+            options={categoryOptions}
+            isDisabled={loading}
+            className="category-select"
+            classNamePrefix="react-select"
+            placeholder="Select category..."
+            isClearable={false}
             required
-            disabled={loading}
-          >
-            <option value="cigarette">Cigarette</option>
-            <option value="bread_tomato">Bread/Tomato</option>
-          </select>
+            styles={{
+              input: (provided) => ({
+                ...provided,
+                color: '#fff',
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: '#fff',
+              }),
+            }}
+          />
         </label>
 
         <button type="submit" className="add-expense-btn" disabled={loading}>
