@@ -606,24 +606,38 @@
 
   .pos-grid {
     flex-direction: column;
+    overflow-y: auto; /* Allow scrolling in the pos-grid */
+    height: calc(100vh - 130px); /* Adjust height to account for header and bottom panel */
   }
+
+  /* Ensure item-selection grows to fill available space */
+  .item-selection {
+    flex: 1;
+    overflow-y: auto;
+    height: calc(100vh - 130px); /* Match pos-grid height */
+  }
+
+  /* Ensure item-grid scrolls */
+  .item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    overflow-y: auto;
+    flex: 1;
+    height: 100%; /* Take full height of parent */
+    -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
+  }
+
+  .item-grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
 
   /* Hide cart panel on mobile */
   .desktop-only {
     display: none;
   }
 
-  .item-selection {
-    flex: none;
-  }
-
   .category-select2 .react-select__control {
     width: 100%;
     max-width: none;
-  }
-
-  .item-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 
   .cart-item-name {
@@ -747,6 +761,8 @@
 @media (max-width: 480px) {
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
   }
 
   .item-name {
