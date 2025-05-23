@@ -228,7 +228,6 @@
   overflow-y: auto;
   flex: 1;
   padding-right: 5px;
-  margin-bottom: 50px;
 }
 
 .item-grid::-webkit-scrollbar {
@@ -618,16 +617,17 @@
     min-height: 0; /* Fix flexbox overflow issue on older devices */
   }
 
-  /* Ensure item-grid scrolls */
+  /* Ensure item-grid scrolls and doesn't overlap with bottom panel */
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     overflow-y: auto;
     flex: 1;
     min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 280px); /* Adjusted to account for all UI elements */
+    max-height: calc(100vh - 370px); /* Adjusted to account for bottom panel */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
+    padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
   }
 
   .item-grid::-webkit-scrollbar {
@@ -767,10 +767,11 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
     min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 280px); /* Consistent with 768px query */
+    max-height: calc(100vh - 370px); /* Consistent with 768px query, adjusted for bottom panel */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
+    padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
   }
 
   .item-grid::-webkit-scrollbar {
