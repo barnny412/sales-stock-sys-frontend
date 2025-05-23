@@ -228,6 +228,7 @@
   overflow-y: auto;
   flex: 1;
   padding-right: 5px;
+  margin-bottom: 50px;
 }
 
 .item-grid::-webkit-scrollbar {
@@ -617,7 +618,7 @@
     min-height: 0; /* Fix flexbox overflow issue on older devices */
   }
 
-  /* Ensure item-grid scrolls with visible scrollbar */
+  /* Ensure item-grid scrolls */
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     overflow-y: auto;
@@ -625,21 +626,12 @@
     min-height: 400px; /* Force minimum height to ensure scrolling */
     max-height: calc(100vh - 280px); /* Adjusted to account for all UI elements */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in Edge */
   }
 
-  /* Remove scrollbar hiding for mobile and tablet */
-  /* Keep the base scrollbar styles */
   .item-grid::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .item-grid::-webkit-scrollbar-track {
-    background: #2a2a2a;
-  }
-
-  .item-grid::-webkit-scrollbar-thumb {
-    background: #00ff7f;
-    border-radius: 3px;
+    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
   }
 
   /* Hide cart panel on mobile */
@@ -777,21 +769,12 @@
     min-height: 400px; /* Force minimum height to ensure scrolling */
     max-height: calc(100vh - 280px); /* Consistent with 768px query */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in Edge */
   }
 
-  /* Remove scrollbar hiding for mobile */
-  /* Keep the base scrollbar styles */
   .item-grid::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .item-grid::-webkit-scrollbar-track {
-    background: #2a2a2a;
-  }
-
-  .item-grid::-webkit-scrollbar-thumb {
-    background: #00ff7f;
-    border-radius: 3px;
+    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
   }
 
   .item-name {
