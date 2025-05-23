@@ -606,15 +606,15 @@
 
   .pos-grid {
     flex-direction: column;
-    overflow-y: auto; /* Allow scrolling in the pos-grid */
-    height: calc(100vh - 130px); /* Adjust height to account for header and bottom panel */
+    flex: 1;
   }
 
   /* Ensure item-selection grows to fill available space */
   .item-selection {
     flex: 1;
-    overflow-y: auto;
-    height: calc(100vh - 130px); /* Match pos-grid height */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Fix flexbox overflow issue on older devices */
   }
 
   /* Ensure item-grid scrolls */
@@ -622,13 +622,16 @@
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     overflow-y: auto;
     flex: 1;
-    height: 100%; /* Take full height of parent */
+    min-height: 400px; /* Force minimum height to ensure scrolling */
+    max-height: calc(100vh - 280px); /* Adjusted to account for all UI elements */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in Edge */
   }
 
   .item-grid::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
+    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
+  }
 
   /* Hide cart panel on mobile */
   .desktop-only {
@@ -762,7 +765,15 @@
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
+    min-height: 400px; /* Force minimum height to ensure scrolling */
+    max-height: calc(100vh - 280px); /* Consistent with 768px query */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in Edge */
+  }
+
+  .item-grid::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
   }
 
   .item-name {
