@@ -230,7 +230,6 @@
   padding-right: 5px;
   max-height: calc(100vh - 273px); /* Adjusted to account for bottom panel, header, and other UI elements */
   padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
-  margin-bottom: 60px;
 }
 
 .item-grid::-webkit-scrollbar {
@@ -630,7 +629,7 @@
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
-    padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
+    padding-bottom: 60px; /* Add padding to prevent last item from being too close to bottom */
   }
 
   .item-grid::-webkit-scrollbar {
@@ -774,7 +773,7 @@
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
-    padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
+    padding-bottom: 60px; /* Add padding to prevent last item from being too close to bottom */
   }
 
   .item-grid::-webkit-scrollbar {
