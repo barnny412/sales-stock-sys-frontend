@@ -629,7 +629,7 @@
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
-    padding-bottom: 60px; /* Add padding to prevent last item from being too close to bottom */
+    padding-bottom: 70px; /* Add padding to prevent last item from being too close to bottom */
   }
 
   .item-grid::-webkit-scrollbar {
@@ -790,7 +790,7 @@
 
   .bottom-panel {
     flex-direction: column;
-    padding: 8px;
+    padding: 0px 8px;
   }
 
   .bottom-right {
@@ -801,7 +801,7 @@
   .charge-btn {
     width: 100%;
     margin-bottom: 10px;
-    padding: 12px;
+    padding: 18px;
     font-size: 14px;
   }
 }
