@@ -228,7 +228,8 @@
   overflow-y: auto;
   flex: 1;
   padding-right: 5px;
-  max-height: calc(100vh - 300px); /* Adjusted to account for bottom panel, header, and other UI elements */
+  height: calc(100vh - 300px);
+  max-height: calc(100vh - 273px); /* Adjusted to account for bottom panel, header, and other UI elements */
   padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
 }
 
