@@ -769,7 +769,7 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
     min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 400px); /* Consistent with 768px query, adjusted for bottom panel */
+    height: calc(100vh - 400px); /* Consistent with 768px query, adjusted for bottom panel */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
