@@ -228,7 +228,6 @@
   overflow-y: auto;
   flex: 1;
   padding-right: 5px;
-  height: calc(100vh - 300px);
   max-height: calc(100vh - 273px); /* Adjusted to account for bottom panel, header, and other UI elements */
   padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
 }
@@ -770,7 +769,7 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
     min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 370px); /* Consistent with 768px query, adjusted for bottom panel */
+    max-height: calc(100vh - 400px); /* Consistent with 768px query, adjusted for bottom panel */
     -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
     -ms-overflow-style: none; /* Hide scrollbar in Edge */
