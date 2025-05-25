@@ -69,7 +69,7 @@ export const addProduct = async (productData) => {
       category_id: parseInt(productData.category_id),
       cost_price: parseFloat(productData.cost_price),
       selling_price: parseFloat(productData.selling_price),
-      stock: parseInt(productData.stock || 0),
+      stock: parseFloat(productData.stock || 0.0), // Changed to parseFloat for consistency
       items_per_unit: productData.items_per_unit ? parseInt(productData.items_per_unit) : undefined,
       cost_price_per_unit: productData.cost_price_per_unit
         ? parseFloat(productData.cost_price_per_unit)
@@ -102,18 +102,18 @@ export const updateProduct = async (id, updatedData) => {
     throw new Error("Invalid product data");
   }
   try {
-    // Ensure proper type conversions
+    // Ensure proper type conversions, exclude stock
     const formattedData = {
       ...updatedData,
       category_id: parseInt(updatedData.category_id),
       cost_price: parseFloat(updatedData.cost_price),
       selling_price: parseFloat(updatedData.selling_price),
-      stock: parseInt(updatedData.stock),
       items_per_unit: updatedData.items_per_unit ? parseInt(updatedData.items_per_unit) : undefined,
       cost_price_per_unit: updatedData.cost_price_per_unit
         ? parseFloat(updatedData.cost_price_per_unit)
         : undefined,
       low_stock_alert: updatedData.low_stock_alert ? parseInt(updatedData.low_stock_alert) : undefined,
+      requires_manual_quantity: updatedData.requires_manual_quantity, // Keep as-is (Boolean)
     };
     const response = await api.put(`/products/${id}`, formattedData);
     return response.data;

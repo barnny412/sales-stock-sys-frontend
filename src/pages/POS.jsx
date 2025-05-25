@@ -8,6 +8,10 @@ const POS = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false); // New state for quantity modal
+  const [selectedItem, setSelectedItem] = useState(null); // Track the item being added
+  const [manualQuantity, setManualQuantity] = useState(''); // Track the input quantity
+  const [quantityError, setQuantityError] = useState(''); // Error message for quantity input
   const [searchQuery, setSearchQuery] = useState('');
   const [menuItems, setMenuItems] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +34,8 @@ const POS = () => {
           acc[category].push({
             id: product.id,
             name: product.name,
-            price: price
+            price: price,
+            requires_manual_quantity: product.requires_manual_quantity || false,
           });
           return acc;
         }, {});
@@ -51,8 +56,20 @@ const POS = () => {
     const price = Number(item.price) || 0;
     if (isNaN(price)) {
       console.warn(`Invalid price for item ${item.name}: setting price to 0`);
+      setError(`Invalid price for item ${item.name}.`);
       return;
     }
+
+    if (item.requires_manual_quantity) {
+      // Open the custom modal instead of window.prompt
+      setSelectedItem(item);
+      setManualQuantity('1'); // Default value for the input
+      setQuantityError(''); // Reset any previous error
+      setIsQuantityModalOpen(true);
+      return;
+    }
+
+    // Default behavior for items without requires_manual_quantity
     const existingItem = cartItems.find((i) => i.id === item.id);
     if (existingItem) {
       setCartItems(
@@ -63,6 +80,40 @@ const POS = () => {
     } else {
       setCartItems([...cartItems, { ...item, price, quantity: 1 }]);
     }
+  };
+
+  const handleConfirmQuantity = () => {
+    const parsedQuantity = parseFloat(manualQuantity);
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      setQuantityError("Please enter a valid positive quantity.");
+      return;
+    }
+
+    // Add the item to the cart with the entered quantity
+    const existingItem = cartItems.find((i) => i.id === selectedItem.id);
+    if (existingItem) {
+      setCartItems(
+        cartItems.map((i) =>
+          i.id === selectedItem.id ? { ...i, quantity: i.quantity + parsedQuantity } : i
+        )
+      );
+    } else {
+      setCartItems([...cartItems, { ...selectedItem, price: selectedItem.price, quantity: parsedQuantity }]);
+    }
+
+    // Close the modal and reset states
+    setIsQuantityModalOpen(false);
+    setSelectedItem(null);
+    setManualQuantity('');
+    setQuantityError('');
+  };
+
+  const handleCloseQuantityModal = () => {
+    // Close the modal without adding the item
+    setIsQuantityModalOpen(false);
+    setSelectedItem(null);
+    setManualQuantity('');
+    setQuantityError('');
   };
 
   const handleRemoveItem = (index) => {
@@ -282,6 +333,42 @@ const POS = () => {
             </div>
           </div>
 
+          {/* Modal for Quantity Entry */}
+          {isQuantityModalOpen && selectedItem && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2 className="modal-header">Enter Quantity</h2>
+                <div className="modal-body">
+                  <p>Enter the quantity for <strong>{selectedItem.name}</strong>:</p>
+                  <input
+                    type="number"
+                    className="quantity-input"
+                    value={manualQuantity}
+                    onChange={(e) => {
+                      setManualQuantity(e.target.value);
+                      setQuantityError(''); // Clear error on input change
+                    }}
+                    min="1"
+                    step="0.01"
+                    placeholder="Enter quantity"
+                    autoFocus
+                  />
+                  {quantityError && (
+                    <div className="error-message">{quantityError}</div>
+                  )}
+                </div>
+                <div className="modal-actions">
+                  <button className="confirm-btn" onClick={handleConfirmQuantity}>
+                    Confirm
+                  </button>
+                  <button className="close-btn" onClick={handleCloseQuantityModal}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Modal for Cart Confirmation */}
           {isCartModalOpen && (
             <div className="modal-overlay">
@@ -330,7 +417,7 @@ const POS = () => {
                         </div>
                         <div className="cart-total cart-tax">
                           <span className="cart-total-label">Tax:</span>
-                          <span className="cart-total-value">K{tax.toFixed(2)}</span>
+                          <span class="cart-total-value">K{tax.toFixed(2)}</span>
                         </div>
                         <div className="cart-total cart-total-amount">
                           <span className="cart-total-label">Total:</span>

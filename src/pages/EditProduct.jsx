@@ -15,7 +15,7 @@ const EditProduct = () => {
   const [itemsPerUnit, setItemsPerUnit] = useState("");
   const [costPricePerUnit, setCostPricePerUnit] = useState("");
   const [lowStockAlert, setLowStockAlert] = useState("");
-  const [requiresManualQuantity, setRequiresManualQuantity] = useState(false); // New state
+  const [requiresManualQuantity, setRequiresManualQuantity] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -42,7 +42,7 @@ const EditProduct = () => {
         setItemsPerUnit(product.items_per_unit);
         setCostPricePerUnit(product.cost_price_per_unit);
         setLowStockAlert(product.low_stock_alert);
-        setRequiresManualQuantity(product.requires_manual_quantity || false); // Fetch the value
+        setRequiresManualQuantity(product.requires_manual_quantity || false);
       } catch (error) {
         setError("Failed to fetch product details.");
         console.error("Fetch Product Error:", error);
@@ -98,7 +98,7 @@ const EditProduct = () => {
       items_per_unit: parseInt(itemsPerUnit),
       cost_price_per_unit: parseFloat(costPricePerUnit),
       low_stock_alert: parseInt(lowStockAlert),
-      requires_manual_quantity: requiresManualQuantity, // Include in submission
+      requires_manual_quantity: requiresManualQuantity,
     };
 
     try {
