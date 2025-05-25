@@ -15,6 +15,7 @@ const EditProduct = () => {
   const [itemsPerUnit, setItemsPerUnit] = useState("");
   const [costPricePerUnit, setCostPricePerUnit] = useState("");
   const [lowStockAlert, setLowStockAlert] = useState("");
+  const [requiresManualQuantity, setRequiresManualQuantity] = useState(false); // New state
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -41,6 +42,7 @@ const EditProduct = () => {
         setItemsPerUnit(product.items_per_unit);
         setCostPricePerUnit(product.cost_price_per_unit);
         setLowStockAlert(product.low_stock_alert);
+        setRequiresManualQuantity(product.requires_manual_quantity || false); // Fetch the value
       } catch (error) {
         setError("Failed to fetch product details.");
         console.error("Fetch Product Error:", error);
@@ -96,6 +98,7 @@ const EditProduct = () => {
       items_per_unit: parseInt(itemsPerUnit),
       cost_price_per_unit: parseFloat(costPricePerUnit),
       low_stock_alert: parseInt(lowStockAlert),
+      requires_manual_quantity: requiresManualQuantity, // Include in submission
     };
 
     try {
@@ -211,6 +214,19 @@ const EditProduct = () => {
             className="product-low-stock-alert"
             min="1"
           />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="requiresManualQuantity">
+            <input
+              type="checkbox"
+              id="requiresManualQuantity"
+              checked={requiresManualQuantity}
+              onChange={(e) => setRequiresManualQuantity(e.target.checked)}
+              className="product-requires-manual-quantity"
+            />
+            Requires Manual Quantity Entry
+          </label>
         </div>
 
         <button type="submit" className="submit-btn" disabled={isSaving}>

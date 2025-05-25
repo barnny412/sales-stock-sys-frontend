@@ -56,6 +56,21 @@ h2 {
   display: block;
 }
 
+/* Add to addProduct.css */
+.input-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #fff;
+}
+
+.product-requires-manual-quantity {
+  width: 18px;
+  height: 18px;
+  accent-color: #00ff7f; /* Matches theme color */
+}
+
 /* General Input Fields */
 .product-name,
 .product-cost-price,
