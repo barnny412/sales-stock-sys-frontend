@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchSales, deleteSale } from "../api/salesAPI";
-import { fetchStocks } from "../api/productsAPI"; // Updated to use fetchStocks
 import "../assets/styles/sales.css";
 
 const Sales = () => {
@@ -21,32 +20,31 @@ const Sales = () => {
       setError("");
       const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
       console.log("Fetching sales with type:", type);
-      const [salesData, products] = await Promise.all([
-        fetchSales(type),
-        fetchStocks(), // Updated to use fetchStocks
-      ]);
-
-      const productMap = {};
-      products.forEach((product) => {
-        productMap[product.id] = product.name;
-      });
+      const [salesData] = await Promise.all([fetchSales(type)]); // Removed fetchStocks for now, adjust if needed
 
       const enhancedSales = salesData.map((sale) => {
-        const sellingPrice = Number(sale.price) || 0; // Ensure price is a number
-        const quantitySold = Number(sale.quantity_sold) || Number(sale.opening_stock) - Number(sale.closing_stock) || 0; // Ensure quantity is a number
+        const unitPrice =
+          Number(sale.unit_price) ||
+          Number(sale.price) ||
+          Number(sale.saleProduct?.selling_price) || // Use saleProduct.selling_price as fallback
+          0; // Default to 0 if no price is available
+        const quantitySold =
+          Number(sale.quantity_sold) ||
+          (Number(sale.opening_stock) - Number(sale.closing_stock)) ||
+          0; // Handle both Sale and SaleDetails
         return {
           ...sale,
-          product_name: productMap[sale.product_id] || "Unknown",
+          product_name: sale.product_name || sale.saleProduct?.name || "Unknown", // Use saleProduct alias
           quantity_sold: quantitySold,
-          price: sellingPrice,
+          unit_price: unitPrice,
         };
       });
 
       console.log("Enhanced sales:", enhancedSales);
       setSales(enhancedSales);
     } catch (error) {
-      console.error("Failed to fetch sales or products:", error);
-      setError(error.message || "Failed to fetch sales or products. Please try again.");
+      console.error("Failed to fetch sales:", error);
+      setError(error.response?.data?.message || error.message || "Failed to fetch sales. Please try again.");
       setSales([]);
     } finally {
       setLoading(false);
@@ -84,27 +82,29 @@ const Sales = () => {
       setError("");
     } catch (error) {
       console.error("Failed to delete sale:", error);
-      setError(error.message || "Failed to delete sale. Please try again.");
+      setError(error.response?.data?.message || error.message || "Failed to delete sale. Please try again.");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  // Filter sales based on search term and tab selection
-  const filteredSales = sales.filter((sale) => {
-    const productName = sale.product_name?.toLowerCase() || "";
-    const matchesSearch = productName.includes(searchTerm.toLowerCase());
+  // Memoize filteredSales to prevent unnecessary recomputation
+  const filteredSales = useMemo(() => {
+    return sales.filter((sale) => {
+      const productName = sale.product_name?.toLowerCase() || "";
+      const matchesSearch = productName.includes(searchTerm.toLowerCase());
 
-    if (currentTab === "cigarette" || currentTab === "bread_tomato") {
-      return matchesSearch && sale.sale_type === currentTab;
-    }
+      if (currentTab === "cigarette" || currentTab === "bread_tomato") {
+        return matchesSearch && sale.sale_type === currentTab;
+      }
 
-    const saleDate = new Date(sale.sales_date).toDateString();
-    const todayDate = new Date().toDateString();
-    const isToday = saleDate === todayDate;
+      const saleDate = new Date(sale.sales_date).toDateString();
+      const todayDate = new Date().toDateString();
+      const isToday = saleDate === todayDate;
 
-    return matchesSearch && (currentTab === "all" || isToday);
-  });
+      return matchesSearch && (currentTab === "all" || isToday);
+    });
+  }, [sales, searchTerm, currentTab]);
 
   // Pagination Logic
   const indexOfLastSale = currentPage * salesPerPage;
@@ -200,9 +200,9 @@ const Sales = () => {
                 <tr key={sale.id}>
                   <td>{indexOfFirstSale + index + 1}</td>
                   <td>{sale.product_name}</td>
-                  <td>{sale.quantity_sold}</td>
-                  <td>{Number(sale.price).toFixed(2)}</td>
-                  <td>{(Number(sale.quantity_sold) * Number(sale.price)).toFixed(2)}</td>
+                  <td>{sale.quantity_sold.toFixed(2)}</td>
+                  <td>{sale.unit_price.toFixed(2)}</td>
+                  <td>{(sale.quantity_sold * sale.unit_price).toFixed(2)}</td>
                   <td>{new Date(sale.sales_date).toLocaleDateString()}</td>
                   <td>{sale.sale_type || "N/A"}</td>
                   <td>

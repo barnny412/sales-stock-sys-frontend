@@ -5,8 +5,8 @@ import "../assets/styles/cashFlow.css";
 const CashFlow = () => {
   const [cashflow, setCashflow] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openingBalances, setOpeningBalances] = useState({ cigarette: 0, bread_tomato: 0 }); // Store balances for both categories
-  const [openingBalance, setOpeningBalance] = useState(0); // Current tab's balance
+  const [openingBalances, setOpeningBalances] = useState({ cigarette: 0, bread_tomato: 0 });
+  const [openingBalance, setOpeningBalance] = useState(0);
   const [closingBalance, setClosingBalance] = useState(0);
   const [currentTab, setCurrentTab] = useState("cigarette");
   const [error, setError] = useState(null);
@@ -43,8 +43,8 @@ const CashFlow = () => {
           return;
         }
         const balances = openingBalResult.data;
-        setOpeningBalances(balances); // Store balances for both categories
-        const openingBal = balances[currentTab] || 0; // Select balance for current tab
+        setOpeningBalances(balances);
+        const openingBal = balances[currentTab] || 0;
         setOpeningBalance(openingBal);
 
         // Fetch cash flow data for the current tab
@@ -60,8 +60,8 @@ const CashFlow = () => {
         if (data.length > 0) {
           let balance = openingBal;
           const updatedCashflow = data.map((entry) => {
-            const cashIn = parseFloat(entry.cash_in) || 0; // Convert to number
-            const cashOut = parseFloat(entry.cash_out) || 0; // Convert to number
+            const cashIn = parseFloat(entry.cash_in) || 0;
+            const cashOut = parseFloat(entry.cash_out) || 0;
             balance += cashIn - cashOut;
             return { ...entry, cash_in: cashIn, cash_out: cashOut, balance };
           });
@@ -94,50 +94,60 @@ const CashFlow = () => {
         <button
           className={currentTab === "cigarette" ? "active" : ""}
           onClick={() => debouncedSetCurrentTab("cigarette")}
+          aria-label="View Cigarette Cash Flow"
+          aria-pressed={currentTab === "cigarette"}
         >
           Cigarette Cash Flow
         </button>
         <button
           className={currentTab === "bread_tomato" ? "active" : ""}
           onClick={() => debouncedSetCurrentTab("bread_tomato")}
+          aria-label="View Bread/Tomato Cash Flow"
+          aria-pressed={currentTab === "bread_tomato"}
         >
           Bread/Tomato Cash Flow
         </button>
       </div>
 
       {error && (
-        <div className="error-message" style={{ color: "red", margin: "10px 0" }}>
+        <div className="error-message" style={{ color: "red", margin: "10px 0" }} role="alert">
           {error}
         </div>
       )}
 
-      <table className="cashflow-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Cash In</th>
-            <th>Cash Out</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="5" className="loading">Loading...</td>
-            </tr>
-          ) : (
-            <>
+      {loading ? (
+        <div className="loading" role="status">
+          Loading...
+        </div>
+      ) : (
+        <div className="table-container">
+          <table className="cashflow-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Cash In</th>
+                <th>Cash Out</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
               <tr className="opening-balance">
                 <td>-</td>
-                <td><strong>Opening Balance</strong></td>
+                <td>
+                  <strong>Opening Balance</strong>
+                </td>
                 <td>-</td>
                 <td>-</td>
-                <td><strong>{openingBalance.toFixed(2)}</strong></td>
+                <td>
+                  <strong>{openingBalance.toFixed(2)}</strong>
+                </td>
               </tr>
               {filteredCashFlow.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="no-data">No records found</td>
+                  <td colSpan="5" className="no-data">
+                    No records found
+                  </td>
                 </tr>
               ) : (
                 filteredCashFlow.map((entry, index) => (
@@ -152,15 +162,19 @@ const CashFlow = () => {
               )}
               <tr className="closing-balance">
                 <td>-</td>
-                <td><strong>Closing Balance</strong></td>
+                <td>
+                  <strong>Closing Balance</strong>
+                </td>
                 <td>-</td>
                 <td>-</td>
-                <td><strong>{closingBalance.toFixed(2)}</strong></td>
+                <td>
+                  <strong>{closingBalance.toFixed(2)}</strong>
+                </td>
               </tr>
-            </>
-          )}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { fetchProductsWithCategory } from "../api/productsAPI";
+import { createSale, fetchLastClosingStock } from "../api/salesAPI";
 import "../assets/styles/POS.css";
 
 const POS = () => {
@@ -8,51 +9,90 @@ const POS = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-  const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false); // New state for quantity modal
-  const [selectedItem, setSelectedItem] = useState(null); // Track the item being added
-  const [manualQuantity, setManualQuantity] = useState(''); // Track the input quantity
-  const [quantityError, setQuantityError] = useState(''); // Error message for quantity input
+  const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [manualQuantity, setManualQuantity] = useState('');
+  const [quantityError, setQuantityError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [menuItems, setMenuItems] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [productStock, setProductStock] = useState({});
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const products = await fetchProductsWithCategory();
+      const groupedItems = products.reduce((acc, product) => {
+        const category = product.category_name || 'Uncategorized';
+        if (!acc[category]) acc[category] = [];
+        const price = Number(product.selling_price) || Number(product.cost_price) || 0;
+        if (isNaN(price)) {
+          console.warn(`Invalid price for product ${product.name}: setting price to 0`);
+          return acc;
+        }
+        acc[category].push({
+          id: product.id,
+          name: product.name,
+          price: price,
+          requires_manual_quantity: product.requires_manual_quantity || false,
+        });
+        return acc;
+      }, {});
+      setMenuItems(groupedItems);
+
+      const stockPromises = products.map(async (product) => {
+        const stockData = await fetchLastClosingStock(product.id);
+        return { id: product.id, stock: Number(stockData?.lastClosingStock) || 0 };
+      });
+      const stockResults = await Promise.all(stockPromises);
+      const stockMap = stockResults.reduce((acc, { id, stock }) => {
+        acc[id] = stock;
+        return acc;
+      }, {});
+      setProductStock(stockMap);
+
+      const categories = Object.keys(groupedItems);
+      setSelectedCategory(categories.includes('cigarette') ? 'cigarette' : categories[0] || null);
+    } catch (err) {
+      setError(err.message || "Failed to load menu items or stock.");
+      console.error("Fetch Data Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        setError('');
-        const products = await fetchProductsWithCategory();
-        const groupedItems = products.reduce((acc, product) => {
-          const category = product.category_name || 'Uncategorized';
-          if (!acc[category]) acc[category] = [];
-          const price = Number(product.selling_price) || Number(product.cost_price) || 0;
-          if (isNaN(price)) {
-            console.warn(`Invalid price for product ${product.name}: setting price to 0`);
-            return acc;
-          }
-          acc[category].push({
-            id: product.id,
-            name: product.name,
-            price: price,
-            requires_manual_quantity: product.requires_manual_quantity || false,
-          });
-          return acc;
-        }, {});
-        setMenuItems(groupedItems);
-        const categories = Object.keys(groupedItems);
-        setSelectedCategory(categories.includes('cigarette') ? 'cigarette' : categories[0] || null);
-      } catch (err) {
-        setError(err.message || "Failed to load menu items.");
-        console.error("Fetch Data Error:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
-  const handleAddItem = (item) => {
+  useEffect(() => {
+    if (error || successMessage) {
+      const timer = setTimeout(() => {
+        setError('');
+        setSuccessMessage('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, successMessage]);
+
+  const checkStockAvailability = (item, requestedQuantity) => {
+    const availableStock = productStock[item.id] || 0;
+    const cartQuantity = cartItems.find((i) => i.id === item.id)?.quantity || 0;
+    const totalRequested = cartQuantity + requestedQuantity;
+    if (totalRequested > availableStock) {
+      return {
+        isAvailable: false,
+        message: `Insufficient stock for ${item.name}. Available: ${availableStock}, Requested: ${totalRequested}.`,
+      };
+    }
+    return { isAvailable: true };
+  };
+
+  const handleAddItem = async (item) => {
     const price = Number(item.price) || 0;
     if (isNaN(price)) {
       console.warn(`Invalid price for item ${item.name}: setting price to 0`);
@@ -60,16 +100,21 @@ const POS = () => {
       return;
     }
 
+    const defaultQuantity = 1;
+    const stockCheck = checkStockAvailability(item, defaultQuantity);
+    if (!stockCheck.isAvailable) {
+      setError(stockCheck.message);
+      return;
+    }
+
     if (item.requires_manual_quantity) {
-      // Open the custom modal instead of window.prompt
       setSelectedItem(item);
-      setManualQuantity('1'); // Default value for the input
-      setQuantityError(''); // Reset any previous error
+      setManualQuantity('1');
+      setQuantityError('');
       setIsQuantityModalOpen(true);
       return;
     }
 
-    // Default behavior for items without requires_manual_quantity
     const existingItem = cartItems.find((i) => i.id === item.id);
     if (existingItem) {
       setCartItems(
@@ -89,7 +134,12 @@ const POS = () => {
       return;
     }
 
-    // Add the item to the cart with the entered quantity
+    const stockCheck = checkStockAvailability(selectedItem, parsedQuantity);
+    if (!stockCheck.isAvailable) {
+      setQuantityError(stockCheck.message);
+      return;
+    }
+
     const existingItem = cartItems.find((i) => i.id === selectedItem.id);
     if (existingItem) {
       setCartItems(
@@ -101,7 +151,6 @@ const POS = () => {
       setCartItems([...cartItems, { ...selectedItem, price: selectedItem.price, quantity: parsedQuantity }]);
     }
 
-    // Close the modal and reset states
     setIsQuantityModalOpen(false);
     setSelectedItem(null);
     setManualQuantity('');
@@ -109,7 +158,6 @@ const POS = () => {
   };
 
   const handleCloseQuantityModal = () => {
-    // Close the modal without adding the item
     setIsQuantityModalOpen(false);
     setSelectedItem(null);
     setManualQuantity('');
@@ -121,10 +169,19 @@ const POS = () => {
   };
 
   const handleQuantityChange = (index, delta) => {
+    const newQuantity = Math.max(1, cartItems[index].quantity + delta);
+    const item = cartItems[index];
+
+    const stockCheck = checkStockAvailability(item, newQuantity - item.quantity);
+    if (!stockCheck.isAvailable) {
+      setError(stockCheck.message);
+      return;
+    }
+
     setCartItems(
       cartItems
         .map((item, idx) =>
-          idx === index ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+          idx === index ? { ...item, quantity: newQuantity } : item
         )
         .filter(item => item.quantity > 0)
     );
@@ -161,11 +218,49 @@ const POS = () => {
 
   const handleChargeClick = () => {
     if (cartItems.length > 0) {
-      if (window.confirm(`Confirm charge of K${total.toFixed(2)}?`)) {
-        setIsChargeModalOpen(true);
-      }
+      setIsChargeModalOpen(true);
+    } else {
+      setError("Cart is empty. Add items before charging.");
     }
   };
+
+const handleConfirmCharge = async () => {
+  if (cartItems.length === 0) {
+    setError("Cart is empty. Add items before confirming the sale.");
+    return;
+  }
+
+  setIsSaving(true);
+  setError('');
+  setSuccessMessage('');
+
+  try {
+    const salesData = {
+      sales_date: new Date().toISOString().split("T")[0],
+      sale_type: (selectedCategory || 'Uncategorized').toLowerCase().includes("cigarette") ? "cigarette" : "bread_tomato",
+      items: cartItems.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price,
+      })),
+    };
+
+    console.log("Saving sales:", JSON.stringify(salesData, null, 2));
+    await createSale(salesData);
+
+    setCartItems([]);
+    setSuccessMessage("Sale recorded successfully!");
+    setIsChargeModalOpen(false);
+
+    await fetchData();
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || err.message || "Failed to save sale. Please try again.";
+    console.error("Save Sale Error:", err, "Detailed Message:", errorMessage);
+    setError(errorMessage);
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   const handleCartClick = () => {
     setIsCartModalOpen(true);
@@ -189,6 +284,14 @@ const POS = () => {
           </button>
         </div>
       )}
+      {successMessage && (
+        <div className="success-alert">
+          <span>{successMessage}</span>
+          <button className="success-close-btn" onClick={() => setSuccessMessage('')}>
+            X
+          </button>
+        </div>
+      )}
       {isLoading && (
         <div className="loading-container">
           <div className="spinner" />
@@ -198,7 +301,6 @@ const POS = () => {
       {!isLoading && (
         <>
           <div className="pos-grid">
-            {/* Left Panel: Item Selection */}
             <div className="item-selection">
               <div className="search-container">
                 <input
@@ -207,6 +309,7 @@ const POS = () => {
                   placeholder="Search items..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={isSaving}
                 />
                 {searchQuery && (
                   <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
@@ -224,6 +327,7 @@ const POS = () => {
                   isClearable={false}
                   placeholder="Select category..."
                   aria-label="Select a category"
+                  isDisabled={isSaving}
                   styles={{
                     input: (provided) => ({
                       ...provided,
@@ -243,11 +347,12 @@ const POS = () => {
                     <div
                       key={item.id}
                       className="item-card"
-                      onClick={() => handleAddItem(item)}
+                      onClick={() => !isSaving && handleAddItem(item)}
                       title="Click to add to cart"
                     >
                       <span className="item-name">{item.name}</span>
                       <span className="item-price">K{item.price.toFixed(2)}</span>
+                      <span className="item-stock">Stock: {productStock[item.id] || 0}</span>
                     </div>
                   ))
                 ) : (
@@ -258,7 +363,6 @@ const POS = () => {
               </div>
             </div>
 
-            {/* Right Panel: Cart (Visible only on Desktop) */}
             <div className="cart-panel desktop-only">
               <div className="cart-items-scroll">
                 {cartItems.length > 0 ? (
@@ -270,6 +374,7 @@ const POS = () => {
                         className="cart-item-decrease-btn"
                         onClick={() => handleQuantityChange(index, -1)}
                         title="Decrease quantity"
+                        disabled={isSaving}
                       >
                         −
                       </button>
@@ -278,6 +383,7 @@ const POS = () => {
                         className="cart-item-increase-btn"
                         onClick={() => handleQuantityChange(index, 1)}
                         title="Increase quantity"
+                        disabled={isSaving}
                       >
                         +
                       </button>
@@ -287,6 +393,7 @@ const POS = () => {
                           className="cart-item-remove-btn"
                           onClick={() => handleRemoveItem(index)}
                           title="Remove item from cart"
+                          disabled={isSaving}
                         >
                           X
                         </button>
@@ -316,52 +423,51 @@ const POS = () => {
             </div>
           </div>
 
-          {/* Bottom Panel */}
           <div className="bottom-panel">
             <div className="bottom-left">
-              {/* Placeholder for future buttons if needed */}
             </div>
             <div className="bottom-right">
               <div className="cart-actions">
-                <button className="cart-btn" onClick={handleCartClick}>
+                <button className="cart-btn" onClick={handleCartClick} disabled={isSaving}>
                   Cart ({cartItems.length})
                 </button>
-                <button className="charge-btn" onClick={handleChargeClick}>
+                <button className="charge-btn" onClick={handleChargeClick} disabled={isSaving}>
                   Charge K{total.toFixed(2)}
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Modal for Quantity Entry */}
           {isQuantityModalOpen && selectedItem && (
             <div className="modal-overlay">
               <div className="modal-content">
                 <h2 className="modal-header">Enter Quantity</h2>
                 <div className="modal-body">
                   <p>Enter the quantity for <strong>{selectedItem.name}</strong>:</p>
+                  <p>Available Stock: {productStock[selectedItem.id] || 0}</p>
                   <input
                     type="number"
                     className="quantity-input"
                     value={manualQuantity}
                     onChange={(e) => {
                       setManualQuantity(e.target.value);
-                      setQuantityError(''); // Clear error on input change
+                      setQuantityError('');
                     }}
                     min="1"
                     step="0.01"
                     placeholder="Enter quantity"
                     autoFocus
+                    disabled={isSaving}
                   />
                   {quantityError && (
                     <div className="error-message">{quantityError}</div>
                   )}
                 </div>
                 <div className="modal-actions">
-                  <button className="confirm-btn" onClick={handleConfirmQuantity}>
+                  <button className="confirm-btn" onClick={handleConfirmQuantity} disabled={isSaving}>
                     Confirm
                   </button>
-                  <button className="close-btn" onClick={handleCloseQuantityModal}>
+                  <button className="close-btn" onClick={handleCloseQuantityModal} disabled={isSaving}>
                     Cancel
                   </button>
                 </div>
@@ -369,7 +475,6 @@ const POS = () => {
             </div>
           )}
 
-          {/* Modal for Cart Confirmation */}
           {isCartModalOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -386,6 +491,7 @@ const POS = () => {
                               className="cart-item-decrease-btn"
                               onClick={() => handleQuantityChange(index, -1)}
                               title="Decrease quantity"
+                              disabled={isSaving}
                             >
                               −
                             </button>
@@ -394,6 +500,7 @@ const POS = () => {
                               className="cart-item-increase-btn"
                               onClick={() => handleQuantityChange(index, 1)}
                               title="Increase quantity"
+                              disabled={isSaving}
                             >
                               +
                             </button>
@@ -403,6 +510,7 @@ const POS = () => {
                                 className="cart-item-remove-btn"
                                 onClick={() => handleRemoveItem(index)}
                                 title="Remove item from cart"
+                                disabled={isSaving}
                               >
                                 X
                               </button>
@@ -417,7 +525,7 @@ const POS = () => {
                         </div>
                         <div className="cart-total cart-tax">
                           <span className="cart-total-label">Tax:</span>
-                          <span class="cart-total-value">K{tax.toFixed(2)}</span>
+                          <span className="cart-total-value">K{tax.toFixed(2)}</span>
                         </div>
                         <div className="cart-total cart-total-amount">
                           <span className="cart-total-label">Total:</span>
@@ -430,7 +538,7 @@ const POS = () => {
                   )}
                 </div>
                 <div className="modal-actions">
-                  <button className="close-btn" onClick={handleCloseCartModal}>
+                  <button className="close-btn" onClick={handleCloseCartModal} disabled={isSaving}>
                     Close
                   </button>
                 </div>
@@ -438,7 +546,6 @@ const POS = () => {
             </div>
           )}
 
-          {/* Modal for Charge Confirmation */}
           {isChargeModalOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -473,8 +580,11 @@ const POS = () => {
                   )}
                 </div>
                 <div className="modal-actions">
-                  <button className="close-btn" onClick={handleCloseChargeModal}>
-                    Close
+                  <button className="confirm-btn" onClick={handleConfirmCharge} disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Confirm Sale"}
+                  </button>
+                  <button className="close-btn" onClick={handleCloseChargeModal} disabled={isSaving}>
+                    Cancel
                   </button>
                 </div>
               </div>

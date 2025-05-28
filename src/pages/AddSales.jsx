@@ -8,7 +8,7 @@ import "../assets/styles/addSales.css";
 const AddSales = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null); // Changed to null for react-select
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [closingStock, setClosingStock] = useState("");
   const [price, setPrice] = useState("");
   const [salesList, setSalesList] = useState([]);
@@ -27,6 +27,8 @@ const AddSales = () => {
         fetchProductsWithCategory(),
         fetchCategories(),
       ]);
+      console.log("Fetched products:", productsData);
+      console.log("Fetched categories:", categoriesData);
       setProducts(productsData || []);
       setCategories(categoriesData || []);
       if (categoriesData.length > 0) {
@@ -45,7 +47,6 @@ const AddSales = () => {
   }, []);
 
   useEffect(() => {
-    // Clear success/error messages after 5 seconds
     if (error || successMessage) {
       const timer = setTimeout(() => {
         setError("");
@@ -55,9 +56,8 @@ const AddSales = () => {
     }
   }, [error, successMessage]);
 
-  // Reset form fields when the current tab changes
   useEffect(() => {
-    setSelectedProduct(null); // Changed to null for react-select
+    setSelectedProduct(null);
     setClosingStock("");
     setPrice("");
     setError("");
@@ -68,7 +68,7 @@ const AddSales = () => {
     setSelectedProduct(productId);
 
     const product = products.find((p) => String(p.id) === String(productId));
-    setPrice(product ? parseFloat(product.selling_price).toFixed(2) : ""); // Format for display
+    setPrice(product ? parseFloat(product.selling_price).toFixed(2) : "");
   };
 
   const handleAddSale = async () => {
@@ -103,40 +103,44 @@ const AddSales = () => {
     }
 
     try {
-      const lastClosingStock = await fetchLastClosingStock(selectedProduct);
-      console.log("Last Closing Stock: ", lastClosingStock);
+      const product = products.find((p) => p.id === parseInt(selectedProduct));
+      if (!product) {
+        setError("Selected product not found in product list.");
+        return;
+      }
 
+      const lastClosingStock = await fetchLastClosingStock(selectedProduct);
       const openingStockValue = parseFloat(lastClosingStock?.lastClosingStock) || 0.0;
+      console.log("Fetched opening stock for product", selectedProduct, ":", openingStockValue);
 
       if (closingStockValue > openingStockValue) {
         setError(`Closing stock (${closingStockValue}) cannot exceed opening stock (${openingStockValue}).`);
         return;
       }
 
-      const product = products.find((p) => p.id === parseInt(selectedProduct));
-      if (!product) {
-        setError("Selected product not found.");
-        return;
-      }
+      // Normalize sale_type based on category name, ensuring backend compatibility
+      const normalizedSaleType = categories.find((cat) => cat.name === currentTab)?.name.toLowerCase().includes("cigarette")
+        ? "cigarette"
+        : "bread_tomato";
 
       const saleData = {
         product_id: parseInt(selectedProduct),
         opening_stock: openingStockValue,
         closing_stock: closingStockValue,
-        price: priceValue,
+        unit_price: priceValue,
         sales_date: new Date().toISOString().split("T")[0],
-        sale_type: currentTab,
+        sale_type: normalizedSaleType,
       };
 
       setSalesList([...salesList, saleData]);
       setOpeningStock({ ...openingStock, [selectedProduct]: openingStockValue });
 
-      setSelectedProduct(null); // Reset to null for react-select
+      setSelectedProduct(null);
       setClosingStock("");
       setPrice("");
       setError("");
     } catch (error) {
-      setError(error.message || "Failed to fetch opening stock.");
+      setError(error.response?.data?.message || error.message || "Failed to fetch opening stock.");
       console.error("Opening Stock Error:", error);
     }
   };
@@ -147,7 +151,7 @@ const AddSales = () => {
       return;
     }
 
-    const confirmSave = window.confirm("Are you sure you want to save these sales?");
+    const confirmSave = window.confirm("Are you sure you want to save this sale?");
     if (!confirmSave) {
       return;
     }
@@ -157,30 +161,49 @@ const AddSales = () => {
     setIsSaving(true);
 
     try {
-      await createSale(salesList);
-      setSuccessMessage("Sales recorded successfully!");
+      const normalizedSaleType = categories.find((cat) => cat.name === currentTab)?.name.toLowerCase().includes("cigarette")
+        ? "cigarette"
+        : "bread_tomato";
+
+      // Group all items into a single sale with an items array
+      const saleData = {
+        sales_date: new Date().toISOString().split("T")[0],
+        sale_type: normalizedSaleType,
+        items: salesList.map((sale) => ({
+          product_id: sale.product_id,
+          quantity: sale.opening_stock - sale.closing_stock,
+          unit_price: sale.unit_price,
+        })),
+      };
+
+      console.log("Sending sale data to server:", JSON.stringify(saleData, null, 2));
+      const response = await createSale(saleData);
+      setSuccessMessage(response.message || "Sale recorded successfully!");
       setSalesList([]);
       setOpeningStock({});
-      setSelectedProduct(null); // Reset to null for react-select
+      setSelectedProduct(null);
       setClosingStock("");
       setPrice("");
       await fetchData();
     } catch (error) {
-      setError(error.message || "Error while saving sales. Please try again.");
-      console.error("Save Sales Error:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error while saving sale. Please try again.";
+      console.error("Save Sales Error:", error, "Detailed Message:", errorMessage);
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Filter products based on the active tab (category)
   const filteredProducts = products.filter(
     (product) => product.category_name === currentTab
   );
 
-  // Filter sales based on the active tab
+  // Normalize sale_type comparison for filtering
+  const normalizedCurrentTab = categories.find((cat) => cat.name === currentTab)?.name.toLowerCase().includes("cigarette")
+    ? "cigarette"
+    : "bread_tomato";
   const filteredSales = salesList.filter(
-    (sale) => sale.sale_type === currentTab
+    (sale) => sale.sale_type === normalizedCurrentTab
   );
 
   const productOptions = filteredProducts.map((product) => ({
@@ -191,7 +214,7 @@ const AddSales = () => {
   const selectedProductValue = productOptions.find((option) => String(option.value) === String(selectedProduct)) || null;
 
   const overallTotalSales = filteredSales.reduce(
-    (total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.price,
+    (total, sale) => total + (sale.opening_stock - sale.closing_stock) * sale.unit_price,
     0
   );
 
@@ -199,7 +222,6 @@ const AddSales = () => {
     <div className="add-sales-container">
       <h2>Record Sales</h2>
 
-      {/* Dynamic Tabs */}
       {categories.length > 0 ? (
         <div className="tabs">
           {categories.map((category) => (
@@ -207,22 +229,36 @@ const AddSales = () => {
               key={category.id}
               className={currentTab === category.name ? "active" : ""}
               onClick={() => setCurrentTab(category.name)}
+              disabled={isSaving}
               aria-label={`Switch to ${category.name.replace("_", "/")} category`}
+              aria-pressed={currentTab === category.name}
             >
               {category.name.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}
             </button>
           ))}
         </div>
       ) : (
-        <div className="error-message">No categories available.</div>
+        <div className="error-message" role="alert">
+          No categories available.
+        </div>
       )}
 
       {isLoading ? (
-        <div className="loading-message">Loading data...</div>
+        <div className="loading-message" role="status">
+          Loading data...
+        </div>
       ) : (
         <>
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
+          {error && (
+            <div className="error-message" role="alert">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="success-message" role="status">
+              {successMessage}
+            </div>
+          )}
 
           <div className="add-sales-form">
             <Select
@@ -234,7 +270,7 @@ const AddSales = () => {
               isDisabled={isSaving}
               isLoading={isLoading}
               placeholder="Search or select product..."
-              aria-label="Search or select a product"
+              aria-label="Search or select a product to add to sales"
               styles={{
                 input: (provided) => ({
                   ...provided,
@@ -256,7 +292,8 @@ const AddSales = () => {
               min="0"
               step="0.01"
               disabled={isSaving}
-              aria-label="Enter closing stock"
+              aria-label="Enter closing stock for the selected product"
+              aria-invalid={error.includes("closing stock") ? "true" : "false"}
             />
 
             <input
@@ -269,14 +306,16 @@ const AddSales = () => {
               step="0.01"
               required
               disabled={isSaving}
-              aria-label="Enter price per unit"
+              aria-label="Enter price per unit for the selected product"
+              aria-invalid={error.includes("price") ? "true" : "false"}
             />
 
             <button
               className="add-sale-btn"
               onClick={handleAddSale}
               disabled={isSaving}
-              aria-label="Add sale to list"
+              aria-label="Add sale to the list"
+              aria-busy={isSaving ? "true" : "false"}
             >
               Add Sale
             </button>
@@ -308,9 +347,9 @@ const AddSales = () => {
                       <td>{products.find((p) => p.id === sale.product_id)?.name || "Unknown"}</td>
                       <td>{sale.opening_stock.toFixed(2)}</td>
                       <td>{sale.closing_stock.toFixed(2)}</td>
-                      <td>{sale.price.toFixed(2)}</td>
+                      <td>{sale.unit_price.toFixed(2)}</td>
                       <td>
-                        {((sale.opening_stock - sale.closing_stock) * sale.price).toFixed(2)}
+                        {((sale.opening_stock - sale.closing_stock) * sale.unit_price).toFixed(2)}
                       </td>
                       <td>{sale.sale_type.replace("_", "/").replace(/\b\w/g, (char) => char.toUpperCase())}</td>
                       <td>
@@ -320,7 +359,7 @@ const AddSales = () => {
                             setSalesList(salesList.filter((_, i) => i !== index))
                           }
                           disabled={isSaving}
-                          aria-label={`Remove sale for ${products.find((p) => p.id === sale.product_id)?.name || "unknown product"}`}
+                          aria-label={`Remove sale for ${products.find((p) => p.id === sale.product_id)?.name || "unknown product"} from the list`}
                         >
                           X
                         </button>
@@ -343,7 +382,8 @@ const AddSales = () => {
               className="save-sales-btn"
               onClick={handleSaveSales}
               disabled={isSaving}
-              aria-label="Save all sales"
+              aria-label="Save all sales in the list"
+              aria-busy={isSaving ? "true" : "false"}
             >
               {isSaving ? "Saving..." : "Save Sales"}
             </button>
