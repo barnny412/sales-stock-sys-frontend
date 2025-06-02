@@ -9,7 +9,7 @@ const Sales = () => {
   const [currentTab, setCurrentTab] = useState("today"); // "today" | "all" | "cigarette" | "bread_tomato"
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false); // Added for delete loading state
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
   const salesPerPage = 5;
   const navigate = useNavigate();
@@ -20,23 +20,28 @@ const Sales = () => {
       setError("");
       const type = ["cigarette", "bread_tomato"].includes(currentTab) ? currentTab : null;
       console.log("Fetching sales with type:", type);
-      const [salesData] = await Promise.all([fetchSales(type)]); // Removed fetchStocks for now, adjust if needed
+      const [salesData] = await Promise.all([fetchSales(type)]);
 
+      // Enhance sales data with fallback values and ensure numbers are parsed
       const enhancedSales = salesData.map((sale) => {
-        const unitPrice =
-          Number(sale.unit_price) ||
-          Number(sale.price) ||
-          Number(sale.saleProduct?.selling_price) || // Use saleProduct.selling_price as fallback
-          0; // Default to 0 if no price is available
-        const quantitySold =
-          Number(sale.quantity_sold) ||
-          (Number(sale.opening_stock) - Number(sale.closing_stock)) ||
-          0; // Handle both Sale and SaleDetails
+        const totalQuantity = parseFloat(sale.total_quantity) || 0;
+        const totalAmount = parseFloat(sale.total_amount) || 0;
+        let productName = sale.saleProduct?.name || "Unknown";
+
+        // Fallback to first saleDetail product_id if saleProduct is null
+        if (!sale.saleProduct && sale.saleDetails?.length > 0) {
+          const firstDetail = sale.saleDetails[0];
+          if (firstDetail.product_id) {
+            productName = `Missing Product (ID: ${firstDetail.product_id})`;
+          }
+        }
+
         return {
           ...sale,
-          product_name: sale.product_name || sale.saleProduct?.name || "Unknown", // Use saleProduct alias
-          quantity_sold: quantitySold,
-          unit_price: unitPrice,
+          saleDetails: sale.saleDetails || [],
+          product_name: productName,
+          total_quantity: totalQuantity, // Ensure number
+          total_amount: totalAmount, // Ensure number
         };
       });
 
@@ -56,7 +61,6 @@ const Sales = () => {
   }, [currentTab]);
 
   useEffect(() => {
-    // Clear error messages after 5 seconds
     if (error) {
       const timer = setTimeout(() => {
         setError("");
@@ -77,7 +81,6 @@ const Sales = () => {
     setIsDeleting(true);
     try {
       await deleteSale(id);
-      // Refetch sales to ensure data consistency
       await fetchSalesData();
       setError("");
     } catch (error) {
@@ -111,6 +114,16 @@ const Sales = () => {
   const indexOfFirstSale = indexOfLastSale - salesPerPage;
   const currentSales = filteredSales.slice(indexOfFirstSale, indexOfLastSale);
   const totalPages = Math.ceil(filteredSales.length / salesPerPage);
+
+  // State to manage expanded rows
+  const [expandedRows, setExpandedRows] = useState({});
+
+  const toggleRow = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   return (
     <div className="sales-container">
@@ -186,9 +199,8 @@ const Sales = () => {
             <tr>
               <th scope="col">#</th>
               <th scope="col">Product</th>
-              <th scope="col">Quantity Sold</th>
-              <th scope="col">Price (K)</th>
-              <th scope="col">Total Price (K)</th>
+              <th scope="col">Total Quantity</th>
+              <th scope="col">Total Amount (K)</th>
               <th scope="col">Sale Date</th>
               <th scope="col">Sale Type</th>
               <th scope="col">Actions</th>
@@ -197,37 +209,71 @@ const Sales = () => {
           <tbody>
             {currentSales.length > 0 ? (
               currentSales.map((sale, index) => (
-                <tr key={sale.id}>
-                  <td>{indexOfFirstSale + index + 1}</td>
-                  <td>{sale.product_name}</td>
-                  <td>{sale.quantity_sold.toFixed(2)}</td>
-                  <td>{sale.unit_price.toFixed(2)}</td>
-                  <td>{(sale.quantity_sold * sale.unit_price).toFixed(2)}</td>
-                  <td>{new Date(sale.sales_date).toLocaleDateString()}</td>
-                  <td>{sale.sale_type || "N/A"}</td>
-                  <td>
-                    <button
-                      className="edit-btn"
-                      onClick={() => handleEdit(sale)}
-                      disabled={isDeleting}
-                      aria-label={`Edit sale for ${sale.product_name}`}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(sale.id)}
-                      disabled={isDeleting}
-                      aria-label={`Delete sale for ${sale.product_name}`}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <React.Fragment key={sale.id}>
+                  <tr>
+                    <td>{indexOfFirstSale + index + 1}</td>
+                    <td>{sale.product_name}</td>
+                    <td>{sale.total_quantity.toFixed(2)}</td>
+                    <td>{sale.total_amount.toFixed(2)}</td>
+                    <td>{new Date(sale.sales_date).toLocaleDateString()}</td>
+                    <td>{sale.sale_type || "N/A"}</td>
+                    <td>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleEdit(sale)}
+                        disabled={isDeleting}
+                        aria-label={`Edit sale for ${sale.product_name}`}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(sale.id)}
+                        disabled={isDeleting}
+                        aria-label={`Delete sale for ${sale.product_name}`}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        className="toggle-btn"
+                        onClick={() => toggleRow(sale.id)}
+                        aria-label={`Toggle details for ${sale.product_name}`}
+                      >
+                        {expandedRows[sale.id] ? "Hide Details" : "Show Details"}
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedRows[sale.id] && sale.saleDetails.length > 0 && (
+                    <tr>
+                      <td colSpan="7">
+                        <table className="details-table">
+                          <thead>
+                            <tr>
+                              <th>Detail ID</th>
+                              <th>Quantity Sold</th>
+                              <th>Unit Price (K)</th>
+                              <th>Total Price (K)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sale.saleDetails.map((detail) => (
+                              <tr key={detail.id}>
+                                <td>{detail.id}</td>
+                                <td>{Number(detail.quantity_sold).toFixed(2)}</td>
+                                <td>{Number(detail.unit_price).toFixed(2)}</td>
+                                <td>{Number(detail.total_price).toFixed(2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
-                <td colSpan="8" className="text-center">
+                <td colSpan="7" className="text-center">
                   No sales found.
                 </td>
               </tr>

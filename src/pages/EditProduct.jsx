@@ -16,6 +16,7 @@ const EditProduct = () => {
   const [costPricePerUnit, setCostPricePerUnit] = useState("");
   const [lowStockAlert, setLowStockAlert] = useState("");
   const [requiresManualQuantity, setRequiresManualQuantity] = useState(false);
+  const [requiresManualPrice, setRequiresManualPrice] = useState(false); // New state
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -43,6 +44,7 @@ const EditProduct = () => {
         setCostPricePerUnit(product.cost_price_per_unit);
         setLowStockAlert(product.low_stock_alert);
         setRequiresManualQuantity(product.requires_manual_quantity || false);
+        setRequiresManualPrice(product.requires_manual_price || false); // Populate new field
       } catch (error) {
         setError("Failed to fetch product details.");
         console.error("Fetch Product Error:", error);
@@ -99,6 +101,7 @@ const EditProduct = () => {
       cost_price_per_unit: parseFloat(costPricePerUnit),
       low_stock_alert: parseInt(lowStockAlert),
       requires_manual_quantity: requiresManualQuantity,
+      requires_manual_price: requiresManualPrice, // Include new field
     };
 
     try {
@@ -226,6 +229,19 @@ const EditProduct = () => {
               className="product-requires-manual-quantity"
             />
             Requires Manual Quantity Entry
+          </label>
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="requiresManualPrice">
+            <input
+              type="checkbox"
+              id="requiresManualPrice"
+              checked={requiresManualPrice}
+              onChange={(e) => setRequiresManualPrice(e.target.checked)}
+              className="product-requires-manual-price"
+            />
+            Requires Manual Price Entry
           </label>
         </div>
 

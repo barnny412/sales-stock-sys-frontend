@@ -10,9 +10,16 @@ const POS = () => {
   const [isChargeModalOpen, setIsChargeModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
+  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [manualQuantity, setManualQuantity] = useState('');
+  const [manualTotalPrice, setManualTotalPrice] = useState('');
+  const [amountPaid, setAmountPaid] = useState('');
+  const [changeAmount, setChangeAmount] = useState(0);
   const [quantityError, setQuantityError] = useState('');
+  const [priceError, setPriceError] = useState('');
+  const [paymentError, setPaymentError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [menuItems, setMenuItems] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +46,7 @@ const POS = () => {
           name: product.name,
           price: price,
           requires_manual_quantity: product.requires_manual_quantity || false,
+          requires_manual_price: product.requires_manual_price || false,
         });
         return acc;
       }, {});
@@ -100,6 +108,14 @@ const POS = () => {
       return;
     }
 
+    if (item.requires_manual_price) {
+      setSelectedItem(item);
+      setManualTotalPrice('');
+      setPriceError('');
+      setIsPriceModalOpen(true);
+      return;
+    }
+
     const defaultQuantity = 1;
     const stockCheck = checkStockAvailability(item, defaultQuantity);
     if (!stockCheck.isAvailable) {
@@ -125,6 +141,63 @@ const POS = () => {
     } else {
       setCartItems([...cartItems, { ...item, price, quantity: 1 }]);
     }
+  };
+
+  const handleConfirmPrice = () => {
+    const parsedTotalPrice = parseFloat(manualTotalPrice);
+    if (isNaN(parsedTotalPrice) || parsedTotalPrice <= 0) {
+      setPriceError("Please enter a valid positive total price.");
+      return;
+    }
+
+    const unitPrice = selectedItem.price;
+    if (!unitPrice || unitPrice <= 0) {
+      setPriceError("Unit price is not available for this product.");
+      return;
+    }
+
+    const calculatedQuantity = parsedTotalPrice / unitPrice;
+    const roundedQuantity = Math.round(calculatedQuantity * 100) / 100;
+
+    const stockCheck = checkStockAvailability(selectedItem, roundedQuantity);
+    if (!stockCheck.isAvailable) {
+      setPriceError(stockCheck.message);
+      return;
+    }
+
+    if (selectedItem.requires_manual_quantity) {
+      setManualQuantity(roundedQuantity.toFixed(2));
+      setIsPriceModalOpen(false);
+      setIsQuantityModalOpen(true);
+      setPriceError('');
+      return;
+    }
+
+    const existingItem = cartItems.find((i) => i.id === selectedItem.id);
+    const updatedPrice = parsedTotalPrice / roundedQuantity;
+
+    if (existingItem) {
+      const newQuantity = existingItem.quantity + roundedQuantity;
+      setCartItems(
+        cartItems.map((i) =>
+          i.id === selectedItem.id ? { ...i, quantity: newQuantity, price: updatedPrice } : i
+        )
+      );
+    } else {
+      setCartItems([...cartItems, { ...selectedItem, price: updatedPrice, quantity: roundedQuantity }]);
+    }
+
+    setIsPriceModalOpen(false);
+    setSelectedItem(null);
+    setManualTotalPrice('');
+    setPriceError('');
+  };
+
+  const handleClosePriceModal = () => {
+    setIsPriceModalOpen(false);
+    setSelectedItem(null);
+    setManualTotalPrice('');
+    setPriceError('');
   };
 
   const handleConfirmQuantity = () => {
@@ -169,10 +242,11 @@ const POS = () => {
   };
 
   const handleQuantityChange = (index, delta) => {
-    const newQuantity = Math.max(1, cartItems[index].quantity + delta);
     const item = cartItems[index];
+    const currentQuantity = item.quantity;
+    const newQuantity = Math.max(1, currentQuantity + delta);
 
-    const stockCheck = checkStockAvailability(item, newQuantity - item.quantity);
+    const stockCheck = checkStockAvailability(item, newQuantity - currentQuantity);
     if (!stockCheck.isAvailable) {
       setError(stockCheck.message);
       return;
@@ -219,48 +293,128 @@ const POS = () => {
   const handleChargeClick = () => {
     if (cartItems.length > 0) {
       setIsChargeModalOpen(true);
+      setAmountPaid('');
+      setPaymentError('');
     } else {
       setError("Cart is empty. Add items before charging.");
     }
   };
 
-const handleConfirmCharge = async () => {
-  if (cartItems.length === 0) {
-    setError("Cart is empty. Add items before confirming the sale.");
-    return;
-  }
+  const handleConfirmCharge = async () => {
+    if (cartItems.length === 0) {
+      setError("Cart is empty. Add items before confirming the sale.");
+      return;
+    }
 
-  setIsSaving(true);
-  setError('');
-  setSuccessMessage('');
+    const parsedAmountPaid = parseFloat(amountPaid);
+    if (isNaN(parsedAmountPaid) || parsedAmountPaid < total) {
+      setPaymentError(`Please enter an amount greater than or equal to K${total.toFixed(2)}.`);
+      return;
+    }
 
-  try {
-    const salesData = {
-      sales_date: new Date().toISOString().split("T")[0],
-      sale_type: (selectedCategory || 'Uncategorized').toLowerCase().includes("cigarette") ? "cigarette" : "bread_tomato",
-      items: cartItems.map((item) => ({
-        product_id: item.id,
-        quantity: item.quantity,
-        unit_price: item.price,
-      })),
-    };
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
 
-    console.log("Saving sales:", JSON.stringify(salesData, null, 2));
-    await createSale(salesData);
+    try {
+      const salesData = {
+        sales_date: new Date().toISOString().split("T")[0],
+        sale_type: (selectedCategory || 'Uncategorized').toLowerCase().includes("cigarette") ? "cigarette" : "bread_tomato",
+        items: cartItems.map((item) => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          unit_price: item.price,
+        })),
+      };
 
-    setCartItems([]);
-    setSuccessMessage("Sale recorded successfully!");
-    setIsChargeModalOpen(false);
+      console.log("Saving sales:", JSON.stringify(salesData, null, 2));
+      await createSale(salesData);
 
-    await fetchData();
-  } catch (err) {
-    const errorMessage = err.response?.data?.message || err.message || "Failed to save sale. Please try again.";
-    console.error("Save Sale Error:", err, "Detailed Message:", errorMessage);
-    setError(errorMessage);
-  } finally {
-    setIsSaving(false);
-  }
-};
+      const change = parsedAmountPaid - total;
+      setChangeAmount(change);
+
+      setCartItems([]);
+      setSuccessMessage("Sale recorded successfully!");
+      setIsChargeModalOpen(false);
+      setIsChangeModalOpen(true);
+
+      await fetchData();
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message || "Failed to save sale. Please try again.";
+      console.error("Save Sale Error:", err, "Detailed Message:", errorMessage);
+      setError(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCloseChangeModal = () => {
+    setIsChangeModalOpen(false);
+    setChangeAmount(0);
+    setAmountPaid('');
+  };
+
+  const handlePrintReceipt = () => {
+    const printWindow = window.open('', '_blank');
+    const receiptContent = `
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .receipt { max-width: 300px; margin: auto; }
+            .receipt-header { text-align: center; margin-bottom: 20px; }
+            .receipt-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+            .receipt-totals { margin-top: 10px; border-top: 1px solid #000; padding-top: 10px; }
+            .receipt-total { display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <div class="receipt-header">
+              <h2>Receipt</h2>
+              <p>Date: ${new Date().toLocaleString()}</p>
+            </div>
+            <div class="receipt-items">
+              ${cartItems.map((item, index) => `
+                <div class="receipt-item" key=${index}>
+                  <span>${item.name} x ${item.quantity}</span>
+                  <span>K${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="receipt-totals">
+              <div className="receipt-total">
+                <span>Subtotal:</span>
+                <span>K${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="receipt-total">
+                <span>Tax:</span>
+                <span>K${tax.toFixed(2)}</span>
+              </div>
+              <div className="receipt-total">
+                <span>Total:</span>
+                <span>K${total.toFixed(2)}</span>
+              </div>
+              <div className="receipt-total">
+                <span>Amount Paid:</span>
+                <span>K${parseFloat(amountPaid).toFixed(2)}</span>
+              </div>
+              <div className="receipt-total">
+                <span>Change:</span>
+                <span>K${changeAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(receiptContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
 
   const handleCartClick = () => {
     setIsCartModalOpen(true);
@@ -268,6 +422,8 @@ const handleConfirmCharge = async () => {
 
   const handleCloseChargeModal = () => {
     setIsChargeModalOpen(false);
+    setAmountPaid('');
+    setPaymentError('');
   };
 
   const handleCloseCartModal = () => {
@@ -475,6 +631,43 @@ const handleConfirmCharge = async () => {
             </div>
           )}
 
+          {isPriceModalOpen && selectedItem && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2 className="modal-header">Enter Total Price</h2>
+                <div className="modal-body">
+                  <p>Enter the total price for <strong>{selectedItem.name}</strong>:</p>
+                  <p>Available Stock: {productStock[selectedItem.id] || 0}</p>
+                  <input
+                    type="number"
+                    className="price-input"
+                    value={manualTotalPrice}
+                    onChange={(e) => {
+                      setManualTotalPrice(e.target.value);
+                      setPriceError('');
+                    }}
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter total price"
+                    autoFocus
+                    disabled={isSaving}
+                  />
+                  {priceError && (
+                    <div className="error-message">{priceError}</div>
+                  )}
+                </div>
+                <div className="modal-actions">
+                  <button className="confirm-btn" onClick={handleConfirmPrice} disabled={isSaving}>
+                    Confirm
+                  </button>
+                  <button className="close-btn" onClick={handleClosePriceModal} disabled={isSaving}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {isCartModalOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -553,27 +746,31 @@ const handleConfirmCharge = async () => {
                 <div className="modal-body">
                   {cartItems.length > 0 ? (
                     <>
-                      {cartItems.map((item, index) => (
-                        <div key={index} className="charge-modal-item">
-                          <span className="charge-modal-item-name">{item.name}</span>
-                          <span className="charge-modal-item-quantity">x {item.quantity}</span>
-                          <span className="charge-modal-item-price">K{(item.price * item.quantity).toFixed(2)}</span>
-                        </div>
-                      ))}
                       <div className="charge-modal-totals">
-                        <div className="charge-modal-total charge-modal-subtotal">
-                          <span className="charge-modal-total-label">Subtotal:</span>
-                          <span className="charge-modal-total-value">K{subtotal.toFixed(2)}</span>
-                        </div>
-                        <div className="charge-modal-total charge-modal-tax">
-                          <span className="charge-modal-total-label">Tax:</span>
-                          <span className="charge-modal-total-value">K{tax.toFixed(2)}</span>
-                        </div>
-                        <div className="charge-modal-total charge-modal-total-amount">
+                        <div className="charge-modal-total charge-modal-total-amount standout-total">
                           <span className="charge-modal-total-label">Total:</span>
-                          <span className="charge-modal-total-value">K{total.toFixed(2)}</span>
+                          <h2 className="charge-modal-total-value">K{total.toFixed(2)}</h2>
+                        </div>
+                        <div className="charge-modal-total charge-modal-amount-paid">
+                          <input
+                            type="number"
+                            className="amount-paid-input"
+                            value={amountPaid}
+                            onChange={(e) => {
+                              setAmountPaid(e.target.value);
+                              setPaymentError('');
+                            }}
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter amount paid"
+                            autoFocus
+                            disabled={isSaving}
+                          />
                         </div>
                       </div>
+                      {paymentError && (
+                        <div className="error-message">{paymentError}</div>
+                      )}
                     </>
                   ) : (
                     <div className="no-items-message">No items to charge.</div>
@@ -585,6 +782,26 @@ const handleConfirmCharge = async () => {
                   </button>
                   <button className="close-btn" onClick={handleCloseChargeModal} disabled={isSaving}>
                     Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isChangeModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2 className="modal-header">Change Due</h2>
+                <div className="modal-body">
+                  <p>Change to return to customer:</p>
+                  <p className="change-amount">K{changeAmount.toFixed(2)}</p>
+                </div>
+                <div className="modal-actions">
+                  <button className="confirm-btn" onClick={handlePrintReceipt}>
+                    Print Receipt
+                  </button>
+                  <button className="close-btn" onClick={handleCloseChangeModal}>
+                    OK
                   </button>
                 </div>
               </div>

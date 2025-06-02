@@ -315,7 +315,7 @@
 .cart-item-quantity-label {
   font-size: 14px;
   line-height: 1;
-  margin: 0 5px;
+  margin: 0 10px;
   color: #bbb;
 }
 
@@ -346,8 +346,8 @@
 .cart-item-quantity {
   font-size: 14px;
   line-height: 1;
-  margin: 0 5px;
-  min-width: 20px;
+  margin: 0 10px;
+  min-width: 30px;
   text-align: center;
 }
 
@@ -525,6 +525,8 @@
 .modal-header {
   margin-bottom: 15px;
   text-align: center;
+  font-size: 24px;
+  color: #fff;
 }
 
 .modal-body {
@@ -580,6 +582,23 @@
   font-weight: bold;
 }
 
+.charge-modal-total.standout-total {
+  text-align: center;
+  font-size: 2.5em; /* Increased from 2em for better emphasis */
+  font-weight: bold;
+  color: #ff4444; /* Red for visibility; adjustable */
+  margin-bottom: 20px; /* Increased spacing for better layout */
+}
+
+.charge-modal-total.standout-total .charge-modal-total-label {
+  display: none; /* Hide "Total:" label */
+}
+
+.charge-modal-total.standout-total .charge-modal-total-value {
+
+  text-align: center;
+}
+
 .modal-actions {
   display: flex;
   justify-content: center;
@@ -599,8 +618,6 @@
 .close-btn:hover {
   background-color: #e03e2d;
 }
-
-/* Add to POS.css */
 
 /* Quantity Input */
 .quantity-input {
@@ -636,57 +653,30 @@
   background-color: #00cc66;
 }
 
-/* Ensure existing modal styles apply */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* Amount Paid Input */
+.amount-paid-input {
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #222;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  color: #fff;
-  font-size: 24px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.close-btn {
-  background-color: #ff4d4d;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+  background-color: #333;
+  color: #fff;
+  font-size: 1.5em; /* Increased font size */
+  height: 50px; /* Increased height */
+  box-sizing: border-box;
 }
 
-.close-btn:hover {
-  background-color: #cc0000;
+/* Change Amount */
+.change-amount {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #28a745; /* Green for positive change */
+  text-align: center;
+  margin: 10px 0;
 }
 
+/* Error Message */
 .error-message {
   color: #ff4d4d;
   font-size: 14px;
@@ -705,32 +695,29 @@
     flex: 1;
   }
 
-  /* Ensure item-selection grows to fill available space */
   .item-selection {
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 0; /* Fix flexbox overflow issue on older devices */
+    min-height: 0;
   }
 
-  /* Ensure item-grid scrolls and doesn't overlap with bottom panel */
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     overflow-y: auto;
     flex: 1;
-    min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 370px); /* Adjusted to account for bottom panel */
-    -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar in Edge */
-    padding-bottom: 70px; /* Add padding to prevent last item from being too close to bottom */
+    min-height: 400px;
+    max-height: calc(100vh - 370px);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 70px;
   }
 
   .item-grid::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
+    display: none;
   }
 
-  /* Hide cart panel on mobile */
   .desktop-only {
     display: none;
   }
@@ -862,16 +849,16 @@
   .item-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
-    min-height: 400px; /* Force minimum height to ensure scrolling */
-    max-height: calc(100vh - 370px); /* Consistent with 768px query, adjusted for bottom panel */
-    -webkit-overflow-scrolling: touch; /* Ensure smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar in Edge */
-    padding-bottom: 70px; /* Add padding to prevent last item from being too close to bottom */
+    min-height: 400px;
+    max-height: calc(100vh - 370px);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 70px;
   }
 
   .item-grid::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
+    display: none;
   }
 
   .item-name {
