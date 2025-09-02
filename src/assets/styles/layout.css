@@ -1,18 +1,134 @@
 /* Layout Styles */
 .layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a2a2a 100%);
+  background-attachment: fixed;
+}
+
+/* Navbar Wrappers */
+.pos-navbar-wrapper {
+  display: block; /* visible by default */
+}
+
+.main-navbar-wrapper {
+  display: block; /* visible by default */
+}
+
+/* Show POS navbar only on mobile/tablet (< 1024px) */
+@media (min-width: 1024px) {
+  .pos-navbar-wrapper {
+    display: none;
   }
-  
-  /* Content Section */
+}
+
+/* Hide normal Navbar on small screens */
+@media (max-width: 1023px) {
+  .main-navbar-wrapper {
+    display: none;
+  }
+}
+
+/* Content Section - Full width, no borders */
+.content {
+  flex: 1;
+  width: 100%;
+  margin: 0px 0 0 0;
+  padding: 0px;
+  background: rgba(30, 30, 30, 0.98);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none; /* Removed for performance */
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for webkit browsers */
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(30, 30, 30, 0.8);
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ff7f, #00cc66);
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00ff7f, #00994d);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
   .content {
-    flex: 1;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 0px;
+  }
+}
+
+@media (max-width: 900px) {
+  .content {
+    margin: 70px 0 0 0;
+    padding: 0px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin: 60px 0 0 0;
+    padding: 0px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    margin: 50px 0 0 0;
+    padding: 0px;
+  }
+}
+
+/* Animation for page transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus styles for accessibility */
+.content:focus {
+  outline: 2px solid #00ff7f;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .content {
+    background: #000000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
   }
   
+  html {
+    scroll-behavior: auto;
+  }
+}

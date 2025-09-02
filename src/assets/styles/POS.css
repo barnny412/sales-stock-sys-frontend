@@ -5,9 +5,9 @@
   height: calc(100vh - 60px);
   background-color: #1e1e1e;
   color: white;
-  padding: 20px;
+  padding: 5px;
   box-sizing: border-box;
-  margin-top: 60px;
+  margin-top: 00px;
 }
 
 /* Error alert */
@@ -26,6 +26,26 @@
   background: none;
   border: none;
   color: #ff4d4d;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Success alert */
+.success-alert {
+  background-color: rgba(0, 255, 127, 0.2);
+  color: #00ff7f;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.success-close-btn {
+  background: none;
+  border: none;
+  color: #00ff7f;
   font-size: 16px;
   cursor: pointer;
 }
@@ -64,15 +84,16 @@
 
 /* Left Panel: Item Selection */
 .item-selection {
-  flex: 1; /* Adjusted to make the cart panel wider */
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 10px;
 }
 
 /* Right Panel: Cart */
 .cart-panel {
-  flex: 1; /* Adjusted to make the cart panel wider */
+  flex: 1;
   display: flex;
   flex-direction: column;
   border-left: 1px solid #333;
@@ -223,13 +244,15 @@
 
 .item-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
   gap: 10px;
   overflow-y: auto;
   flex: 1;
   padding-right: 5px;
-  max-height: calc(100vh - 273px); /* Adjusted to account for bottom panel, header, and other UI elements */
-  padding-bottom: 20px; /* Add padding to prevent last item from being too close to bottom */
+  padding-left: 5px;
+  max-height: calc(100vh - 200px);
+  padding-bottom: 20px;
+  padding-top: 10px;
 }
 
 .item-grid::-webkit-scrollbar {
@@ -253,6 +276,7 @@
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  height: 120px;
 }
 
 .item-card:hover {
@@ -270,6 +294,13 @@
   display: block;
   font-size: 12px;
   color: #00ff7f;
+}
+
+.item-stock {
+  display: block;
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 3px;
 }
 
 .cart-items-scroll {
@@ -428,16 +459,12 @@
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 10px 20px;
   background-color: #2a2a2a;
   border-top: 1px solid #444;
   z-index: 1000;
   height: 70px;
-}
-
-.bottom-left {
-  flex: 1;
 }
 
 .bottom-right {
@@ -539,6 +566,76 @@
   padding: 20px;
 }
 
+/* Payment Method Selector in Charge Modal */
+.charge-modal-payment-method {
+  margin-bottom: 15px;
+}
+
+.charge-modal-payment-method label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 14px;
+}
+
+.charge-modal-payment-method .react-select__control {
+  min-height: 42px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #333, #2a2a2a);
+  color: #333;
+  box-sizing: border-box;
+}
+
+.charge-modal-payment-method .react-select__control:hover {
+  border-color: #00ff7f;
+}
+
+.charge-modal-payment-method .react-select__control--is-focused {
+  border-color: #00ff7f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+}
+
+.charge-modal-payment-method .react-select__value-container {
+  padding: 5px 12px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 500;
+  color: #333;
+}
+
+.charge-modal-payment-method .react-select__input {
+  color: #333;
+  caret-color: #00ff7f;
+}
+
+.charge-modal-payment-method .react-select__menu {
+  z-index: 1002;
+  background-color: #333;
+  border: 1px solid #00ff7f;
+  border-radius: 8px;
+  margin-top: 2px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option {
+  color: #fff;
+  padding: 8px 12px;
+  background-color: #333;
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option:hover,
+.charge-modal-payment-method .react-select__menu .react-select__option--is-focused {
+  background-color: #00cc66;
+  color: #000;
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option--is-selected {
+  background-color: #006633;
+  color: #fff;
+  font-weight: bold;
+}
+
 .charge-modal-item {
   display: flex;
   justify-content: space-between;
@@ -584,19 +681,38 @@
 
 .charge-modal-total.standout-total {
   text-align: center;
-  font-size: 2.5em; /* Increased from 2em for better emphasis */
+  font-size: 2.5em;
   font-weight: bold;
-  color: #ff4444; /* Red for visibility; adjustable */
-  margin-bottom: 20px; /* Increased spacing for better layout */
+  color: #ff4444;
+  margin-bottom: 20px;
 }
 
 .charge-modal-total.standout-total .charge-modal-total-label {
-  display: none; /* Hide "Total:" label */
+  display: none;
 }
 
 .charge-modal-total.standout-total .charge-modal-total-value {
-
   text-align: center;
+}
+
+.charge-modal-customer-id {
+  margin: 10px 0;
+}
+
+.charge-modal-customer-id label {
+  font-size: 14px;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.charge-modal-customer-id input {
+  padding: 8px;
+  border: 1px solid #00ff7f;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  font-size: 14px;
+  width: 120px;
 }
 
 .modal-actions {
@@ -621,6 +737,18 @@
 
 /* Quantity Input */
 .quantity-input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  font-size: 16px;
+}
+
+/* Price Input */
+.price-input {
   width: 100%;
   padding: 8px;
   margin: 10px 0;
@@ -662,8 +790,8 @@
   border-radius: 4px;
   background-color: #333;
   color: #fff;
-  font-size: 1.5em; /* Increased font size */
-  height: 50px; /* Increased height */
+  font-size: 1.5em;
+  height: 50px;
   box-sizing: border-box;
 }
 
@@ -671,7 +799,7 @@
 .change-amount {
   font-size: 1.5em;
   font-weight: bold;
-  color: #28a745; /* Green for positive change */
+  color: #28a745;
   text-align: center;
   margin: 10px 0;
 }
@@ -837,6 +965,15 @@
   .cart-total {
     font-size: 14px;
   }
+
+  /* Mobile responsive for charge modal */
+  .charge-modal-payment-method .react-select__control {
+    min-height: 48px;
+  }
+
+  .charge-modal-payment-method .react-select__value-container {
+    padding: 8px 12px;
+  }
 }
 
 @media (min-width: 769px) {
@@ -850,11 +987,11 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     overflow-y: auto;
     min-height: 400px;
-    max-height: calc(100vh - 370px);
+    max-height: calc(100vh - 280px);
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-bottom: 70px;
+    padding-bottom: 0px;
   }
 
   .item-grid::-webkit-scrollbar {
@@ -884,5 +1021,14 @@
     margin-bottom: 10px;
     padding: 18px;
     font-size: 14px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .charge-modal-payment-method .react-select__control {
+    min-height: 44px;
   }
 }

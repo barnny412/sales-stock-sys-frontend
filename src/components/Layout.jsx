@@ -1,11 +1,21 @@
 import React from "react";
 import Navbar from "./Navbar";
-import "../assets/styles/layout.css"; // Import CSS
+import PosNavbar from "./PosNavbar";
+import "../assets/styles/layout.css";
 
-const Layout = ({ children }) => {
+const Layout = ({ children, usePosNavbar = false }) => {
   return (
     <div className="layout">
-      <Navbar />
+      {usePosNavbar && (
+        <div className="pos-navbar-wrapper">
+          <PosNavbar />
+        </div>
+      )}
+      {!usePosNavbar && (
+        <div className="main-navbar-wrapper">
+          <Navbar />
+        </div>
+      )}
       <div className="content">{children}</div>
     </div>
   );

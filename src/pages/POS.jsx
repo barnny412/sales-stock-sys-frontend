@@ -27,6 +27,9 @@ const POS = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [productStock, setProductStock] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [customerId, setCustomerId] = useState('1');
+  const [userId] = useState('1');
 
   const fetchData = async () => {
     try {
@@ -295,6 +298,7 @@ const POS = () => {
       setIsChargeModalOpen(true);
       setAmountPaid('');
       setPaymentError('');
+      setCustomerId('1');
     } else {
       setError("Cart is empty. Add items before charging.");
     }
@@ -319,22 +323,26 @@ const POS = () => {
     try {
       const salesData = {
         sales_date: new Date().toISOString().split("T")[0],
-        sale_type: (selectedCategory || 'Uncategorized').toLowerCase().includes("cigarette") ? "cigarette" : "bread_tomato",
         items: cartItems.map((item) => ({
           product_id: item.id,
           quantity: item.quantity,
           unit_price: item.price,
         })),
+        payment_method: paymentMethod,
+        customer_id: customerId,
+        user_id: userId,
+        tax_rate: 0.00,
+        discount_rate: 0.00,
       };
 
       console.log("Saving sales:", JSON.stringify(salesData, null, 2));
-      await createSale(salesData);
+      const response = await createSale(salesData);
 
       const change = parsedAmountPaid - total;
       setChangeAmount(change);
 
       setCartItems([]);
-      setSuccessMessage("Sale recorded successfully!");
+      setSuccessMessage(`Sale recorded successfully! Sale ID: ${response.saleId}`);
       setIsChargeModalOpen(false);
       setIsChangeModalOpen(true);
 
@@ -371,19 +379,19 @@ const POS = () => {
         </head>
         <body>
           <div class="receipt">
-            <div class="receipt-header">
+            <div className="receipt-header">
               <h2>Receipt</h2>
               <p>Date: ${new Date().toLocaleString()}</p>
             </div>
-            <div class="receipt-items">
+            <div className="receipt-items">
               ${cartItems.map((item, index) => `
-                <div class="receipt-item" key=${index}>
+                <div className="receipt-item" key=${index}>
                   <span>${item.name} x ${item.quantity}</span>
                   <span>K${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               `).join('')}
             </div>
-            <div class="receipt-totals">
+            <div className="receipt-totals">
               <div className="receipt-total">
                 <span>Subtotal:</span>
                 <span>K${subtotal.toFixed(2)}</span>
@@ -424,11 +432,18 @@ const POS = () => {
     setIsChargeModalOpen(false);
     setAmountPaid('');
     setPaymentError('');
+    setCustomerId('1');
   };
 
   const handleCloseCartModal = () => {
     setIsCartModalOpen(false);
   };
+
+  const paymentOptions = [
+    { value: 'cash', label: 'Cash' },
+    { value: 'card', label: 'Card' },
+    { value: 'mobile', label: 'Mobile Money' },
+  ];
 
   return (
     <div className="pos-container">
@@ -580,8 +595,6 @@ const POS = () => {
           </div>
 
           <div className="bottom-panel">
-            <div className="bottom-left">
-            </div>
             <div className="bottom-right">
               <div className="cart-actions">
                 <button className="cart-btn" onClick={handleCartClick} disabled={isSaving}>
@@ -746,6 +759,40 @@ const POS = () => {
                 <div className="modal-body">
                   {cartItems.length > 0 ? (
                     <>
+                      <div className="charge-modal-payment-method">
+                        <label>Payment Method:</label>
+                        <Select
+                          value={paymentOptions.find(option => option.value === paymentMethod)}
+                          onChange={(option) => setPaymentMethod(option.value)}
+                          options={paymentOptions}
+                          classNamePrefix="react-select"
+                          isClearable={false}
+                          placeholder="Select Payment Method..."
+                          aria-label="Select payment method"
+                          isDisabled={isSaving}
+                          styles={{
+                            input: (provided) => ({
+                              ...provided,
+                              color: '#333',
+                            }),
+                            singleValue: (provided) => ({
+                              ...provided,
+                              color: '#333',
+                            }),
+                          }}
+                        />
+                      </div>
+
+                      <div className="charge-modal-customer-id">
+                        <label>Customer ID:</label>
+                        <input
+                          type="number"
+                          value={customerId}
+                          onChange={(e) => setCustomerId(e.target.value)}
+                          placeholder="Enter Customer ID"
+                          disabled={isSaving}
+                        />
+                      </div>
                       <div className="charge-modal-totals">
                         <div className="charge-modal-total charge-modal-total-amount standout-total">
                           <span className="charge-modal-total-label">Total:</span>

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Layout from "./components/Layout"; // Import the Layout component
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Sales from "./pages/Sales";
@@ -27,25 +27,24 @@ const NotFound = () => (
 function AppRouter() {
   return (
     <Router>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/sales" element={<Sales />} />
-        <Route path="/purchases" element={<Purchases />} />
-        <Route path="/stocks" element={<Stocks />} />
-        <Route path="/expenses" element={<Expenses />} />
-        <Route path="/damages" element={<Damages />} />
-        <Route path="/cashflow" element={<Cashflow />} />
-        <Route path="/add-sales" element={<AddSales />} />
-        <Route path="/add-purchase" element={<AddPurchase />} />
-        <Route path="/add-product" element={<AddProduct />} />
-        <Route path="/edit-product/:id" element={<EditProduct />} />
-        <Route path="/add-expense" element={<AddExpense />} />
-        <Route path="/add-damage" element={<AddDamage />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/pos" element={<POS />} /> {/* This route causes Dashboard to fail */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<Layout><Dashboard /></Layout>} />
+        <Route path="/products" element={<Layout><Products /></Layout>} />
+        <Route path="/sales" element={<Layout><Sales /></Layout>} />
+        <Route path="/purchases" element={<Layout><Purchases /></Layout>} />
+        <Route path="/stocks" element={<Layout><Stocks /></Layout>} />
+        <Route path="/expenses" element={<Layout><Expenses /></Layout>} />
+        <Route path="/damages" element={<Layout><Damages /></Layout>} />
+        <Route path="/cashflow" element={<Layout><Cashflow /></Layout>} />
+        <Route path="/add-sales" element={<Layout><AddSales /></Layout>} />
+        <Route path="/add-purchase" element={<Layout><AddPurchase /></Layout>} />
+        <Route path="/add-product" element={<Layout><AddProduct /></Layout>} />
+        <Route path="/edit-product/:id" element={<Layout><EditProduct /></Layout>} />
+        <Route path="/add-expense" element={<Layout><AddExpense /></Layout>} />
+        <Route path="/add-damage" element={<Layout><AddDamage /></Layout>} />
+        <Route path="/settings" element={<Layout><Settings /></Layout>} />
+        <Route path="/pos" element={<Layout usePosNavbar={true}><POS /></Layout>} /> {/* POS uses special navbar */}
+        <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </Router>
   );
