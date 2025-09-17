@@ -1,13 +1,21 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling on html/body */
+}
+
 /* General container styling */
 .pos-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px);
+  height: 100vh; /* Take full viewport height */
+  padding-top: 60px; /* Space for fixed navbar */
+  padding-bottom: 70px; /* Space for fixed bottom panel */
   background-color: #1e1e1e;
   color: white;
   padding: 5px;
   box-sizing: border-box;
-  margin-top: 00px;
 }
 
 /* Error alert */
@@ -80,6 +88,8 @@
   flex: 1;
   gap: 20px;
   overflow: hidden;
+  height: 100%; /* Fill the available space within the padded .pos-container */
+
 }
 
 /* Left Panel: Item Selection */
@@ -98,7 +108,7 @@
   flex-direction: column;
   border-left: 1px solid #333;
   padding-left: 20px;
-  height: calc(100vh - 90px);
+  height: calc(100% - 10px); /* Adjusted to fill remaining space in pos-grid, minus some padding */
   overflow: hidden;
 }
 
@@ -250,7 +260,7 @@
   flex: 1;
   padding-right: 5px;
   padding-left: 5px;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 60px - 70px - 100px); /* Adjusted for navbar (60px), bottom-panel (70px), search/category (approx 100px) */
   padding-bottom: 20px;
   padding-top: 10px;
 }
@@ -1033,7 +1043,21 @@
   }
 }
 
-/* Toggle Menu Button */
+/* POS Menu Toggle Button and Panel */
+.bottom-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #222;
+  border-top: 1px solid #444;
+  position: relative; /* For positioning the menu panel */
+}
+
+.bottom-left {
+  position: relative;
+}
+
 .pos-menu-toggle-btn {
   background-color: #007bff;
   color: white;
@@ -1086,38 +1110,10 @@
   background-color: #555;
 }
 
-.pos-menu-panel.open {
-  transform: translateX(0); /* Slide in */
-}
-
-/* Desktop view only */
-@media (min-width: 768px) {
-  .pos-menu-toggle-btn {
-    display: block; /* Show button on desktop */
+/* Media query for desktop-only visibility */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
   }
-}
-
-
-
-/* Ensure the main content area adjusts when the menu is open */
-.pos-container.menu-open {
-  margin-left: 250px; /* Width of the menu panel */
-}
-
-/* Adjust pos-grid to account for the menu panel when open */
-.pos-grid.menu-open {
-  width: calc(100% - 250px); /* Subtract menu panel width */
-  transform: translateX(250px); /* Shift content to the right */
-}
-
-/* Ensure bottom panel also shifts with the menu */
-.bottom-panel.menu-open {
-  margin-left: 250px; /* Width of the menu panel */
-  width: calc(100% - 250px); /* Adjust width */
-}
-
-/* Specific styling for the toggle button in the bottom panel */
-.bottom-panel .pos-menu-toggle-btn {
-  margin-right: auto; /* Push to the left */
 }
 

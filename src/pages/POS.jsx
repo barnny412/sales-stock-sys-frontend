@@ -30,6 +30,7 @@ const POS = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [customerId, setCustomerId] = useState('1');
   const [userId] = useState('1');
+  const [isPosMenuOpen, setIsPosMenuOpen] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -439,6 +440,10 @@ const POS = () => {
     setIsCartModalOpen(false);
   };
 
+  const handleTogglePosMenu = () => {
+    setIsPosMenuOpen(!isPosMenuOpen);
+  };
+
   const paymentOptions = [
     { value: 'cash', label: 'Cash' },
     { value: 'card', label: 'Card' },
@@ -595,6 +600,19 @@ const POS = () => {
           </div>
 
           <div className="bottom-panel">
+            <div className="bottom-left desktop-only">
+              <button className="pos-menu-toggle-btn" onClick={handleTogglePosMenu} disabled={isSaving}>
+                {isPosMenuOpen ? 'Close POS Menu' : 'Open POS Menu'}
+              </button>
+              {isPosMenuOpen && (
+                <div className="pos-menu-panel">
+                  {/* Add your POS menu items here */}
+                  <button className="pos-menu-item" onClick={() => alert('POS Menu Item 1 Clicked')}>Item 1</button>
+                  <button className="pos-menu-item" onClick={() => alert('POS Menu Item 2 Clicked')}>Item 2</button>
+                  <button className="pos-menu-item" onClick={() => alert('POS Menu Item 3 Clicked')}>Item 3</button>
+                </div>
+              )}
+            </div>
             <div className="bottom-right">
               <div className="cart-actions">
                 <button className="cart-btn" onClick={handleCartClick} disabled={isSaving}>
