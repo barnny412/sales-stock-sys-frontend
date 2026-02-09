@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../assets/styles/POS/PosMenu.css';
 
 const PosMenu = ({ isPosMenuOpen, onTogglePosMenu, isSaving }) => {
   return (

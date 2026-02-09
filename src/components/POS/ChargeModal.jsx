@@ -1,5 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
+import '../../assets/styles/POS/ChargeModal.css';
 
 const ChargeModal = ({
   isOpen,

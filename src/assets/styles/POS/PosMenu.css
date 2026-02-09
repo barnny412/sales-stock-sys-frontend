@@ -1,0 +1,85 @@
+/* PosMenu Styles */
+.pos-menu-toggle-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.pos-menu-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+.pos-menu-toggle-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.pos-menu-panel {
+  position: absolute;
+  bottom: 100%; /* Position above the button */
+  left: 0;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 10px;
+  min-width: 180px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 5px; /* Space between button and panel */
+}
+
+.pos-menu-item {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+  border-radius: 3px;
+}
+
+.pos-menu-item:hover {
+  background-color: #555;
+}
+
+.pos-menu-panel.open {
+  transform: translateX(0); /* Slide in */
+}
+
+/* Desktop view only */
+@media (min-width: 768px) {
+  .pos-menu-toggle-btn {
+    display: block; /* Show button on desktop */
+  }
+}
+
+/* Ensure the main content area adjusts when the menu is open */
+.pos-container.menu-open {
+  margin-left: 250px; /* Width of the menu panel */
+}
+
+/* Adjust pos-grid to account for the menu panel when open */
+.pos-grid.menu-open {
+  width: calc(100% - 250px); /* Subtract menu panel width */
+  transform: translateX(250px); /* Shift content to the right */
+}
+
+/* Ensure bottom panel also shifts with the menu */
+.bottom-panel.menu-open {
+  margin-left: 250px; /* Width of the menu panel */
+  width: calc(100% - 250px); /* Adjust width */
+}
+
+/* Specific styling for the toggle button in the bottom panel */
+.bottom-panel .pos-menu-toggle-btn {
+  margin-right: auto; /* Push to the left */
+}

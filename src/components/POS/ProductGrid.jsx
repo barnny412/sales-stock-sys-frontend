@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../assets/styles/POS/ProductGrid.css';
 
 const ProductGrid = ({ 
   items, 

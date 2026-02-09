@@ -7,7 +7,7 @@
   color: white;
   padding: 5px;
   box-sizing: border-box;
-  margin-top: 00px;
+  margin-top: 0px;
 }
 
 /* Error alert */
@@ -242,216 +242,6 @@
   cursor: pointer;
 }
 
-.item-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-  gap: 10px;
-  overflow-y: auto;
-  flex: 1;
-  padding-right: 5px;
-  padding-left: 5px;
-  max-height: calc(100vh - 200px);
-  padding-bottom: 20px;
-  padding-top: 10px;
-}
-
-.item-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.item-grid::-webkit-scrollbar-track {
-  background: #2a2a2a;
-}
-
-.item-grid::-webkit-scrollbar-thumb {
-  background: #00ff7f;
-  border-radius: 3px;
-}
-
-.item-card {
-  background: linear-gradient(135deg, #333, #2a2a2a);
-  border: 1px solid #00ff7f;
-  border-radius: 5px;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  height: 120px;
-}
-
-.item-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
-}
-
-.item-name {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.item-price {
-  display: block;
-  font-size: 12px;
-  color: #00ff7f;
-}
-
-.item-stock {
-  display: block;
-  font-size: 11px;
-  color: #bbb;
-  margin-top: 3px;
-}
-
-.cart-items-scroll {
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 10px;
-  padding-right: 5px;
-}
-
-.cart-items-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.cart-items-scroll::-webkit-scrollbar-track {
-  background: #2a2a2a;
-}
-
-.cart-items-scroll::-webkit-scrollbar-thumb {
-  background: #00ff7f;
-  border-radius: 3px;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 0;
-  padding: 5px 0;
-  color: white;
-  width: 100%;
-}
-
-.cart-item-name {
-  flex: 1;
-  text-align: left;
-  font-size: 14px;
-  line-height: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cart-item-quantity-label {
-  font-size: 14px;
-  line-height: 1;
-  margin: 0 10px;
-  color: #bbb;
-}
-
-.cart-item-decrease-btn,
-.cart-item-increase-btn {
-  background: #333;
-  border: 1px solid #00ff7f;
-  color: #00ff7f;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin: 0 2px;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  min-width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-item-decrease-btn:hover,
-.cart-item-increase-btn:hover {
-  background: #00e67f;
-  color: #1e1e1e;
-}
-
-.cart-item-quantity {
-  font-size: 14px;
-  line-height: 1;
-  margin: 0 10px;
-  min-width: 30px;
-  text-align: center;
-}
-
-.cart-item-actions {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
-}
-
-.cart-item-price {
-  font-size: 14px;
-  line-height: 1;
-  color: #ccffcc;
-  min-width: 60px;
-  text-align: right;
-}
-
-.cart-item-remove-btn {
-  padding: 4px 8px;
-  border: none;
-  border-radius: 4px;
-  background-color: #ff3333;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  font-size: 14px;
-  line-height: 1;
-  min-width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-item-remove-btn:hover {
-  background-color: #e60000;
-}
-
-.cart-empty-message {
-  padding: 20px;
-  text-align: center;
-  color: #bbb;
-}
-
-.cart-totals {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.cart-total-label {
-  font-size: 14px;
-}
-
-.cart-total-value {
-  font-size: 14px;
-  color: #00ff7f;
-}
-
-.cart-total-amount .cart-total-value {
-  font-size: 16px;
-  font-weight: bold;
-}
-
 /* Bottom Panel */
 .bottom-panel {
   position: fixed;
@@ -549,11 +339,39 @@
   border-radius: 3px;
 }
 
-.modal-header {
+.modal-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+}
+
+.modal-header {
+  margin: 0;
   text-align: center;
   font-size: 24px;
   color: #fff;
+  flex: 1;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  color: #ff4d4d;
 }
 
 .modal-body {
@@ -564,249 +382,6 @@
   text-align: center;
   color: #bbb;
   padding: 20px;
-}
-
-/* ======================
-   ENHANCED CHARGE MODAL STYLING
-   ====================== */
-.charge-modal-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.charge-order-summary {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border: 1px solid #e9ecef;
-}
-
-.charge-order-summary h4 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.charge-order-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.charge-order-item:last-child {
-  border-bottom: none;
-}
-
-.charge-order-more {
-  font-style: italic;
-  color: #666;
-  text-align: center;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-}
-
-/* Payment Method Selector in Charge Modal */
-.charge-modal-payment-method {
-  margin-bottom: 15px;
-}
-
-.charge-modal-payment-method label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #fff;
-  font-size: 14px;
-}
-
-.charge-modal-payment-method .react-select__control {
-  min-height: 42px;
-  border: 1px solid #00ff7f;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #333, #2a2a2a);
-  color: #fff;
-  box-sizing: border-box;
-}
-
-.charge-modal-payment-method .react-select__control:hover {
-  border-color: #00ff7f;
-}
-
-.charge-modal-payment-method .react-select__control--is-focused {
-  border-color: #00ff7f;
-  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
-}
-
-.charge-modal-payment-method .react-select__value-container {
-  padding: 5px 12px;
-  font-family: 'Arial', sans-serif;
-  font-weight: 500;
-  color: #fff;
-}
-
-.charge-modal-payment-method .react-select__input {
-  color: #fff;
-  caret-color: #00ff7f;
-}
-
-.charge-modal-payment-method .react-select__menu {
-  z-index: 1002;
-  background-color: #333;
-  border: 1px solid #00ff7f;
-  border-radius: 8px;
-  margin-top: 2px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.charge-modal-payment-method .react-select__menu .react-select__option {
-  color: #fff;
-  padding: 8px 12px;
-  background-color: #333;
-}
-
-.charge-modal-payment-method .react-select__menu .react-select__option:hover,
-.charge-modal-payment-method .react-select__menu .react-select__option--is-focused {
-  background-color: #00cc66;
-  color: #000;
-}
-
-.charge-modal-payment-method .react-select__menu .react-select__option--is-selected {
-  background-color: #006633;
-  color: #fff;
-  font-weight: bold;
-}
-
-.charge-modal-customer-id {
-  margin: 15px 0;
-}
-
-.charge-modal-customer-id label {
-  font-size: 14px;
-  color: #fff;
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-.charge-modal-customer-id input {
-  padding: 10px;
-  border: 1px solid #00ff7f;
-  border-radius: 4px;
-  background-color: #333;
-  color: #fff;
-  font-size: 14px;
-  width: 120px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.charge-modal-customer-id input:focus {
-  outline: none;
-  border-color: #00cc66;
-  box-shadow: 0 0 0 2px rgba(0, 255, 127, 0.2);
-}
-
-.charge-modal-totals {
-  margin-top: 15px;
-}
-
-.total-breakdown {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  margin-bottom: 1rem;
-}
-
-.total-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding: 0.25rem 0;
-}
-
-.total-row.main-total {
-  border-top: 2px solid #ddd;
-  padding-top: 0.75rem;
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-top: 0.5rem;
-}
-
-.total-amount {
-  color: #007bff;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.amount-paid-section {
-  margin-bottom: 1rem;
-}
-
-.amount-paid-section label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #fff;
-  font-size: 1rem;
-}
-
-.amount-paid-input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #00ff7f;
-  border-radius: 6px;
-  font-size: 1.2rem;
-  text-align: center;
-  background-color: #333;
-  color: #fff;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  font-weight: bold;
-}
-
-.amount-paid-input:focus {
-  border-color: #00cc66;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.2);
-}
-
-.amount-paid-input::placeholder {
-  color: #bbb;
-  font-weight: normal;
-}
-
-.amount-warning {
-  color: #ff6b6b;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  text-align: center;
-  font-weight: 500;
-  background: rgba(255, 107, 107, 0.1);
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 107, 107, 0.3);
-}
-
-.change-display {
-  display: flex;
-  justify-content: space-between;
-  background: linear-gradient(135deg, #d4edda, #c3e6cb);
-  padding: 1rem;
-  border-radius: 8px;
-  font-weight: bold;
-  color: #155724;
-  border: 2px solid #28a745;
-  margin-top: 1rem;
-  font-size: 1.1rem;
-}
-
-.change-amount {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #28a745;
 }
 
 .modal-actions {
@@ -945,22 +520,6 @@
     min-height: 0;
   }
 
-  .item-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    overflow-y: auto;
-    flex: 1;
-    min-height: 400px;
-    max-height: calc(100vh - 370px);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 70px;
-  }
-
-  .item-grid::-webkit-scrollbar {
-    display: none;
-  }
-
   .desktop-only {
     display: none;
   }
@@ -968,31 +527,6 @@
   .category-select2 .react-select__control {
     width: 100%;
     max-width: none;
-  }
-
-  .cart-item-name {
-    font-size: 12px;
-  }
-
-  .cart-item-quantity,
-  .cart-item-price {
-    font-size: 12px;
-  }
-
-  .cart-item-decrease-btn,
-  .cart-item-increase-btn,
-  .cart-item-remove-btn {
-    padding: 2px 6px;
-    font-size: 12px;
-  }
-
-  .cart-total-label,
-  .cart-total-value {
-    font-size: 12px;
-  }
-
-  .cart-total-amount .cart-total-value {
-    font-size: 14px;
   }
 
   .bottom-panel {
@@ -1050,46 +584,6 @@
     background-color: #e6b800;
   }
 
-  .cart-item {
-    padding: 8px 0;
-  }
-
-  .cart-item-decrease-btn,
-  .cart-item-increase-btn,
-  .cart-item-remove-btn {
-    padding: 4px 8px;
-    min-width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-
-  .cart-item-name {
-    font-size: 12px;
-  }
-
-  .cart-item-quantity-label,
-  .cart-item-quantity,
-  .cart-item-price {
-    font-size: 12px;
-  }
-
-  .cart-totals {
-    padding-top: 15px;
-  }
-
-  .cart-total {
-    font-size: 14px;
-  }
-
-  /* Mobile responsive for charge modal */
-  .charge-modal-payment-method .react-select__control {
-    min-height: 48px;
-  }
-
-  .charge-modal-payment-method .react-select__value-container {
-    padding: 8px 12px;
-  }
-
   .modal-actions {
     flex-direction: column;
     gap: 10px;
@@ -1100,11 +594,6 @@
     width: 100%;
     min-width: auto;
   }
-
-  .charge-modal-customer-id input {
-    width: 100%;
-    max-width: 200px;
-  }
 }
 
 @media (min-width: 769px) {
@@ -1114,29 +603,6 @@
 }
 
 @media (max-width: 480px) {
-  .item-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    overflow-y: auto;
-    min-height: 400px;
-    max-height: calc(100vh - 280px);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 0px;
-  }
-
-  .item-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .item-name {
-    font-size: 12px;
-  }
-
-  .item-price {
-    font-size: 10px;
-  }
-
   .bottom-panel {
     flex-direction: column;
     padding: 0px 8px;
@@ -1159,98 +625,8 @@
     padding: 15px;
   }
 
-  .charge-modal-payment-method .react-select__control {
-    min-height: 44px;
-  }
-
   .amount-paid-input {
     font-size: 1.1rem;
     padding: 10px;
   }
-}
-
-/* Toggle Menu Button */
-.pos-menu-toggle-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-}
-
-.pos-menu-toggle-btn:hover {
-  background-color: #0056b3;
-}
-
-.pos-menu-toggle-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.pos-menu-panel {
-  position: absolute;
-  bottom: 100%; /* Position above the button */
-  left: 0;
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 5px;
-  padding: 10px;
-  min-width: 180px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px; /* Space between button and panel */
-}
-
-.pos-menu-item {
-  background: none;
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  text-align: left;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: background-color 0.2s;
-  border-radius: 3px;
-}
-
-.pos-menu-item:hover {
-  background-color: #555;
-}
-
-.pos-menu-panel.open {
-  transform: translateX(0); /* Slide in */
-}
-
-/* Desktop view only */
-@media (min-width: 768px) {
-  .pos-menu-toggle-btn {
-    display: block; /* Show button on desktop */
-  }
-}
-
-/* Ensure the main content area adjusts when the menu is open */
-.pos-container.menu-open {
-  margin-left: 250px; /* Width of the menu panel */
-}
-
-/* Adjust pos-grid to account for the menu panel when open */
-.pos-grid.menu-open {
-  width: calc(100% - 250px); /* Subtract menu panel width */
-  transform: translateX(250px); /* Shift content to the right */
-}
-
-/* Ensure bottom panel also shifts with the menu */
-.bottom-panel.menu-open {
-  margin-left: 250px; /* Width of the menu panel */
-  width: calc(100% - 250px); /* Adjust width */
-}
-
-/* Specific styling for the toggle button in the bottom panel */
-.bottom-panel .pos-menu-toggle-btn {
-  margin-right: auto; /* Push to the left */
 }

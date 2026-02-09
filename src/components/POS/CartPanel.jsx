@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../assets/styles/POS/CartPanel.css';
 
 const CartPanel = ({ cartItems, onQuantityChange, onRemoveItem, subtotal, tax, total, isSaving }) => {
   return (

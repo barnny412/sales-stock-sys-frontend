@@ -1,0 +1,212 @@
+/* ChargeModal Styles */
+.charge-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Payment Method Selector in Charge Modal */
+.charge-modal-payment-method {
+  margin-bottom: 15px;
+}
+
+.charge-modal-payment-method label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 14px;
+}
+
+.charge-modal-payment-method .react-select__control {
+  min-height: 42px;
+  border: 1px solid #00ff7f;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #333, #2a2a2a);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.charge-modal-payment-method .react-select__control:hover {
+  border-color: #00ff7f;
+}
+
+.charge-modal-payment-method .react-select__control--is-focused {
+  border-color: #00ff7f;
+  box-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+}
+
+.charge-modal-payment-method .react-select__value-container {
+  padding: 5px 12px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 500;
+  color: #fff;
+}
+
+.charge-modal-payment-method .react-select__input {
+  color: #fff;
+  caret-color: #00ff7f;
+}
+
+.charge-modal-payment-method .react-select__menu {
+  z-index: 1002;
+  background-color: #333;
+  border: 1px solid #00ff7f;
+  border-radius: 8px;
+  margin-top: 2px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option {
+  color: #fff;
+  padding: 8px 12px;
+  background-color: #333;
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option:hover,
+.charge-modal-payment-method .react-select__menu .react-select__option--is-focused {
+  background-color: #00cc66;
+  color: #000;
+}
+
+.charge-modal-payment-method .react-select__menu .react-select__option--is-selected {
+  background-color: #006633;
+  color: #fff;
+  font-weight: bold;
+}
+
+.charge-modal-customer-id {
+  margin: 15px 0;
+}
+
+.charge-modal-customer-id label {
+  font-size: 14px;
+  color: #fff;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.charge-modal-customer-id input {
+  padding: 10px;
+  border: 1px solid #00ff7f;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  font-size: 14px;
+  width: 120px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.charge-modal-customer-id input:focus {
+  outline: none;
+  border-color: #00cc66;
+  box-shadow: 0 0 0 2px rgba(0, 255, 127, 0.2);
+}
+
+.charge-modal-totals {
+  margin-top: 15px;
+}
+
+.total-breakdown {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.total-row.main-total {
+  border-top: 2px solid #ddd;
+  padding-top: 0.75rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.total-amount {
+  color: #007bff;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.amount-paid-section {
+  margin-bottom: 1rem;
+}
+
+.amount-paid-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.amount-paid-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #00ff7f;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  text-align: center;
+  background-color: #333;
+  color: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-weight: bold;
+}
+
+.amount-paid-input:focus {
+  border-color: #00cc66;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.2);
+}
+
+.amount-paid-input::placeholder {
+  color: #bbb;
+  font-weight: normal;
+}
+
+.amount-warning {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* Responsive Design for Charge Modal */
+@media (max-width: 768px) {
+  .charge-modal-payment-method .react-select__control {
+    min-height: 48px;
+  }
+
+  .charge-modal-payment-method .react-select__value-container {
+    padding: 8px 12px;
+  }
+
+  .charge-modal-customer-id input {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .charge-modal-payment-method .react-select__control {
+    min-height: 44px;
+  }
+
+  .amount-paid-input {
+    font-size: 1.1rem;
+    padding: 10px;
+  }
+}

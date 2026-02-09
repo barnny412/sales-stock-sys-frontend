@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Select from 'react-select';
 import { fetchProductsWithCategory } from "../api/productsAPI";
 import { createSale, fetchLastClosingStock } from "../api/salesAPI";
-import ProductGrid from '../components/ProductGrid';
-import CartPanel from '../components/CartPanel';
-import PosMenu from '../components/PosMenu';
-import ChargeModal from '../components/ChargeModal';
-import Receipt from '../components/Receipt';
+import ProductGrid from '../components/POS/ProductGrid';
+import CartPanel from '../components/POS/CartPanel';
+import PosMenu from '../components/POS/PosMenu';
+import ChargeModal from '../components/POS/ChargeModal';
+import Receipt from '../components/POS/Receipt';
 import "../assets/styles/POS.css";
 
 // Custom hook for error handling
